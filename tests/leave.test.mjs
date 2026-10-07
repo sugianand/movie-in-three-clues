@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {newRoom,player,act,view,leaveRoom} from '../lib/game.ts';
+const a=player('Host'),b=player('B'),c=player('C'),r=newRoom('ABC234',a,0);r.players.push(b,c);
+assert.throws(()=>leaveRoom(r,'invalid'),/session/);assert.equal(r.players.length,3);
+leaveRoom(r,a.token);assert.equal(r.host,b.id);assert.deepEqual(r.players.map(p=>p.name),['B','C']);assert.match(view(r,b.token,0).notice,/B is now the host/);
+act(r,b.token,{action:'start'},0);const seen=[...r.seen];r.players[0].score=300;
+leaveRoom(r,c.token);assert.equal(r.status,'lobby');assert.equal(b.score,0);assert.deepEqual(r.seen,seen);assert.match(r.notice,/match ended/);
+assert.throws(()=>act(r,b.token,{action:'start'},1),/two players/);
+leaveRoom(r,b.token);assert.equal(r.players.length,0);assert.equal(r.host,'');
+console.log('PASS: invalid leave, host handoff, active-game reset, preserved rotation, minimum players and empty room.');
