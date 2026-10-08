@@ -1,6 +1,14 @@
 export function normalizeRoomCode(value:string){
- const text=value.trim();
- try{const url=new URL(text);const code=url.searchParams.get('room');if(code)return code.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);}catch{}
+ const text=value.trim().replace(/^<(.+)>$/,'$1');
+ // Read the query independently of the origin: copied invites may omit the
+ // scheme or contain only the path/query. Never use the hostname as a code.
+ const queryStart=text.indexOf('?');
+ if(queryStart!==-1){
+  const params=new URLSearchParams(text.slice(queryStart+1).split('#')[0]);
+  const code=params.get('room');
+  return code?code.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6):'';
+ }
+ if(text.includes('://')||/[/.]/.test(text))return '';
  return text.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6);
 }
 export function uniquePlayerName(name:string,names:string[]){

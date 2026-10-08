@@ -18,6 +18,10 @@ for(let round=0;round<5;round++){
 assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);
 game=await api({...host,action:'replay'});assert.equal(game.status,'playing');assert.equal(game.players[0].score,0);assert.equal(game.unseenCount,190);assert(!deck.includes(movies.find(m=>m.clues[0]===game.clues[0]).title));
 const invited=await api({action:'create',name:'Invite host'});const inviteGuest=await api({action:'join',name:'Invite guest',code:base+'/?room='+invited.code});assert.equal(inviteGuest.code,invited.code);
+for(const code of [new URL(base).host+'/?room='+invited.code,'<'+base+'/?room='+invited.code+'>','?room='+invited.code]){
+ const joinedInvite=await api({action:'join',name:'Pasted invite',code});assert.equal(joinedInvite.code,invited.code);
+}
+await api({action:'join',name:'Missing code',code:base+'/?source=chat'},400);
 const race=await api({action:'create',name:'Race host'});const results=await Promise.all(Array.from({length:10},(_,i)=>fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify({action:'join',code:race.code,name:'P'+i})}).then(async r=>({status:r.status,data:await r.json()}))));
 const room=await api({action:'state',code:race.code,token:race.token});assert.equal(room.players.length,8);assert.equal(results.filter(r=>r.status===200).length,7);
 const selected={collection:'indian',era:'modern',mode:'individual',difficulty:'normal'};
