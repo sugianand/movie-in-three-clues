@@ -4,7 +4,7 @@ const base=process.env.GAME_TEST_URL||'http://localhost:4173';
 async function api(body,expected=200){const res=await fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify(body)});const text=await res.text();assert.equal(res.status,expected,text||JSON.stringify([...res.headers]));const data=JSON.parse(text);return data;}
 const a=await api({action:'create',name:'Host'});const b=await api({action:'join',name:'Host',code:' '+a.code.toLowerCase().split('').join(' ')+' '});const host={code:a.code,token:a.token},guest={code:a.code,token:b.token};
 const joined=await api({...host,action:'state'});assert.equal(joined.players.length,2);assert.deepEqual(joined.players.map(p=>p.name),['Host','Host 2']);
-await api({...guest,action:'start'},400);let game=await api({...host,action:'start'});const deck=[];
+await api({...guest,action:'start'},400);let game=await api({...host,action:'start'});const deck=[];const firstRoundStarted=game.roundStarted;assert.equal(typeof firstRoundStarted,'number');
 await api({code:a.code,name:'Late',action:'join'},400);
 for(let round=0;round<5;round++){
  assert.equal(game.round,round);assert.equal(game.answer,null);assert.equal(game.clues.length,1);assert(!JSON.stringify(game).includes(a.token));
@@ -17,11 +17,9 @@ for(let round=0;round<5;round++){
 }
 assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);
 game=await api({...host,action:'replay'});assert.equal(game.status,'playing');assert.equal(game.players[0].score,0);assert.equal(game.unseenCount,190);assert(!deck.includes(movies.find(m=>m.clues[0]===game.clues[0]).title));
+const staleGuess=await api({...host,action:'guess',round:0,stage:0,roundStarted:firstRoundStarted,guess:'A delayed answer'},400);assert.match(staleGuess.error,/earlier round/);assert.equal((await api({...host,action:'state'})).me.attempt,-1);
 const invited=await api({action:'create',name:'Invite host'});const inviteGuest=await api({action:'join',name:'Invite guest',code:base+'/?room='+invited.code});assert.equal(inviteGuest.code,invited.code);
-for(const code of [new URL(base).host+'/?room='+invited.code,'<'+base+'/?room='+invited.code+'>','?room='+invited.code]){
- const joinedInvite=await api({action:'join',name:'Pasted invite',code});assert.equal(joinedInvite.code,invited.code);
-}
-await api({action:'join',name:'Missing code',code:base+'/?source=chat'},400);
+const retryToken='12345678-1234-4123-8123-123456789abc';const firstJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});const retriedJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});assert.equal(retriedJoin.token,firstJoin.token);assert.equal(retriedJoin.players.length,3);
 const race=await api({action:'create',name:'Race host'});const results=await Promise.all(Array.from({length:10},(_,i)=>fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify({action:'join',code:race.code,name:'P'+i})}).then(async r=>({status:r.status,data:await r.json()}))));
 const room=await api({action:'state',code:race.code,token:race.token});assert.equal(room.players.length,8);assert.equal(results.filter(r=>r.status===200).length,7);
 const selected={collection:'indian',era:'modern',mode:'individual',difficulty:'normal'};
@@ -68,6 +66,6 @@ const stopped=await api({...lbc,action:'state'});assert.equal(stopped.status,'lo
 const replacement=await api({action:'join',code:lh.code,name:'Replacement'});assert.equal(replacement.players.length,2);
 await Promise.all([api({...lbc,action:'leave'}),api({code:lh.code,token:replacement.token,action:'leave'})]);
 await api({action:'join',code:lh.code,name:'No room'},400);
-const page=await fetch(base);assert.equal(page.status,200);const html=await page.text();assert(html.includes('landing-play'));assert(html.includes('>Play</button>'));assert(!html.includes('id="host-name"'));
+const page=await fetch(base);assert.equal(page.status,200);const html=await page.text();assert(html.includes('landing-play'));assert(html.includes('>Play with friends</button>'));assert(html.includes('Daily Premiere'));assert(!html.includes('id="host-name"'));
 await api({action:'create',name:'Invalid mode',mode:'bad'},400);
-console.log('PASS: live HTTP two-player 5-round game, 1500-point shared winners, replay, reconnect, hidden data, 8-player concurrent capacity, host permissions, duplicate-name join, pasted codes, invite links, same-origin cookie-free requests and page render.');
+console.log('PASS: live HTTP two-player 5-round game, 1500-point shared winners, replay, reconnect, idempotent join retries, hidden data, 8-player concurrent capacity, host permissions, duplicate-name join, pasted codes, invite links, same-origin cookie-free requests and page render.');

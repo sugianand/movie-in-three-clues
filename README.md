@@ -125,3 +125,11 @@ Leave room is available in the shared room header to every player, including the
 Leaving during play/reveal stops the match and returns remaining players to the lobby, resets match scores and preserves movie history/team names/settings. Leaving from finished results also returns the room to the lobby. This avoids continuing with uneven teams or awarding a misleading win. Closing the browser tab does not automatically leave.
 
 The landing, Host/Join forms, lobby, settings, team cards, clue screens, results and leave dialog share improved spacing, contrast, focus rings, readable labels and mobile layouts. Reduced-motion preferences are respected. Unit and Worker tests cover host transfer, unauthorized leaves, replay readiness, reclaimed seats, concurrent departures and last-player room deletion. Actual browser visual QA remains unverified.
+
+## Daily Premiere
+
+The home screen now offers a one-player daily puzzle alongside multiplayer. Everyone gets the same movie for a UTC day. Each wrong guess or skip reveals another clue; a correct answer earns 300, 200, or 100 points. The answer and unrevealed clues stay on the server until completion. No countdown limits an individual guess; the puzzle resets at midnight UTC.
+
+A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
+
+Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.

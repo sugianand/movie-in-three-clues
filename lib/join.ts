@@ -16,3 +16,8 @@ export function uniquePlayerName(name:string,names:string[]){
  while(names.some(n=>n.toLowerCase()===result.toLowerCase())){const tail=` ${suffix++}`;result=name.slice(0,20-tail.length)+tail;}
  return result;
 }
+export function activeRoomUrl(href:string,code:string){
+ const url=new URL(href);
+ url.searchParams.set('room',code);
+ return url.pathname+url.search+url.hash;
+}

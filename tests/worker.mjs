@@ -8,4 +8,5 @@ try{
  const db=await mf.getD1Database('DB');await db.exec(readFileSync('drizzle/0000_magenta_namorita.sql','utf8').replace(/\n/g,' '));
  globalThis.fetch=(url,init)=>mf.dispatchFetch(url,init);
  await import('./integration.mjs');
+ await import('./daily-integration.mjs');
 }finally{await mf.dispose();}

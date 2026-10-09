@@ -14,7 +14,8 @@ export async function POST(req:Request){try{
  throw Error('Could not create a room. Please try again.');
  }
  const code=typeof b.code==='string'?normalizeRoomCode(b.code):'';if(!/^[A-Z2-9]{6}$/.test(code))throw Error('Enter a valid six-character room code.');
- const joining=b.action==='join'?player(b.name):null;
+ const joinToken=b.action==='join'&&typeof b.joinToken==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(b.joinToken)?b.joinToken:undefined;
+ const joining=b.action==='join'?player(b.name,joinToken):null;
  for(let n=0;n<8;n++){
  const row=await db.prepare('SELECT state,version,created FROM rooms WHERE code=?').bind(code).first<{state:string;version:number;created:number}>();if(!row||Date.now()-row.created>86400000)throw Error('Room not found or expired. Check the code or create a new room.');
  const r=JSON.parse(row.state) as Room;let token=b.token;
@@ -24,7 +25,7 @@ export async function POST(req:Request){try{
   if(changed.meta.changes)return reply({left:true});continue;
  }
 
- if(joining){if(r.status!=='lobby')throw Error('This game has started. Join a new room.');if(r.players.length>=8)throw Error('This room is full (8 players).');joining.name=uniquePlayerName(typeof b.name==='string'?b.name.trim():joining.name,r.players.map(p=>p.name));r.players.push(joining);if(r.settings?.mode==='teams')assignTeams(r);token=joining.token;}
+ if(joining){const existing=r.players.find(p=>p.token===joining.token);if(existing)return reply({token:existing.token,...view(r,existing.token)});if(r.status!=='lobby')throw Error('This game has started. Join a new room.');if(r.players.length>=8)throw Error('This room is full (8 players).');joining.name=uniquePlayerName(typeof b.name==='string'?b.name.trim():joining.name,r.players.map(p=>p.name));r.players.push(joining);if(r.settings?.mode==='teams')assignTeams(r);token=joining.token;}
  else if(b.action!=='state')act(r,token,b);
  const data=view(r,token);const changed=JSON.stringify(r)!==row.state;
  if(!changed)return reply(data);
