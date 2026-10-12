@@ -133,3 +133,9 @@ The home screen now offers a one-player daily puzzle alongside multiplayer. Ever
 A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
 
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
+
+## Movie Night Recap
+
+Finished multiplayer matches include an optional recap with every movie, each solver, the clue they solved it on, points earned, missed players, and a comeback callout based on standings after round one. Team matches use team standings for the comeback calculation while keeping individual solves in the round list.
+
+The server records each round once at reveal but returns the recap only after the match is finished, preventing answer or result leaks during play. Existing rooms without recap data remain compatible and simply omit the panel; replay starts a fresh recap. Tests cover privacy, idempotent capture, clue and point accuracy, comeback ranking, and legacy rooms.
