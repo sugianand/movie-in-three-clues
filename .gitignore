@@ -44,3 +44,13 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# Generated Vercel frontend copies
+/vercel/app/
+/vercel/components/
+/vercel/hooks/
+/vercel/lib/
+/vercel/data/
+/vercel/public/
+/vercel/next-env.d.ts
+/vercel/tsconfig.tsbuildinfo

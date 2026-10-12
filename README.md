@@ -133,3 +133,11 @@ The home screen now offers a one-player daily puzzle alongside multiplayer. Ever
 A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
 
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
+
+## Vercel frontend deployment
+
+Import this repository into Vercel with Root Directory `vercel`, enable access to source files outside that directory, and use the included Next.js preset and build configuration. `npm ci --workspaces=false` installs the independent locked dependencies. Each build copies the current shared frontend, so GitHub updates rebuild the Vercel UI without a second copy to maintain.
+
+Vercel serves the frontend and same-origin API forwarding functions. Room state, scoring, timers, and Daily Premiere remain on the existing Cloudflare/D1 deployment at `movie-in-three-clues.sugianand89.chatgpt.site`; that backend must stay deployed. This is not a migration of D1 into Vercel. Forwarding checks the browser origin, limits request size, uses a fixed upstream destination, disables caching, and times out after 15 seconds. No credentials or API keys are required.
+
+Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build --prefix vercel`.
