@@ -22,7 +22,7 @@ const invited=await api({action:'create',name:'Invite host'});const inviteGuest=
 const retryToken='12345678-1234-4123-8123-123456789abc';const firstJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});const retriedJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});assert.equal(retriedJoin.token,firstJoin.token);assert.equal(retriedJoin.players.length,3);
 const race=await api({action:'create',name:'Race host'});const results=await Promise.all(Array.from({length:10},(_,i)=>fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify({action:'join',code:race.code,name:'P'+i})}).then(async r=>({status:r.status,data:await r.json()}))));
 const room=await api({action:'state',code:race.code,token:race.token});assert.equal(room.players.length,8);assert.equal(results.filter(r=>r.status===200).length,7);
-const selected={collection:'indian',era:'modern',mode:'individual',difficulty:'normal'};
+const selected={collection:'indian',era:'modern',mode:'individual',difficulty:'normal',speedBonus:false};
 const sh=await api({action:'create',name:'Settings host'});const sg=await api({action:'join',name:'Settings guest',code:sh.code});
 const hc={code:sh.code,token:sh.token},gc={code:sh.code,token:sg.token};
 await api({...gc,action:'settings',settings:selected},400);
@@ -40,6 +40,12 @@ for(let round=0;round<5;round++){
 assert.equal(filtered.status,'finished');assert.deepEqual(filtered.players.map(p=>p.score),[1500,1500]);
 const changed=await api({...hc,action:'settings',settings:{collection:'hollywood',era:'classic'}});assert.equal(changed.movieCount,50);
 const again=await api({...hc,action:'replay'});assert.equal(again.movieCount,50);const nextMovie=movies.find(m=>m.clues[0]===again.clues[0]);assert.equal(nextMovie.region,'hollywood');assert(nextMovie.year<2010);
+const bh=await api({action:'create',name:'Bonus host'}),bg=await api({action:'join',name:'Bonus guest',code:bh.code});
+const bc={code:bh.code,token:bh.token},bgc={code:bg.code,token:bg.token};
+await api({...bc,action:'settings',settings:{collection:'mixed',era:'all',mode:'individual',difficulty:'normal',speedBonus:true}});
+let bonusGame=await api({...bc,action:'start'});const bonusTitle=movies.find(m=>m.clues[0]===bonusGame.clues[0]).title;
+bonusGame=await api({...bc,action:'guess',round:0,stage:0,guess:bonusTitle});assert(bonusGame.me.speedBonus>=5&&bonusGame.me.speedBonus<=50);assert.equal(bonusGame.me.gain,300+bonusGame.me.speedBonus);
+assert.equal((await api({...bgc,action:'state'})).players.find(p=>p.id===bh.me.id).score,0);
 const th=await api({action:'create',name:'Team host',mode:'teams'}),tc={code:th.code,token:th.token};
 await api({...tc,action:'settings',settings:{collection:'mixed',era:'all',mode:'teams',difficulty:'easy'}});
 const tg=await api({action:'join',code:th.code,name:'Team guest'}),tgc={code:th.code,token:tg.token};

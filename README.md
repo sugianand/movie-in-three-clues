@@ -30,6 +30,7 @@ Open http://localhost:3000 after startup. Port 3000 must be free.
 - The host starts a five-round game. Movies are randomly selected without repeats within a game from a bank of 200 active titles. The same room remembers used titles across Play again, with no repeats until the pool is exhausted; a new room starts fresh.
 - Clues appear every 30 seconds on Easy, 15 on Normal, or 10 on Hard. You may submit one guess per clue.
 - Correct guesses score 300, 200, or 100 points, depending on the clue. Punctuation/case and small typos are accepted; very short titles must match exactly.
+- The host can optionally enable Speed Bonus. Correct guesses then earn 5–50 extra points based on server-measured time left on the current clue; classic scoring remains the default.
 - Correct answers, new points, and other players' guesses stay hidden until the reveal.
 - A round ends after 90/45/30 seconds (Easy/Normal/Hard) or when everyone gets the movie. The host advances to the next round.
 - Highest score after five rounds wins; tied leaders share the win. The host can start another game.
@@ -139,3 +140,7 @@ Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily
 Finished multiplayer matches include an optional recap with every movie, each solver, the clue they solved it on, points earned, missed players, and a comeback callout based on standings after round one. Team matches use team standings for the comeback calculation while keeping individual solves in the round list.
 
 The server records each round once at reveal but returns the recap only after the match is finished, preventing answer or result leaks during play. Existing rooms without recap data remain compatible and simply omit the panel; replay starts a fresh recap. Tests cover privacy, idempotent capture, clue and point accuracy, comeback ranking, and legacy rooms.
+
+## Speed Bonus
+
+Host Settings includes an optional Speed Bonus toggle. When enabled, the server adds 5–50 points in five-point tiers based on the time remaining on the current clue. The browser never supplies the bonus, opponents' in-round scores remain hidden, and rooms created before this option continue with classic scoring. Recaps track the solved clue independently so bonus points do not affect clue statistics.
