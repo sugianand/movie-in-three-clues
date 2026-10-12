@@ -17,6 +17,6 @@ const classic=setup(false);solve(classic.room,classic.host,1001);assert.equal(cl
 const fast=setup(true);assert.equal(speedBonus(fast.room,1000),50);assert.equal(speedBonus(fast.room,15999),5);
 solve(fast.room,fast.host,1001);assert.equal(fast.host.score,350);assert.equal(view(fast.room,fast.host.token,1002).me.speedBonus,50);
 assert.equal(view(fast.room,fast.guest.token,1002).players[0].score,0,'opponents still see hidden scores');
-const middle=setup(true);solve(middle.room,middle.host,23500);assert.equal(middle.host.score,225);assert.equal(middle.host.speedBonus,25);
+const middle=setup(true);solve(middle.room,middle.host,23500);assert.equal(middle.host.score,225);assert.equal(middle.host.speedBonus,25);assert.equal(middle.host.solveMs,7500);
 
 console.log('PASS: optional server-timed Speed Bonus tiers, classic defaults, recap-safe stages and hidden scores.');
