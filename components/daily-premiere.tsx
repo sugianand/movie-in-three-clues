@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from 'react';
 import {CalendarDays,Flame,Share2,Trophy,Lock,LoaderCircle,Ticket} from 'lucide-react';
 import type {DailyView} from '@/lib/daily-types';
+import {dailyDraftKey,readDailyDraft,sameDailyProgress,writeDailyDraft} from '@/lib/daily-draft';
 const passKey='three-clues-daily-pass';
 function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join('');return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\nCan you beat my score?\n${window.location.origin}/?daily=1`;}
 export function DailyPremiere({onBack}:{onBack:()=>void}){
@@ -13,8 +14,12 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   try{
    const res=await fetch('/api/daily',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:AbortSignal.timeout(12000),body:JSON.stringify({action,token:token.current,date:previous?.date,version:previous?.version,guess})});
    const next=await res.json() as DailyView & {error?:string};if(!res.ok)throw Error(next.error||'Please try again.');if(!alive.current)return;
-   latest.current=next;setData(next);setGuess('');
-   setNotice(action==='guess'?(next.date!==previous?.date?'A new Daily Premiere has arrived.':next.done?(next.score?'You got it! Your result is saved.':'That’s a wrap. Tomorrow is another movie.'):next.stage>previous!.stage?'Not quite. Here’s your next clue.':'Your progress is up to date.'):action==='skip'?'Next clue revealed.':'');
+   let restored='';
+   if(!previous)try{restored=readDailyDraft(sessionStorage.getItem(dailyDraftKey(token.current)),next);}catch{}
+   latest.current=next;setData(next);
+   // A background refresh must not erase typing; changed progress invalidates the draft.
+   setGuess(value=>sameDailyProgress(previous,next)?value:restored);
+   setNotice(action==='guess'?(next.date!==previous?.date?'A new Daily Premiere has arrived.':next.done?(next.score?'You got it! Your result is saved.':'That’s a wrap. Tomorrow is another movie.'):next.stage>previous!.stage?'Not quite. Here’s your next clue.':'Your progress is up to date.'):action==='skip'?'Next clue revealed.':restored?'Your unfinished guess is back. Review it, then tap Guess.':'');
   }catch(e){if(alive.current)setError(e instanceof Error&&e.name==='TimeoutError'?'Connection timed out. Retry to recover your saved progress.':e instanceof Error?e.message:'Connection lost. Please try again.');}
   finally{lock.current=false;if(alive.current){setBusy(false);if(action!=='state')setTimeout(()=>field.current?.focus(),0);}}
  }
@@ -26,6 +31,10 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   const sync=()=>{if(document.visibilityState==='visible')void request();};document.addEventListener('visibilitychange',sync);
   return()=>{alive.current=false;clearInterval(timer);document.removeEventListener('visibilitychange',sync);};
  },[]);
+ useEffect(()=>{
+  if(!data||!token.current)return;
+  try{const key=dailyDraftKey(token.current),draft=writeDailyDraft(data,guess);if(draft)sessionStorage.setItem(key,draft);else sessionStorage.removeItem(key);}catch{}
+ },[data,guess]);
  const expired=!!data&&now>=data.nextAt;
  async function share(){if(!data)return;const text=resultText(data);try{if(navigator.share){await navigator.share({text});setNotice('Result shared.');}else{await navigator.clipboard.writeText(text);setNotice('Spoiler-free result copied.');}}catch(e){if(e instanceof Error&&e.name==='AbortError')return;setShareFallback(text);setNotice('Copy your result below.');}}
  const remaining=data?Math.max(0,Math.ceil((data.nextAt-now)/1000)):0;
