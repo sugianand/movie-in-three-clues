@@ -10,12 +10,12 @@ for(let round=0;round<5;round++){
  assert.equal(game.round,round);assert.equal(game.answer,null);assert.equal(game.clues.length,1);assert(!JSON.stringify(game).includes(a.token));
  const movie=movies.find(m=>m.clues[0]===game.clues[0]);deck.push(movie.title);
  await api({...host,action:'guess',round,stage:0,guess:movie.title});
- const hidden=await api({...guest,action:'state'});assert.equal(hidden.players.find(p=>p.id===a.me.id).score,round*300);assert.equal(hidden.answer,null);
+ const hidden=await api({...guest,action:'state'});assert.equal(hidden.players.find(p=>p.id===a.me.id).score,round*300);assert.equal(hidden.answer,null);assert.equal(hidden.fastest,null);
  await api({...host,action:'guess',round,stage:0,guess:movie.title},400);
  game=await api({...guest,action:'guess',round,stage:0,guess:movie.title});assert.equal(game.status,'reveal');assert.equal(game.answer,movie.title);
  game=await api({...host,action:'next',round});
 }
-assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);
+assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert(game.fastest&&game.fastest.ms>=0);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);
 game=await api({...host,action:'replay'});assert.equal(game.status,'playing');assert.equal(game.players[0].score,0);assert.equal(game.unseenCount,190);assert(!deck.includes(movies.find(m=>m.clues[0]===game.clues[0]).title));
 const staleGuess=await api({...host,action:'guess',round:0,stage:0,roundStarted:firstRoundStarted,guess:'A delayed answer'},400);assert.match(staleGuess.error,/earlier round/);assert.equal((await api({...host,action:'state'})).me.attempt,-1);
 const invited=await api({action:'create',name:'Invite host'});const inviteGuest=await api({action:'join',name:'Invite guest',code:base+'/?room='+invited.code});assert.equal(inviteGuest.code,invited.code);
@@ -44,7 +44,7 @@ const bh=await api({action:'create',name:'Bonus host'}),bg=await api({action:'jo
 const bc={code:bh.code,token:bh.token},bgc={code:bg.code,token:bg.token};
 await api({...bc,action:'settings',settings:{collection:'mixed',era:'all',mode:'individual',difficulty:'normal',speedBonus:true}});
 let bonusGame=await api({...bc,action:'start'});const bonusTitle=movies.find(m=>m.clues[0]===bonusGame.clues[0]).title;
-bonusGame=await api({...bc,action:'guess',round:0,stage:0,guess:bonusTitle});assert(bonusGame.me.speedBonus>=5&&bonusGame.me.speedBonus<=50);assert.equal(bonusGame.me.gain,300+bonusGame.me.speedBonus);
+bonusGame=await api({...bc,action:'guess',round:0,stage:0,guess:bonusTitle});assert(bonusGame.me.speedBonus>=5&&bonusGame.me.speedBonus<=50);assert.equal(bonusGame.me.gain,300+bonusGame.me.speedBonus);assert.equal(bonusGame.fastest,null);assert.deepEqual(bonusGame.recap,[]);
 assert.equal((await api({...bgc,action:'state'})).players.find(p=>p.id===bh.me.id).score,0);
 const th=await api({action:'create',name:'Team host',mode:'teams'}),tc={code:th.code,token:th.token};
 await api({...tc,action:'settings',settings:{collection:'mixed',era:'all',mode:'teams',difficulty:'easy'}});
