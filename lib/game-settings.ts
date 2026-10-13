@@ -12,5 +12,5 @@ export function parseSettings(value:unknown):GameSettings{
  if(s.difficulty!==undefined&&!difficulties.some(d=>d.value===s.difficulty))throw Error('Choose a valid difficulty.');
  return {collection:s.collection,era:s.era,mode:s.mode??'individual',difficulty:s.difficulty??'normal'};
 }
-export function settingsLabel(s:GameSettings){return `${collections.find(c=>c.value===s.collection)?.label??'Mixed cinema'} · ${eras.find(e=>e.value===s.era)?.label??'All years'} · ${s.mode==='teams'?'Teams':'Solo'} · ${difficulties.find(d=>d.value===(s.difficulty??'normal'))?.label}`;}
+export function settingsLabel(s:GameSettings){return `${collections.find(c=>c.value===s.collection)?.label??'Mixed cinema'} · ${eras.find(e=>e.value===s.era)?.label??'All years'} · ${s.mode==='teams'?'Teams':'Free-for-all'} · ${difficulties.find(d=>d.value===(s.difficulty??'normal'))?.label}`;}
 export function clueSeconds(s?:GameSettings){return difficulties.find(d=>d.value===s?.difficulty)?.seconds??15;}
