@@ -76,7 +76,7 @@
 /* One full poster-width per lap: continuous leftward motion, no reversal. */
 main{position:relative;isolation:isolate}
 .cinema-backdrop{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#0c0e10}
-.cinema-backdrop-reel{--reel-width:max(220vh,1600px);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 100s linear infinite;will-change:transform}
+.cinema-backdrop-reel{--reel-width:max(198vh,1440px);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 70s linear infinite;will-change:transform}
 .cinema-backdrop-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0c0e1070 0%,#0c0e1030 30%,#0c0e10bb 85%,#0c0e10e8 100%),radial-gradient(ellipse at center,#11131599 10%,#11131566 48%,#11131522 100%)}
 .cinema-backdrop-subdued .cinema-backdrop-reel{opacity:.26}
 .landing .intro{background:linear-gradient(135deg,#1b1e2370,#10121440);border-color:#98a0ab50;box-shadow:0 24px 90px #0005}
