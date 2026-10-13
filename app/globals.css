@@ -76,7 +76,7 @@
 /* One full poster-width per lap: continuous leftward motion, no reversal. */
 main{position:relative;isolation:isolate}
 .cinema-backdrop{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#0c0e10}
-.cinema-backdrop-reel{--reel-width:max(220vh,1600px);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 150s linear infinite;will-change:transform}
+.cinema-backdrop-reel{--reel-width:max(220vh,1600px);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 100s linear infinite;will-change:transform}
 .cinema-backdrop-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0c0e1070 0%,#0c0e1030 30%,#0c0e10bb 85%,#0c0e10e8 100%),radial-gradient(ellipse at center,#11131599 10%,#11131566 48%,#11131522 100%)}
 .cinema-backdrop-subdued .cinema-backdrop-reel{opacity:.26}
 .landing .intro{background:linear-gradient(135deg,#1b1e2370,#10121440);border-color:#98a0ab50;box-shadow:0 24px 90px #0005}
@@ -181,3 +181,10 @@ body{background:var(--background);color:var(--foreground)}header{border-bottom:0
 /* Recent-room recovery is explicit so shared devices never silently inherit a player seat. */
 .resume-room{display:flex;align-items:center;justify-content:space-between;gap:20px;width:min(100%,620px);margin:22px auto;padding:16px 18px;border:1px solid #7890ff88;border-radius:14px;background:#0f1730d9;text-align:left;box-shadow:0 12px 35px #0005}.resume-room>div:first-child{min-width:0}.resume-room span{display:block;font-size:10px;letter-spacing:.16em;color:#aebfff}.resume-room strong{display:block;margin:3px 0;font-size:24px;letter-spacing:.16em;color:#fff}.resume-room p{margin:0;color:#c7cee0;font-size:13px;line-height:1.45}.resume-room>div:last-child{display:flex;align-items:center;gap:10px;flex-shrink:0}.resume-room button{min-height:46px;white-space:nowrap}.resume-room .text-button{padding:8px}
 @media(max-width:650px){.resume-room{align-items:stretch;flex-direction:column}.resume-room>div:last-child{width:100%}.resume-room .primary{flex:1}.resume-room .text-button{min-width:84px}}
+
+/* Keep the mystery-frame symbol legible over the moving poster wall. */
+.reel-brand-symbol{filter:drop-shadow(0 3px 10px #0009)}
+.reel-brand-hero .reel-brand-symbol{width:72px;height:72px}
+.intro-description{max-width:580px;line-height:1.6;margin:0 0 20px;color:#e0e5f0}
+.landing-note{max-width:600px;line-height:1.6;color:#cbd3e4;font-size:14px;margin:16px 0 0}
+@media(max-width:650px){.brand .reel-brand-symbol{width:40px;height:40px}.reel-brand-hero .reel-brand-symbol{width:64px;height:64px}.intro-description{font-size:14px}.landing-note{font-size:13px}.landing .score-guide{margin-top:22px}}
