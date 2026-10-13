@@ -1,6 +1,6 @@
 import {normalizeRoomCode,uniquePlayerName} from '@/lib/join';
 import {roomDb} from '@/db/rooms';
-import {player,newRoom,act,view,assignTeams,leaveRoom,type Room} from '@/lib/game';
+import {player,newRoom,act,view,assignTeams,leaveRoom,spectator,type Room} from '@/lib/game';
 export const dynamic='force-dynamic';
 const reply=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export async function POST(req:Request){try{
@@ -25,7 +25,7 @@ export async function POST(req:Request){try{
   if(changed.meta.changes)return reply({left:true});continue;
  }
 
- if(joining){const existing=r.players.find(p=>p.token===joining.token);if(existing)return reply({token:existing.token,...view(r,existing.token)});if(r.status!=='lobby')throw Error('This game has started. Join a new room.');if(r.players.length>=8)throw Error('This room is full (8 players).');joining.name=uniquePlayerName(typeof b.name==='string'?b.name.trim():joining.name,r.players.map(p=>p.name));r.players.push(joining);if(r.settings?.mode==='teams')assignTeams(r);token=joining.token;}
+ if(joining){const existing=r.players.find(p=>p.token===joining.token)??r.spectators?.find(p=>p.token===joining.token);if(existing)return reply({token:existing.token,...view(r,existing.token)});const names=[...r.players,...(r.spectators??[])].map(p=>p.name);joining.name=uniquePlayerName(typeof b.name==='string'?b.name.trim():joining.name,names);if(r.status==='lobby'){if(r.players.length>=8)throw Error('This room is full (8 players).');r.players.push(joining);if(r.settings?.mode==='teams')assignTeams(r);}else {r.spectators??=[];if(r.spectators.length>=8)throw Error('The spectator seats are full.');r.spectators.push(spectator(joining));r.notice=`${joining.name} joined as a spectator.`;}token=joining.token;}
  else if(b.action!=='state')act(r,token,b);
  const data=view(r,token);const changed=JSON.stringify(r)!==row.state;
  if(!changed)return reply(data);

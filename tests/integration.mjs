@@ -5,7 +5,7 @@ async function api(body,expected=200){const res=await fetch(base+'/api/game',{me
 const a=await api({action:'create',name:'Host'});const b=await api({action:'join',name:'Host',code:' '+a.code.toLowerCase().split('').join(' ')+' '});const host={code:a.code,token:a.token},guest={code:a.code,token:b.token};
 const joined=await api({...host,action:'state'});assert.equal(joined.players.length,2);assert.deepEqual(joined.players.map(p=>p.name),['Host','Host 2']);
 await api({...guest,action:'start'},400);let game=await api({...host,action:'start'});const deck=[];const firstRoundStarted=game.roundStarted;assert.equal(typeof firstRoundStarted,'number');
-await api({code:a.code,name:'Late',action:'join'},400);
+const late=await api({code:a.code,name:'Late',action:'join'}),lateClient={code:a.code,token:late.token};assert.equal(late.me.spectator,true);assert.equal(late.players.length,2);assert.equal(late.answer,null);assert.deepEqual(late.spectators.map(p=>p.name),['Late']);await api({...lateClient,action:'guess',round:0,stage:0,guess:'Anything'},400);
 for(let round=0;round<5;round++){
  assert.equal(game.round,round);assert.equal(game.answer,null);assert.equal(game.clues.length,1);assert(!JSON.stringify(game).includes(a.token));
  const movie=movies.find(m=>m.clues[0]===game.clues[0]);deck.push(movie.title);
@@ -15,8 +15,8 @@ for(let round=0;round<5;round++){
  game=await api({...guest,action:'guess',round,stage:0,guess:movie.title});assert.equal(game.status,'reveal');assert.equal(game.answer,movie.title);
  game=await api({...host,action:'next',round});
 }
-assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert(game.fastest&&game.fastest.ms>=0);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);
-game=await api({...host,action:'replay'});assert.equal(game.status,'playing');assert.equal(game.players[0].score,0);assert.equal(game.unseenCount,190);assert(!deck.includes(movies.find(m=>m.clues[0]===game.clues[0]).title));
+assert.equal(game.status,'finished');assert.equal(game.report.length,5);assert(game.report.every(row=>row.first===2&&row.missed===0));assert.deepEqual((await api({...guest,action:'state'})).report,[]);assert(game.fastest&&game.fastest.ms>=0);assert.deepEqual(game.players.map(p=>p.score),[1500,1500]);assert.deepEqual(game.winners,['Host','Host 2']);assert.equal(new Set(deck).size,5);assert.equal((await api({...lateClient,action:'state'})).me.spectator,true);
+game=await api({...host,action:'replay'});assert.equal(game.status,'playing');assert.equal(game.players[0].score,0);assert.equal(game.players.length,3);assert.equal((await api({...lateClient,action:'state'})).me.spectator,false);assert.equal(game.unseenCount,190);assert(!deck.includes(movies.find(m=>m.clues[0]===game.clues[0]).title));
 const staleGuess=await api({...host,action:'guess',round:0,stage:0,roundStarted:firstRoundStarted,guess:'A delayed answer'},400);assert.match(staleGuess.error,/earlier round/);assert.equal((await api({...host,action:'state'})).me.attempt,-1);
 const invited=await api({action:'create',name:'Invite host'});const inviteGuest=await api({action:'join',name:'Invite guest',code:base+'/?room='+invited.code});assert.equal(inviteGuest.code,invited.code);
 const retryToken='12345678-1234-4123-8123-123456789abc';const firstJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});const retriedJoin=await api({action:'join',name:'Retry guest',code:invited.code,joinToken:retryToken});assert.equal(retriedJoin.token,firstJoin.token);assert.equal(retriedJoin.players.length,3);
@@ -74,4 +74,4 @@ await Promise.all([api({...lbc,action:'leave'}),api({code:lh.code,token:replacem
 await api({action:'join',code:lh.code,name:'No room'},400);
 const page=await fetch(base);assert.equal(page.status,200);const html=await page.text();assert(html.includes('landing-play'));assert(html.includes('>Play with friends</button>'));assert(html.includes('Daily Premiere'));assert(!html.includes('id="host-name"'));
 await api({action:'create',name:'Invalid mode',mode:'bad'},400);
-console.log('PASS: live HTTP two-player 5-round game, 1500-point shared winners, replay, reconnect, idempotent join retries, hidden data, 8-player concurrent capacity, host permissions, duplicate-name join, pasted codes, invite links, same-origin cookie-free requests and page render.');
+console.log('PASS: live HTTP game, late-join spectator privacy and next-match promotion, scoring, replay, reconnect, idempotent joins, 8-player capacity, host permissions, invite links and page render.');
