@@ -17,3 +17,24 @@ assert.throws(()=>dailyAction(openDaily(null,now),'guess',''));
 assert.equal(new Set(Array.from({length:200},(_,i)=>dailyMovie(dailyDate(now+i*86400000)).title)).size,200);
 assert.equal(openDaily(null,Date.parse('2026-10-09T23:59:59Z')).date,'2026-10-09');assert.equal(openDaily(null,Date.parse('2026-10-10T00:00:00Z')).date,'2026-10-10');
 console.log('Daily challenge: hidden answers, scoring, full rotation, rollover, streaks, and retries passed.');
+
+// Attempts survive serialization, stay aligned with skips, and reset each day.
+let trail=openDaily(null,now);
+dailyAction(trail,'guess','  A totally wrong title  ');
+trail=JSON.parse(JSON.stringify(trail));
+assert.deepEqual(dailyView(trail,2).guesses,['A totally wrong title']);
+dailyAction(trail,'skip');
+dailyAction(trail,'guess',trail.title);
+assert.deepEqual(dailyView(trail,4).guesses,['A totally wrong title',null,trail.title]);
+const saved=JSON.stringify(trail);
+dailyAction(trail,'skip');assert.equal(JSON.stringify(trail),saved);
+assert.deepEqual(dailyView(openDaily(trail,now+86400000),5).guesses,[]);
+assert(!JSON.stringify(trail.history).includes('A totally wrong title'));
+// Legacy passes have unknown guess text, but preserve score and attempt slots.
+const legacy=openDaily(null,now);dailyAction(legacy,'guess','wrong');delete legacy.guesses;
+assert.deepEqual(dailyView(legacy,2).guesses,[null]);
+dailyAction(legacy,'guess',legacy.title);
+assert.deepEqual(dailyView(legacy,3).guesses,[null,legacy.title]);
+const invalid=openDaily(null,now);assert.throws(()=>dailyAction(invalid,'guess','x'.repeat(151)));
+assert.deepEqual(invalid.guesses,[]);assert.deepEqual(invalid.marks,[]);
+console.log('Daily guess trail: saved text, skips, legacy passes, rollover and validation passed.');

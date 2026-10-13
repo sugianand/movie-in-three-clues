@@ -9,4 +9,5 @@ try{
  globalThis.fetch=(url,init)=>mf.dispatchFetch(url,init);
  await import('./integration.mjs');
  await import('./daily-integration.mjs');
+ await import('./double-down-integration.mjs');
 }finally{await mf.dispose();}

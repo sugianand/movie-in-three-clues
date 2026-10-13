@@ -1,6 +1,6 @@
 import {movies,matches} from './game.ts';
 import type {DailyResult,DailyView} from './daily-types.ts';
-export type DailyProfile={date:string;title:string;stage:number;done:boolean;score:number;marks:DailyResult['marks'];history:DailyResult[]};
+export type DailyProfile={date:string;title:string;stage:number;done:boolean;score:number;guesses?:(string|null)[];marks:DailyResult['marks'];history:DailyResult[]};
 const dayMs=86400000;
 export const dailyDate=(now=Date.now())=>new Date(now).toISOString().slice(0,10);
 export function dailyMovie(date:string){
@@ -11,7 +11,7 @@ export function dailyMovie(date:string){
 }
 export function openDaily(previous:DailyProfile|null,now=Date.now()):DailyProfile{
  const date=dailyDate(now);if(previous?.date===date)return previous;
- return {date,title:dailyMovie(date).title,stage:0,done:false,score:0,marks:[],history:previous?.history??[]};
+ return {date,title:dailyMovie(date).title,stage:0,done:false,score:0,guesses:[],marks:[],history:previous?.history??[]};
 }
 export function dailyAction(p:DailyProfile,action:unknown,guess:unknown){
  if(p.done)return;
@@ -19,6 +19,9 @@ export function dailyAction(p:DailyProfile,action:unknown,guess:unknown){
  if(action==='guess'&&(typeof guess!=='string'||!guess.trim()||guess.length>150))throw Error('Enter a movie title up to 150 characters.');
  const movie=movies.find(m=>m.title===p.title);if(!movie)throw Error('Today’s movie is unavailable.');
  const correct=action==='guess'&&matches(guess as string,movie);
+ // Older profiles retain their marks without inventing missing guess text.
+ p.guesses??=p.marks.map(()=>null);
+ p.guesses.push(action==='guess'?(guess as string).trim():null);
  p.marks.push(correct?'hit':action==='skip'?'skip':'miss');
  if(correct||p.stage===2){p.done=true;p.score=correct?(3-p.stage)*100:0;p.history.push({date:p.date,score:p.score,marks:[...p.marks]});}
  else p.stage++;
@@ -33,5 +36,5 @@ export function dailyStats(history:DailyResult[],today:string):DailyView['stats'
 }
 export function dailyView(p:DailyProfile,version:number):DailyView{
  const movie=movies.find(m=>m.title===p.title)!;
- return {date:p.date,number:Math.floor(Date.parse(p.date)/dayMs)-Math.floor(Date.parse('2026-10-09')/dayMs)+1,stage:p.stage,done:p.done,score:p.score,clues:movie.clues.slice(0,p.done?3:p.stage+1),marks:p.marks,answer:p.done?{title:movie.title,year:movie.year,language:movie.language}:null,nextAt:Date.parse(p.date+'T00:00:00Z')+dayMs,version,history:p.history.slice(-7),stats:dailyStats(p.history,p.date)};
+ return {date:p.date,number:Math.floor(Date.parse(p.date)/dayMs)-Math.floor(Date.parse('2026-10-09')/dayMs)+1,stage:p.stage,done:p.done,score:p.score,guesses:p.marks.map((_,i)=>p.guesses?.[i]??null),clues:movie.clues.slice(0,p.done?3:p.stage+1),marks:p.marks,answer:p.done?{title:movie.title,year:movie.year,language:movie.language}:null,nextAt:Date.parse(p.date+'T00:00:00Z')+dayMs,version,history:p.history.slice(-7),stats:dailyStats(p.history,p.date)};
 }
