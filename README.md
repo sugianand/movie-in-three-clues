@@ -144,3 +144,7 @@ The server records each round once at reveal but returns the recap only after th
 ## Speed Bonus
 
 Host Settings includes an optional Speed Bonus toggle. When enabled, the server adds 5–50 points in five-point tiers based on the time remaining on the current clue. The browser never supplies the bonus, opponents' in-round scores remain hidden, and rooms created before this option continue with classic scoring. Recaps track the solved clue independently so bonus points do not affect clue statistics.
+
+## Rematch ready check
+
+After the final results, every active player can mark themselves ready for another match. Readiness syncs to the room so the host can see the count and each player’s status before choosing Play again. It is informational only and never auto-starts a match. Spectators stay queued separately, legacy rooms default to not ready, and readiness resets on replay or when the next match settings or teams change.
