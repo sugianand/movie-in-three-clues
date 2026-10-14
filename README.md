@@ -152,3 +152,7 @@ After the final results, every active player can mark themselves ready for anoth
 ## Lightning format
 
 Hosts can switch from the default five-round Classic game to Lightning: 10 rapid movies, one middle-difficulty clue per movie, a fixed 10-second timer, and 100 points for each correct answer. Speed Bonus remains optional, and only the selected clue is sent to players while a round is live.
+
+## Movie Night Series
+
+Completed multiplayer matches now feed a room-level series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. The table persists across rematches and settings changes for the life of the room, while match scores still reset normally. Legacy rooms begin at zero, and retrying the final action cannot award the same match twice.
