@@ -120,6 +120,14 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
   p.ready=body.ready;return;
  }
+ if(body.action==='transfer-host'){
+  if(p.id!==r.host)throw Error('Only the host can pass hosting.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Hosting can only change before or between games.');
+  if(typeof body.playerId!=='string'||body.playerId===p.id)throw Error('Choose another active player to host.');
+  const nextHost=r.players.find(player=>player.id===body.playerId);
+  if(!nextHost)throw Error('Choose another active player to host.');
+  r.host=nextHost.id;r.notice=`${nextHost.name} is now the host.`;return;
+ }
  if(body.action==='react'){
   if(r.status!=='reveal')throw Error('Reactions open after the answer is revealed.');
   if(body.round!==r.round||body.roundStarted!==r.started)throw Error('That reaction belongs to an earlier round.');

@@ -4,7 +4,9 @@ const base=process.env.GAME_TEST_URL||'http://localhost:4173';
 async function api(body,expected=200){const res=await fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify(body)});const text=await res.text();assert.equal(res.status,expected,text||JSON.stringify([...res.headers]));const data=JSON.parse(text);return data;}
 const a=await api({action:'create',name:'Host'});const b=await api({action:'join',name:'Host',code:' '+a.code.toLowerCase().split('').join(' ')+' '});const host={code:a.code,token:a.token},guest={code:a.code,token:b.token};
 const joined=await api({...host,action:'state'});assert.equal(joined.players.length,2);assert.deepEqual(joined.players.map(p=>p.name),['Host','Host 2']);
-await api({...guest,action:'start'},400);let game=await api({...host,action:'start'});const deck=[];const firstRoundStarted=game.roundStarted;assert.equal(typeof firstRoundStarted,'number');
+const handed=await api({...host,action:'transfer-host',playerId:b.me.id});assert.equal(handed.host,b.me.id);assert.match(handed.notice,/Host 2 is now the host/);
+await api({...host,action:'start'},400);await api({...guest,action:'transfer-host',playerId:a.me.id});await api({...guest,action:'start'},400);
+let game=await api({...host,action:'start'});const deck=[];const firstRoundStarted=game.roundStarted;assert.equal(typeof firstRoundStarted,'number');
 const late=await api({code:a.code,name:'Late',action:'join'}),lateClient={code:a.code,token:late.token};assert.equal(late.me.spectator,true);assert.equal(late.players.length,2);assert.equal(late.answer,null);assert.deepEqual(late.spectators.map(p=>p.name),['Late']);await api({...lateClient,action:'guess',round:0,stage:0,guess:'Anything'},400);
 for(let round=0;round<5;round++){
  assert.equal(game.round,round);assert.equal(game.answer,null);assert.equal(game.clues.length,1);assert(!JSON.stringify(game).includes(a.token));
@@ -76,4 +78,4 @@ await Promise.all([api({...lbc,action:'leave'}),api({code:lh.code,token:replacem
 await api({action:'join',code:lh.code,name:'No room'},400);
 const page=await fetch(base);assert.equal(page.status,200);const html=await page.text();assert(html.includes('landing-play'));assert(html.includes('>Play with friends</button>'));assert(html.includes('Daily Premiere'));assert(!html.includes('id="host-name"'));
 await api({action:'create',name:'Invalid mode',mode:'bad'},400);
-console.log('PASS: live HTTP game, rematch readiness, late-join spectator privacy and promotion, scoring, replay, reconnect, idempotent joins, capacity, permissions, invite links and page render.');
+console.log('PASS: live HTTP game, voluntary host handoff, rematch readiness, late-join spectator privacy and promotion, scoring, replay, reconnect, idempotent joins, capacity, permissions, invite links and page render.');

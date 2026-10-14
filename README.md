@@ -161,3 +161,7 @@ Completed multiplayer matches now feed a room-level series table. Every solo win
 ## Reveal reactions
 
 Every answer reveal includes four lightweight room reactions: Great pick, No way, So close and Great clue. Each active player has one reaction per round and can change it until the host advances. Counts synchronize to players and spectators without exposing who chose what, adding a shared movie-night moment without chat or spoilers. Reactions clear for the next round and never affect scores.
+
+## Voluntary host handoff
+
+The current host can make any other active player the host from the lobby or finished results. A confirmation explains that the new host receives control of settings, match starts and round advancement while the original host stays in the room as a player. Scores, readiness, series wins, movie history and settings are preserved. Hosting cannot change during an active round or reveal, spectators cannot receive it, and server authorization prevents non-hosts from using the action.
