@@ -156,3 +156,8 @@ Hosts can switch from the default five-round Classic game to Lightning: 10 rapid
 ## Movie Night Series
 
 Completed multiplayer matches now feed a room-level series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. The table persists across rematches and settings changes for the life of the room, while match scores still reset normally. Legacy rooms begin at zero, and retrying the final action cannot award the same match twice.
+
+
+## Reveal reactions
+
+Every answer reveal includes four lightweight room reactions: Great pick, No way, So close and Great clue. Each active player has one reaction per round and can change it until the host advances. Counts synchronize to players and spectators without exposing who chose what, adding a shared movie-night moment without chat or spoilers. Reactions clear for the next round and never affect scores.
