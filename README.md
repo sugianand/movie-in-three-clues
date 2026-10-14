@@ -141,3 +141,7 @@ Import this repository into Vercel with Root Directory `vercel`, enable access t
 Vercel serves the frontend and same-origin API forwarding functions. Room state, scoring, timers, and Daily Premiere remain on the existing Cloudflare/D1 deployment at `movie-in-three-clues.sugianand89.chatgpt.site`; that backend must stay deployed. This is not a migration of D1 into Vercel. Forwarding checks the browser origin, limits request size, uses a fixed upstream destination, disables caching, and times out after 15 seconds. No credentials or API keys are required.
 
 Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build --prefix vercel`.
+
+## Personal cinema themes
+
+The browser-local theme picker offers Blue Premiere, Midnight Signal, Neon Arena and Classic Cinema. Blue Premiere remains the default Missing Frame identity with near-black, white and electric blue; the cream-and-red Classic Cinema treatment is an optional fourth look. Theme changes affect only the current browser, persist across visits when local storage is available, and never alter room state or gameplay. The room header remains visible while scrolling in every theme.
