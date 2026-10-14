@@ -1,6 +1,6 @@
 export const themeKey='three-clues-theme';
 export const themes=[
- {id:'premiere',name:'Blue Premiere',description:'Clean blue and white. The original Three Clues look.'},
+ {id:'premiere',name:'Classic Cinema',description:'Cream lettering, deep red accents, and classic cinema framing.'},
  {id:'midnight',name:'Midnight Signal',description:'Crimson neon, eerie shadows, and retro supernatural cinema.'},
  {id:'arena',name:'Neon Arena',description:'Pink and teal with geometric competition-show energy.'},
 ] as const;

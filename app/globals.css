@@ -188,3 +188,68 @@ body{background:var(--background);color:var(--foreground)}header{border-bottom:0
 .intro-description{max-width:580px;line-height:1.6;margin:0 0 20px;color:#e0e5f0}
 .landing-note{max-width:600px;line-height:1.6;color:#cbd3e4;font-size:14px;margin:16px 0 0}
 @media(max-width:650px){.brand .reel-brand-symbol{width:40px;height:40px}.reel-brand-hero .reel-brand-symbol{width:64px;height:64px}.intro-description{font-size:14px}.landing-note{font-size:13px}.landing .score-guide{margin-top:22px}}
+
+/* Classic Cinema default; saved alternate themes retain their own identity. */
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) {
+  --brand-accent:#b72e36;--background:#130f0e;--foreground:#fff1d6;
+  --card:#251b18;--primary:#b72e36;--primary-foreground:#fff8e8;--border:#896c55;
+  --muted:#30241e;--muted-foreground:#d5c1a6;--ring:#edb66c;--acid:#fff1d6;--focus-ring:#edb66c;
+}
+/* The logo stays visible while scrolling through a room, with room for mobile actions. */
+main>header{position:sticky;top:0;z-index:45;height:auto;min-height:90px;padding:14px 0;flex-wrap:wrap;background:var(--background);border-bottom:1px solid var(--border);box-shadow:0 8px 22px #0004}
+main>header .brand{min-width:0;flex-shrink:0}
+main>header .header-actions{margin-left:auto;flex-wrap:wrap}
+main>header .rules-link,main>header .theme-picker summary{min-height:44px;display:flex;align-items:center}
+.rules{scroll-margin-top:150px}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.reel-brand,.reel-brand-symbol){color:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-symbol path:nth-of-type(2){stroke:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-symbol circle{fill:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-words{font-family:Georgia,'Times New Roman',serif;font-weight:700;transform:none;flex-direction:column;gap:0;font-size:24px;line-height:.95;letter-spacing:-.035em;border-block:2px solid var(--brand-accent);padding:5px 8px;color:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .brand .reel-brand-symbol{width:48px;height:48px}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .intro{padding:36px 28px;border:1px solid #ad825d88;border-radius:20px;background:linear-gradient(145deg,#251710db,#160e0bd1);box-shadow:0 22px 70px #0006,inset 0 0 0 5px #fff1d609}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .intro>.eyebrow{display:flex;justify-content:center;color:#e3bf87;letter-spacing:.12em;margin-bottom:24px}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .live-mark{background:#e45a58;box-shadow:0 0 14px #b72e3688}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero{gap:14px}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero .reel-brand-words{font-size:clamp(64px,10vw,116px);line-height:.9;border-block-width:4px;padding:17px 24px;text-shadow:0 5px 25px #0008}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero:after{display:none}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.intro-line,.quick-rules b,.score-guide b,.ticket h2,.players h2,.screen h1,.daily-heading h1){color:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.intro-description,.landing-note,.landing .micro,.quick-rules p){color:#d5c1a6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .primary{background:#b72e36;border-color:#d84e50;color:#fff8e8;box-shadow:0 3px 0 #731820}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .primary:not(:disabled):hover{background:#cf3b43;border-color:#ee7770;box-shadow:0 5px 22px #b72e363d}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .secondary{background:#291c17d9;border-color:#ac8660;color:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .secondary:hover{background:#452c22}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing-actions :is(.primary,.secondary){border-radius:10px}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:620px;margin:28px auto 0;padding:0;border:0;order:0}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide>div{flex-direction:column;align-items:flex-start;gap:5px;padding:16px;border:1px solid #916b47;border-radius:10px;background:#322218cc}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide>div:first-child{border-color:#d47d5c;background:#542722aa}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide .score-step{color:#e3bf87!important;font-size:11px!important}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide b{font-family:Georgia,serif;font-size:34px;color:#fff1d6}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide small{color:#e3bf87}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide span:last-child{display:block;color:#d5c1a6;font-size:12px;white-space:normal}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .quick-rules{display:grid;border-color:#896c5577}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .quick-rules>div{background:#241912cf;border-color:#896c55}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .quick-rules>div>span{color:#edb66c;border-color:#a76549}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.screen,.room-bar,.players,.settings-panel,.ticket,.daily-screen,.daily-stats,.daily-history,.daily-party){background:#211713ed;border-color:#896c55}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.clue.active,.double-down button[aria-pressed=true]){background:#b72e3624;border-color:#d78967}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.daily-feedback,.daily-streak,.daily-points,.daily-party>svg,.daily-recap b){color:#edb66c}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .daily-result-icon{color:#edb66c;background:#b72e3624}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.daily-marks .mark-hit,.daily-history-row .history-hit){background:#b72e36;border-color:#e3bf87;color:#fff8e8}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .entry-tab-list [data-state=active]{background:#913039!important;color:#fff1d6!important}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .resume-room{background:#291813ed;border-color:#bd8259}
+html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .resume-room :is(span,p){color:#e3bf87}
+.theme-swatch-premiere i{background:#b72e36}.theme-swatch-premiere i:nth-child(2){background:#fff1d6}.theme-swatch-premiere i:nth-child(3){background:#251b18}
+@media(max-width:650px){
+  main>header{min-height:84px;gap:8px 16px;padding:12px 0}
+  main>header .header-actions{gap:16px}
+  .theme-popover{top:132px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .brand .reel-brand-symbol{width:42px;height:42px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .brand .reel-brand-words{font-size:20px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .intro{padding:26px 16px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .intro>.eyebrow{font-size:10px;letter-spacing:.06em}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero .reel-brand-words{font-size:clamp(52px,13vw,84px);padding:14px 16px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide{gap:7px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide>div{padding:12px 8px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide b{font-size:27px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide small{font-size:9px;margin-left:2px}
+  html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide span:last-child{font-size:10px}
+}
