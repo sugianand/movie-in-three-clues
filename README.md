@@ -1,6 +1,6 @@
 # Movie in Three Clues
 
-A real multiplayer movie guessing game for 2–8 players, with room codes, shared server time, hidden answers, and five-round scoring. No API keys are needed.
+A real multiplayer movie guessing game for 2–8 players, with room codes, shared server time, hidden answers, and Classic or Lightning formats. No API keys are needed.
 
 ## Play locally on Windows
 
@@ -148,3 +148,7 @@ Host Settings includes an optional Speed Bonus toggle. When enabled, the server 
 ## Rematch ready check
 
 After the final results, every active player can mark themselves ready for another match. Readiness syncs to the room so the host can see the count and each player’s status before choosing Play again. It is informational only and never auto-starts a match. Spectators stay queued separately, legacy rooms default to not ready, and readiness resets on replay or when the next match settings or teams change.
+
+## Lightning format
+
+Hosts can switch from the default five-round Classic game to Lightning: 10 rapid movies, one middle-difficulty clue per movie, a fixed 10-second timer, and 100 points for each correct answer. Speed Bonus remains optional, and only the selected clue is sent to players while a round is live.
