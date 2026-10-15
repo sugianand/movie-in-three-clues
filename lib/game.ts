@@ -105,6 +105,14 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  advance(r,now);const p=r.players.find(p=>p.token===token);if(!p){if(r.spectators?.some(p=>p.token===token))throw Error('Spectators can watch this match and will join the next one when a seat is available.');throw Error('Your player session is no longer available. Rejoin the room.');}
  // Older open tabs omit this stamp; current clients bind actions to one round instance.
  if((body.action==='guess'||body.action==='next')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
+ if(body.action==='remove-player'){
+  if(p.id!==r.host)throw Error('Only the host can remove a player.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Players can only be removed before or between games.');
+  if(typeof body.playerId!=='string'||body.playerId===p.id)throw Error('Choose another active player to remove.');
+  const target=r.players.find(player=>player.id===body.playerId);
+  if(!target)throw Error('Choose another active player to remove.');
+  r.players=r.players.filter(player=>player.id!==target.id);r.notice=`${target.name} was removed by the host.`;return;
+ }
  if(body.action==='ready'){
   if(r.status!=='finished')throw Error('Rematch readiness opens after the final reveal.');
   if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');

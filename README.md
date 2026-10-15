@@ -157,3 +157,8 @@ The global Sound control is off by default and persists only in the current brow
 ## Keep screen awake
 
 Supported mobile and desktop browsers can opt in to keeping the display awake during active multiplayer rounds and reveals. The browser-local preference defaults to off, releases the Screen Wake Lock whenever the match is not active or the tab is hidden, and reacquires it when play resumes. Unsupported browsers simply omit the control; no permission workaround or fallback timer is used.
+
+
+## Host seat management
+
+Between matches, the host can remove an inactive player after a confirmation. The seat opens immediately without resetting room settings, movie rotation, series history, or completed results. Server authorization prevents guests and spectators from removing anyone, active rounds cannot be interrupted, and the host cannot remove their own seat through this control. Removed players can join again later with the room code.
