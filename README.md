@@ -149,3 +149,7 @@ The browser-local theme picker offers Blue Premiere, Midnight Signal, Neon Arena
 ## Movie Night Passport
 
 Every completed multiplayer match now updates a browser-local Movie Night Passport with matches, win rate, movie solves, first-clue solves, current and best win streaks, best score, fastest solve and perfect matches. A room/match stamp prevents polling, reloads and repeated result views from counting the same match twice. Solo and team wins are recognized separately, spectators never affect the record, and malformed or older saved values fall back safely. The Passport appears with finished results without an account; clearing browser data resets it.
+
+## Opt-in cinema sound
+
+The global Sound control is off by default and persists only in the current browser. After a user enables it, lightweight Web Audio cues mark a new round, a newly revealed clue, the player’s own correct answer, the big reveal and the final results. Cues are synthesized locally with no audio downloads, never play on initial room recovery or unchanged polling snapshots, and wait for a browser-approved interaction before creating audio. Spectators receive shared round/reveal cues but never a personal correct cue.
