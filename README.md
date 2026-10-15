@@ -162,3 +162,8 @@ Supported mobile and desktop browsers can opt in to keeping the display awake du
 ## Host seat management
 
 Between matches, the host can remove an inactive player after a confirmation. The seat opens immediately without resetting room settings, movie rotation, series history, or completed results. Server authorization prevents guests and spectators from removing anyone, active rounds cannot be interrupted, and the host cannot remove their own seat through this control. Removed players can join again later with the room code.
+
+
+## Passport stamps
+
+The Movie Night Passport derives six milestone stamps from the browser-local record: first match, first win, five matches, five first-clue solves, a solve under five seconds, and a perfect match. Locked stamps show progress, earned stamps unlock automatically for existing players, and no additional personal data or server storage is introduced.
