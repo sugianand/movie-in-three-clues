@@ -145,3 +145,7 @@ Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build 
 ## Personal cinema themes
 
 The browser-local theme picker offers Blue Premiere, Midnight Signal, Neon Arena and Classic Cinema. Blue Premiere remains the default Missing Frame identity with near-black, white and electric blue; the cream-and-red Classic Cinema treatment is an optional fourth look. Theme changes affect only the current browser, persist across visits when local storage is available, and never alter room state or gameplay. The room header remains visible while scrolling in every theme.
+
+## Movie Night Passport
+
+Every completed multiplayer match now updates a browser-local Movie Night Passport with matches, win rate, movie solves, first-clue solves, current and best win streaks, best score, fastest solve and perfect matches. A room/match stamp prevents polling, reloads and repeated result views from counting the same match twice. Solo and team wins are recognized separately, spectators never affect the record, and malformed or older saved values fall back safely. The Passport appears with finished results without an account; clearing browser data resets it.
