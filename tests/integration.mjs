@@ -73,6 +73,8 @@ const stopped=await api({...lbc,action:'state'});assert.equal(stopped.status,'lo
 const replacement=await api({action:'join',code:lh.code,name:'Replacement'});assert.equal(replacement.players.length,2);
 await Promise.all([api({...lbc,action:'leave'}),api({code:lh.code,token:replacement.token,action:'leave'})]);
 await api({action:'join',code:lh.code,name:'No room'},400);
+const kh=await api({action:'create',name:'Kick host'}),kg=await api({action:'join',name:'Inactive seat',code:kh.code});const kc={code:kh.code,token:kh.token},kgc={code:kh.code,token:kg.token};
+await api({...kgc,action:'remove-player',playerId:kh.me.id},400);const cleared=await api({...kc,action:'remove-player',playerId:kg.me.id});assert.deepEqual(cleared.players.map(p=>p.name),['Kick host']);assert.match(cleared.notice,/removed by the host/);await api({...kgc,action:'state'},400);
 const page=await fetch(base);assert.equal(page.status,200);const html=await page.text();assert(html.includes('landing-play'));assert(html.includes('>Play with friends</button>'));assert(html.includes('Daily Premiere'));assert(!html.includes('id="host-name"'));
 await api({action:'create',name:'Invalid mode',mode:'bad'},400);
 console.log('PASS: live HTTP game, rematch readiness, late-join spectator privacy and promotion, scoring, replay, reconnect, idempotent joins, capacity, permissions, invite links and page render.');
