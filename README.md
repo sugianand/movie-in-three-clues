@@ -167,3 +167,8 @@ Between matches, the host can remove an inactive player after a confirmation. Th
 ## Passport stamps
 
 The Movie Night Passport derives six milestone stamps from the browser-local record: first match, first win, five matches, five first-clue solves, a solve under five seconds, and a perfect match. Locked stamps show progress, earned stamps unlock automatically for existing players, and no additional personal data or server storage is introduced.
+
+
+## Host Auto Continue
+
+During an answer reveal, the host can opt into an eight-second Auto Continue countdown. It advances through the existing authenticated next-round action, changes the final-round label to results, pauses while offline or another action is active, and can be cancelled from any reveal. The preference defaults off and stays only in that host's browser.
