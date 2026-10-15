@@ -26,6 +26,15 @@ export type PassportResult={
  recap:{round:number;solvers:{name:string;clue:number;ms?:number}[];missed:string[]}[];
 };
 
+export type PassportAchievement={
+ id:string;
+ title:string;
+ description:string;
+ unlocked:boolean;
+ current:number;
+ target:number;
+};
+
 export const emptyMovieNightPassport=():MovieNightPassport=>({matches:0,wins:0,solves:0,firstClueSolves:0,perfectMatches:0,currentStreak:0,bestStreak:0,bestScore:0,fastestMs:null,recorded:[]});
 const count=(value:unknown)=>typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.floor(value):0;
 
@@ -34,6 +43,19 @@ export function parseMovieNightPassport(value:unknown):MovieNightPassport{
  const fastest=typeof source.fastestMs==='number'&&Number.isFinite(source.fastestMs)&&source.fastestMs>=0?source.fastestMs:null;
  const recorded=Array.isArray(source.recorded)?[...new Set(source.recorded.filter((key):key is string=>typeof key==='string'&&key.length<=32))].slice(-32):[];
  return {matches:count(source.matches),wins:count(source.wins),solves:count(source.solves),firstClueSolves:count(source.firstClueSolves),perfectMatches:count(source.perfectMatches),currentStreak:count(source.currentStreak),bestStreak:count(source.bestStreak),bestScore:count(source.bestScore),fastestMs:fastest,recorded};
+}
+
+export function passportAchievements(input:MovieNightPassport):PassportAchievement[]{
+ const profile=parseMovieNightPassport(input);
+ const achievement=(id:string,title:string,description:string,current:number,target:number):PassportAchievement=>({id,title,description,unlocked:current>=target,current:Math.min(current,target),target});
+ return [
+  achievement('opening-night','Opening Night','Finish your first match.',profile.matches,1),
+  achievement('box-office-hit','Box Office Hit','Win your first match.',profile.wins,1),
+  achievement('season-ticket','Season Ticket','Play five matches.',profile.matches,5),
+  achievement('sharp-eye','Sharp Eye','Solve five movies on clue one.',profile.firstClueSolves,5),
+  achievement('quick-cut','Quick Cut','Solve a movie in under five seconds.',profile.fastestMs!==null&&profile.fastestMs<5000?1:0,1),
+  achievement('perfect-screening','Perfect Screening','Solve every movie in one match.',profile.perfectMatches,1),
+ ];
 }
 
 export function recordMovieNight(input:MovieNightPassport,result:PassportResult):MovieNightPassport{
