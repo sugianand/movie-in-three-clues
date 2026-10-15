@@ -153,3 +153,7 @@ Every completed multiplayer match now updates a browser-local Movie Night Passpo
 ## Opt-in cinema sound
 
 The global Sound control is off by default and persists only in the current browser. After a user enables it, lightweight Web Audio cues mark a new round, a newly revealed clue, the player’s own correct answer, the big reveal and the final results. Cues are synthesized locally with no audio downloads, never play on initial room recovery or unchanged polling snapshots, and wait for a browser-approved interaction before creating audio. Spectators receive shared round/reveal cues but never a personal correct cue.
+
+## Keep screen awake
+
+Supported mobile and desktop browsers can opt in to keeping the display awake during active multiplayer rounds and reveals. The browser-local preference defaults to off, releases the Screen Wake Lock whenever the match is not active or the tab is hidden, and reacquires it when play resumes. Unsupported browsers simply omit the control; no permission workaround or fallback timer is used.
