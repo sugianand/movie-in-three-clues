@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {guessDraftContext} from '@/lib/guess-draft';
 import {MovieTitleInput} from '@/components/movie-title-input';
 import {DailyPremiere} from '@/components/daily-premiere';
 import {MultiplayerResultCard} from '@/components/multiplayer-result-card';
@@ -39,7 +40,9 @@ export default function Home(){
  if(alive&&current.current===session){if(!response.ok){setOnline(false);if(response.status===400||response.status===403){terminal=true;try{clearRecoverableSession(localStorage);}catch{}setResumeSession(null);setFatalError(data.error||'This room is no longer available.');}else {recovering.current=true;setError(data.error||'Unable to load this room.');}}else accept(data);}}
  catch{if(alive&&current.current===session){recovering.current=true;setOnline(false);}}finally{if(alive&&!terminal)timer=setTimeout(poll,800);}}
  poll();return()=>{alive=false;clearTimeout(timer);controller.abort();};},[session]);
- useEffect(()=>{setGuess('');setDoubleDown(false);setError('');},[game?.roundStarted,game?.stage,game?.status,game?.me.attempt]);
+ const draftContext=guessDraftContext(game);
+ useEffect(()=>{setGuess('');},[draftContext]);
+ useEffect(()=>{setDoubleDown(false);setError('');},[game?.roundStarted,game?.stage,game?.status,game?.me.attempt]);
  async function perform(action:string,extra:Record<string,unknown>={}){
   try{return await runActionOnce(actionLock,async()=>{setBusy(true);setError('');const start=current.current;let transportFailure=true;
    try{const response=await gameRequest<Game & {error?:string;token?:string}>({...start,action,...extra,...(action==='join'?{joinToken:joinToken.current}:{})});transportFailure=false;const data=response.data;if(!response.ok)throw Error(data.error||'Please try again.');if(current.current!==start)return;
