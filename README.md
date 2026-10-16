@@ -172,3 +172,5 @@ The Movie Night Passport derives six milestone stamps from the browser-local rec
 ## Host Auto Continue
 
 During an answer reveal, the host can opt into an eight-second Auto Continue countdown. It advances through the existing authenticated next-round action, changes the final-round label to results, pauses while offline or another action is active, and can be cancelled from any reveal. The preference defaults off and stays only in that host's browser.
+
+Auto Continue pauses when the host switches apps or hides the tab, then gives a fresh eight seconds on return. Its status explains connection and action pauses; cancellation remains available offline. After a failed advance, continue manually or switch Auto Continue off and on to retry.
