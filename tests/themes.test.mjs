@@ -2,11 +2,14 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {parseTheme,themes} from '../lib/themes.ts';
 
-assert.deepEqual(themes.map(theme=>theme.id),['premiere','midnight','arena','classic']);
+assert.deepEqual(themes.map(theme=>theme.id),['premiere','midnight','arena','scout','classic']);
 assert.equal(themes[0].name,'Blue Premiere');
 assert.equal(parseTheme(undefined),'premiere');
 assert.equal(parseTheme('not-a-theme'),'premiere');
 assert.equal(parseTheme('classic'),'classic');
+assert.equal(parseTheme('scout'),'scout');
+assert.equal(parseTheme('midnight'),'midnight');
+assert.equal(parseTheme('arena'),'arena');
 assert.equal(new Set(themes.map(theme=>theme.id)).size,themes.length);
 
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
