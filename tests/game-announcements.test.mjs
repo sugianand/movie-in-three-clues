@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {clueAnnouncement,roundAnnouncement,timeWarning} from '../lib/client-sync.ts';
+assert.equal(clueAnnouncement(0,'A clue.','lightning'),'Lightning clue, worth 100 points: A clue.');
+assert.equal(clueAnnouncement(1,'Another clue.'),'Clue 2 of 3, worth 200 points: Another clue.');
+const game={status:'playing',round:2,totalRounds:10,stage:0,clues:['Public clue'],answer:'Private title',settings:{format:'lightning'}};
+assert.equal(roundAnnouncement(game),'Round 3 of 10. Lightning clue, worth 100 points: Public clue');
+assert(!roundAnnouncement(game).includes('Private title'),'Never announce an answer during play');
+assert.equal(roundAnnouncement({...game,status:'reveal'}),'Round 3 of 10. The movie was Private title.');
+assert.equal(roundAnnouncement({...game,status:'finished'}),'Match complete. Final standings are ready.');
+assert.equal(roundAnnouncement({...game,status:'lobby'}),'');
+assert.equal(roundAnnouncement(null),'');
+for(const seconds of [0,6,15,-1])assert.equal(timeWarning(seconds,0),'');
+for(const seconds of [1,2,3,4,5])assert.equal(timeWarning(seconds,0),timeWarning(5,0));
+assert.match(timeWarning(5,0),/next clue/);
+assert.match(timeWarning(5,2),/answer reveal/);
+assert.match(timeWarning(5,0,'lightning'),/answer reveal/);
+console.log('PASS: format-correct clue/round/reveal announcements and stable low-time warnings without premature answers.');
