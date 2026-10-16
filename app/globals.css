@@ -303,3 +303,19 @@ main>header .brand .reel-brand-words{font-family:var(--font-display);font-size:2
 .theme-swatch-scout i{background:#496d45}.theme-swatch-scout i:nth-child(2){background:#dfc28d}.theme-swatch-scout i:nth-child(3){background:#101610}
 @media(max-width:650px){main>header{padding:10px 0;gap:8px;min-height:74px}main>header .brand .reel-brand-symbol{width:38px;height:38px}main>header .brand .reel-brand-words{font-size:22px}main>header .header-actions{gap:12px}.theme-popover{top:130px;right:16px}}
 @media(max-width:420px){main>header .header-actions{width:100%;justify-content:space-between;margin-left:0}main>header .brand .reel-brand-words{flex-direction:row;font-size:24px;gap:.18em}main>header .brand .reel-brand-symbol{width:34px;height:34px}.theme-popover{top:130px}}
+
+/* Portal the theme picker outside the sticky header's containing block. */
+.theme-trigger{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:8px 0;border:0;background:transparent;color:var(--foreground);font-size:14px;white-space:nowrap}
+.theme-trigger:hover{color:var(--ring)}
+.cinema-theme-dialog[data-slot=dialog-content]{display:block;width:min(420px,calc(100vw - 32px));max-width:420px;max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;padding:22px;background:var(--background);color:var(--foreground);border:1px solid var(--border);border-radius:18px;z-index:60;box-shadow:0 24px 90px #0009}
+.theme-dialog-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.cinema-theme-dialog .theme-panel-title{margin:0;font-family:var(--font-display);font-size:30px;line-height:1.15}
+.cinema-theme-dialog .theme-panel-intro{margin:5px 0 0;color:var(--muted-foreground);font-size:13px;line-height:1.5}
+.theme-done{min-height:44px;min-width:64px;padding:8px 12px;border:1px solid var(--border);background:var(--card);color:var(--foreground);border-radius:10px;font-size:13px;font-weight:700;flex-shrink:0}
+.theme-done:hover{border-color:var(--ring)}
+.cinema-theme-dialog>p{margin:16px 0 8px;font-size:13px;line-height:1.5}
+.cinema-theme-dialog>small{display:block;color:var(--muted-foreground);font-size:12px;line-height:1.5}
+.cinema-theme-dialog .theme-notice:empty{display:none}
+.cinema-theme-dialog .theme-choice small{color:var(--muted-foreground);line-height:1.5}
+@media(max-width:650px){.theme-trigger{font-size:12px}.cinema-theme-dialog[data-slot=dialog-content]{padding:18px;max-height:calc(100dvh - 24px)}}
+@media(prefers-reduced-motion:reduce){.cinema-theme-dialog[data-slot=dialog-content],[data-slot=dialog-overlay]{animation:none!important;transition:none!important}}
