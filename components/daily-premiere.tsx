@@ -1,4 +1,5 @@
 'use client';
+import {dailyRequest} from '@/lib/daily-request';
 import {DailyPerformance} from '@/components/daily-performance';
 import {MovieTitleInput} from '@/components/movie-title-input';
 import {useEffect,useRef,useState} from 'react';
@@ -16,8 +17,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   if(lock.current)return;lock.current=true;setBusy(true);setError('');
   const previous=latest.current;
   try{
-   const res=await fetch('/api/daily',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:AbortSignal.timeout(12000),body:JSON.stringify({action,token:token.current,date:previous?.date,version:previous?.version,guess})});
-   const next=await res.json() as DailyView & {error?:string};if(!res.ok)throw Error(next.error||'Please try again.');if(!alive.current)return;
+   const next=await dailyRequest({action,token:token.current,date:previous?.date,version:previous?.version,guess});if(!alive.current)return;
    let restored='';
    if(!previous)try{restored=readDailyDraft(sessionStorage.getItem(dailyDraftKey(token.current)),next);}catch{}
    latest.current=next;setData(next);

@@ -15,3 +15,5 @@ assert.match(timeWarning(5,0),/next clue/);
 assert.match(timeWarning(5,2),/answer reveal/);
 assert.match(timeWarning(5,0,'lightning'),/answer reveal/);
 console.log('PASS: format-correct clue/round/reveal announcements and stable low-time warnings without premature answers.');
+
+assert.equal(roundAnnouncement({...game,settings:{collection:'mixed',era:'all'}}),'Round 3 of 10. Clue 1 of 3, worth 300 points: Public clue','current backend defaults to Classic announcements');

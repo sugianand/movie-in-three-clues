@@ -174,3 +174,9 @@ The Movie Night Passport derives six milestone stamps from the browser-local rec
 During an answer reveal, the host can opt into an eight-second Auto Continue countdown. It advances through the existing authenticated next-round action, changes the final-round label to results, pauses while offline or another action is active, and can be cancelled from any reveal. The preference defaults off and stays only in that host's browser.
 
 Auto Continue pauses when the host switches apps or hides the tab, then gives a fresh eight seconds on return. Its status explains connection and action pauses; cancellation remains available offline. After a failed advance, continue manually or switch Auto Continue off and on to retry.
+
+## Preventing Vercel preview failures
+
+Before pushing a frontend change, install the locked Vercel dependencies and run `npm run typecheck --prefix vercel` followed by `npm run build --prefix vercel`. The root build targets Cloudflare and is not a substitute for this Next.js build. Start new work from current `main`; branches created before the Vercel adapter was added must incorporate it before deploying. Do not redeploy an old failed SHA expecting it to include newer fixes.
+
+The Vercel frontend forwards to an independently deployed backend. Client features must tolerate fields absent from that backend: Classic is the default when `settings.format` is absent, and Movie Night Passport uses the final-round start timestamp when no series counter is supplied. Publishing a preview does not update the Cloudflare backend.

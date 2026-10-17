@@ -1,3 +1,4 @@
+import type {GameSettings} from './game-settings.ts';
 export type SnapshotStamp={version:number;serverNow:number};
 export function acceptsSnapshot(incoming:SnapshotStamp,current:SnapshotStamp){
  return incoming.version>current.version||(incoming.version===current.version&&incoming.serverNow>=current.serverNow);
@@ -7,7 +8,7 @@ export function errorAfterRecovery(recovered:boolean){return (message:string)=>r
 export function clueAnnouncement(stage:number,clue:string,format='classic'){
  return format==='lightning'?`Lightning clue, worth 100 points: ${clue}`:`Clue ${stage+1} of 3, worth ${(3-stage)*100} points: ${clue}`;
 }
-type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null;settings:{format?:string}};
+type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null;settings:GameSettings & {format?:string}};
 export function roundAnnouncement(game:AnnouncedRound|null){
  if(!game)return '';
  const round=`Round ${game.round+1} of ${game.totalRounds}.`;

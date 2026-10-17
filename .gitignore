@@ -54,3 +54,6 @@ next-env.d.ts
 /vercel/public/
 /vercel/next-env.d.ts
 /vercel/tsconfig.tsbuildinfo
+
+/vercel/node_modules/
+/vercel/.next/
