@@ -1,4 +1,5 @@
 import {movies,matches} from './game.ts';
+import {dailyPerformance} from './daily-performance.ts';
 import type {DailyResult,DailyView} from './daily-types.ts';
 export type DailyProfile={date:string;title:string;stage:number;done:boolean;score:number;guesses?:(string|null)[];marks:DailyResult['marks'];history:DailyResult[]};
 const dayMs=86400000;
@@ -36,5 +37,5 @@ export function dailyStats(history:DailyResult[],today:string):DailyView['stats'
 }
 export function dailyView(p:DailyProfile,version:number):DailyView{
  const movie=movies.find(m=>m.title===p.title)!;
- return {date:p.date,number:Math.floor(Date.parse(p.date)/dayMs)-Math.floor(Date.parse('2026-10-09')/dayMs)+1,stage:p.stage,done:p.done,score:p.score,guesses:p.marks.map((_,i)=>p.guesses?.[i]??null),clues:movie.clues.slice(0,p.done?3:p.stage+1),marks:p.marks,answer:p.done?{title:movie.title,year:movie.year,language:movie.language}:null,nextAt:Date.parse(p.date+'T00:00:00Z')+dayMs,version,history:p.history.slice(-7),stats:dailyStats(p.history,p.date)};
+ return {performance:dailyPerformance(p.history),date:p.date,number:Math.floor(Date.parse(p.date)/dayMs)-Math.floor(Date.parse('2026-10-09')/dayMs)+1,stage:p.stage,done:p.done,score:p.score,guesses:p.marks.map((_,i)=>p.guesses?.[i]??null),clues:movie.clues.slice(0,p.done?3:p.stage+1),marks:p.marks,answer:p.done?{title:movie.title,year:movie.year,language:movie.language}:null,nextAt:Date.parse(p.date+'T00:00:00Z')+dayMs,version,history:p.history.slice(-7),stats:dailyStats(p.history,p.date)};
 }
