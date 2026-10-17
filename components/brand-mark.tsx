@@ -1,12 +1,12 @@
-/** Scalable, code-native Missing Frame logo. */
+/** The same three-frame monogram is used in public/favicon.svg. */
 export function BrandMark({hero=false}:{hero?:boolean}) {
-  return <span className={`reel-brand${hero?' reel-brand-hero':''}`} aria-hidden="true">
-    <svg className="reel-brand-symbol" viewBox="0 0 64 64" fill="none" focusable="false">
-      <path d="M12 12H6v40h6M52 12h6v40h-6" stroke="currentColor" strokeWidth="4" strokeLinecap="square"/>
-      <rect x="17" y="6" width="30" height="52" rx="7" fill="var(--brand-accent, #4169ff)"/>
-      <path d="M26 23a6 6 0 1 1 10 4.5c-3 2-4 3-4 7" stroke="white" strokeWidth="4" strokeLinecap="round"/>
-      <circle cx="32" cy="43" r="2.5" fill="white"/>
+  return <span className={`movie-brand${hero?' movie-brand-hero':''}`} aria-hidden="true">
+    <svg className="movie-brand-symbol" viewBox="0 0 64 64" fill="none" focusable="false">
+      <rect x="3" y="3" width="58" height="58" rx="13" fill="var(--brand-accent)"/>
+      <path d="M24 20h9a7 7 0 0 1 0 14h-5m5 0a7 7 0 0 1 0 14h-9" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M11 15v5m0 10v5m0 10v5m42-35v5m0 10v5m0 10v5" stroke="white" strokeWidth="3" strokeLinecap="round"/>
     </svg>
-    <span className="reel-brand-words"><span>THREE</span><span>CLUES</span></span>
+    <span className="movie-brand-wordmark"><span>3</span>movies</span>
+    <svg className="arena-motifs" viewBox="0 0 100 24" fill="none" focusable="false"><circle cx="12" cy="12" r="9"/><path d="m50 3 10 18H40Z"/><path d="M79 3h18v18H79Z"/></svg>
   </span>;
 }

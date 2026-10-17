@@ -1,8 +1,8 @@
 import {cpSync, existsSync, mkdirSync, rmSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 const root = fileURLToPath(new URL('../', import.meta.url));
-if (!existsSync(root + 'public/movie-poster-wall.png')) {
-  throw new Error('Missing cinema backdrop: commit public/movie-poster-wall.png before deploying.');
+if (!existsSync(root + 'data/cinema-posters.json')) {
+  throw new Error('Missing cinema poster dataset: commit data/cinema-posters.json before deploying.');
 }
 for (const name of ['app', 'components', 'hooks', 'lib', 'data', 'public']) {
   rmSync(new URL(name, import.meta.url), {recursive:true, force:true});
