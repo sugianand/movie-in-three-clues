@@ -46,6 +46,8 @@ next-env.d.ts
 /work/
 
 # Generated Vercel frontend copies
+/vercel/node_modules/
+/vercel/.next/
 /vercel/app/
 /vercel/components/
 /vercel/hooks/

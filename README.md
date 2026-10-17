@@ -141,3 +141,11 @@ Import this repository into Vercel with Root Directory `vercel`, enable access t
 Vercel serves the frontend and same-origin API forwarding functions. Room state, scoring, timers, and Daily Premiere remain on the existing Cloudflare/D1 deployment at `movie-in-three-clues.sugianand89.chatgpt.site`; that backend must stay deployed. This is not a migration of D1 into Vercel. Forwarding checks the browser origin, limits request size, uses a fixed upstream destination, disables caching, and times out after 15 seconds. No credentials or API keys are required.
 
 Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build --prefix vercel`.
+
+## 3movies identity, themes and poster reel
+
+The header and landing page use the responsive 3movies filmstrip monogram; the same mark is the SVG favicon. Themes offers Classic Cinema, Stranger Things (navy, neon red and retro serif headings), and Squid Game (charcoal, pink, teal and geometric symbols). Existing saved `midnight` and `arena` selections still work. The saved theme is applied before hydration and changes only the current browser.
+
+`data/cinema-posters.json` contains 60 distinct movie IDs, titles and poster paths from TMDB's [public API response examples](https://gist.github.com/semusings/c3afb9ce20fce29d37082d25c2945bff). It is a fixed artwork collection, independent of the answer bank. `lib/cinema-posters.ts` distributes it into three disjoint 20-poster rows. Each complete row is duplicated once and translated by exactly half its track width over 120 seconds, including the inter-poster gap, for a seamless loop. Reduced-motion preferences stop the animation.
+
+Images use [TMDB's image CDN](https://developer.themoviedb.org/docs/image-basics) at `w342`, native lazy loading, low fetch priority, asynchronous decoding and fixed aspect ratios. No runtime metadata fetch, API key, added package or Vercel image transformation is required. A missing image falls back to its title. All 60 thumbnails returned HTTP 200 during validation, totaling approximately 2.9 MB if the entire collection is eventually loaded; browsers defer offscreen images and reuse duplicate URLs. Artwork availability depends on TMDB's CDN.

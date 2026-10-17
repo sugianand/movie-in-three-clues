@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Movie in Three Clues",
+  title: "3movies | Movie in Three Clues",
   description: "A live movie guessing game for 2–8 players. Join a room, read the clues, and claim the spotlight.",
   icons: {
-    icon: "/favicon.svg?v=missing-frame",
-    shortcut: "/favicon.svg?v=missing-frame",
+    icon: "/favicon.svg?v=3movies",
+    shortcut: "/favicon.svg?v=3movies",
   },
 };
 
@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased"><script dangerouslySetInnerHTML={{__html:"try{var t=localStorage.getItem('three-clues-theme');document.documentElement.dataset.cinemaTheme=['midnight','arena'].includes(t)?t:'premiere'}catch{}"}}/>{children}</body>
     </html>
   );
 }
