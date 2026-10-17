@@ -16,7 +16,8 @@ export type MovieNightPassport={
 export type PassportResult={
  status:string;
  code:string;
- seriesMatches:number;
+ seriesMatches?:number;
+ roundStarted?:number;
  totalRounds:number;
  matchMode:string;
  winners:string[];
@@ -60,8 +61,16 @@ export function passportAchievements(input:MovieNightPassport):PassportAchieveme
 
 export function recordMovieNight(input:MovieNightPassport,result:PassportResult):MovieNightPassport{
  const profile=parseMovieNightPassport(input);
- if(result.status!=='finished'||result.me.spectator||!result.code||result.seriesMatches<1)return profile;
- const key=`${result.code}:${result.seriesMatches}`;
+ if(result.status!=='finished'||result.me.spectator||!result.code)return profile;
+ // The deployed backend predates series counters. Its final-round start is
+ // stable during result polling and changes on replay, so it identifies a match.
+ const series=result.seriesMatches;
+ const started=result.roundStarted;
+ const matchId=typeof series==='number'&&Number.isSafeInteger(series)&&series>0
+  ?String(series)
+  :typeof started==='number'&&Number.isSafeInteger(started)&&started>0?`t${started}`:null;
+ if(!matchId)return profile;
+ const key=`${result.code}:${matchId}`;
  if(profile.recorded.includes(key))return profile;
  const me=result.players.find(player=>player.id===result.me.id);if(!me)return profile;
  const mySolves=result.recap.flatMap(round=>round.solvers.filter(solver=>solver.name===me.name));

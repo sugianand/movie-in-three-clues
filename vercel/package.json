@@ -7,7 +7,8 @@
   },
   "scripts": {
     "build": "node prepare.mjs && next build",
-    "dev": "node prepare.mjs && next dev"
+    "dev": "node prepare.mjs && next dev",
+    "typecheck": "node prepare.mjs && tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

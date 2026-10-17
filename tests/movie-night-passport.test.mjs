@@ -21,3 +21,12 @@ assert.deepEqual(recordMovieNight(profile,{...loss,code:'WATCH1',me:{id:'p1',spe
 assert.deepEqual(parseMovieNightPassport({matches:-4,wins:'x',fastestMs:-2,recorded:['ok','ok',7]}),{matches:0,wins:0,solves:0,firstClueSolves:0,perfectMatches:0,currentStreak:0,bestStreak:0,bestScore:0,fastestMs:null,recorded:['ok']});
 stamps=passportAchievements({...profile,matches:5,firstClueSolves:5});assert(stamps.every(stamp=>stamp.unlocked));
 console.log('PASS: Movie Night Passport tracks browser-local multiplayer records once across solo and team matches.');
+
+const legacy={...solo,seriesMatches:undefined,roundStarted:1792243306000};
+const legacyProfile=recordMovieNight(emptyMovieNightPassport(),legacy);
+assert.equal(legacyProfile.matches,1,'deployed backend without series counters is supported');
+assert.deepEqual(recordMovieNight(legacyProfile,legacy),legacyProfile,'polls cannot duplicate legacy results');
+assert.equal(recordMovieNight(legacyProfile,{...legacy,roundStarted:1792243406000}).matches,2,'a replay in the same room is a new match');
+for(const seriesMatches of [undefined,NaN,0,-1]){
+ assert.equal(recordMovieNight(emptyMovieNightPassport(),{...solo,seriesMatches}).matches,0,'missing match identity must not create a phantom record');
+}
