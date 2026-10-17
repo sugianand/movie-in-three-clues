@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {dailyPerformance} from '../lib/daily-performance.ts';
+import {dailyView,openDaily,dailyAction} from '../lib/daily.ts';
+assert.deepEqual(dailyPerformance([]),{counts:[0,0,0,0],played:0,average:0});
+const history=[300,200,100,0,300,0,200,100,300].map((score,i)=>({date:`2026-10-${String(i+1).padStart(2,'0')}`,score,marks:[]}));
+assert.deepEqual(dailyPerformance(history),{counts:[3,2,2,2],played:9,average:167});
+const profile=openDaily(null,Date.parse('2026-10-17T12:00:00Z'));profile.history=history;
+const view=dailyView(profile,1);
+assert.equal(view.history.length,7);assert.equal(view.performance.played,9);
+assert.equal(view.answer,null);assert(!JSON.stringify(view.performance).includes(profile.title));
+dailyAction(profile,'skip');dailyAction(profile,'skip');dailyAction(profile,'skip');
+assert.deepEqual(dailyView(profile,2).performance,{counts:[3,2,2,3],played:10,average:150});
+dailyAction(profile,'skip');assert.equal(dailyView(profile,3).performance.played,10);
+console.log('PASS: daily breakdown uses all completed results, counts reveals once, excludes unfinished days and reveals no answers.');
