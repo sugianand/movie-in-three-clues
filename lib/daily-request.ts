@@ -6,7 +6,7 @@ const number=(value:unknown)=>typeof value==='number'&&Number.isFinite(value);
 const marks=(value:unknown)=>Array.isArray(value)&&value.every(mark=>['hit','miss','skip'].includes(mark));
 export function isDailyView(value:unknown):value is DailyView{
  if(!record(value)||!record(value.stats))return false;
- return typeof value.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.date)&&
+ return (value.serverNow===undefined||number(value.serverNow))&&typeof value.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value.date)&&
   ['number','stage','score','nextAt','version'].every(key=>number(value[key]))&&[0,1,2].includes(value.stage as number)&&typeof value.done==='boolean'&&
   Array.isArray(value.clues)&&value.clues.length>=(value.done?3:(value.stage as number)+1)&&value.clues.every(clue=>typeof clue==='string')&&
   marks(value.marks)&&Array.isArray(value.guesses)&&value.guesses.every(guess=>guess===null||typeof guess==='string')&&
