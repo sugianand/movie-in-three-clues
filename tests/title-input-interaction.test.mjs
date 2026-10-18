@@ -11,7 +11,8 @@ function render(active=0){
  const exports={};
  const jsx=(type,props)=>({type,props});
  vm.runInNewContext(compiled,{exports,require(name){
-  if(name==='react')return {useState:()=>[[true,active][stateIndex++],()=>{}]};
+  if(name.includes('title-option-scroll'))return {revealTitleOption:()=>{}};
+  if(name==='react')return {useEffect:()=>{},useRef:()=>({current:null}),useState:()=>[[true,active][stateIndex++],()=>{}]};
   if(name==='react/jsx-runtime')return {jsx,jsxs:jsx};
   if(name.includes('movie-titles'))return {};
   if(name.includes('title-search'))return {findTitles:()=>[{title:'Arrival',year:2016},{title:'Argo',year:2012}]};
