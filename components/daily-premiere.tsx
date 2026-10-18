@@ -1,5 +1,6 @@
 'use client';
 import {dailySkipConfirmation} from '@/lib/daily-skip';
+import {dailyClockOffset} from '@/lib/daily-clock';
 import {dailyRequest} from '@/lib/daily-request';
 import {DailyPerformance} from '@/components/daily-performance';
 import {MovieTitleInput} from '@/components/movie-title-input';
@@ -13,6 +14,7 @@ const passKey='three-clues-daily-pass';
 function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join('');return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\nCan you beat my score?\n${window.location.origin}/?daily=1`;}
 export function DailyPremiere({onBack}:{onBack:()=>void}){
  const [data,setData]=useState<DailyView|null>(null),[guess,setGuess]=useState(''),[revealOpen,setRevealOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[storageWarning,setStorageWarning]=useState(''),[shareFallback,setShareFallback]=useState(''),[now,setNow]=useState(Date.now());
+ const clockOffset=useRef(0);
  const token=useRef(''),lock=useRef(false),latest=useRef<DailyView|null>(null),alive=useRef(true),field=useRef<HTMLInputElement>(null);
  async function request(action='state'){
   if(lock.current)return;lock.current=true;setBusy(true);setError('');
@@ -21,6 +23,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
    const next=await dailyRequest({action,token:token.current,date:previous?.date,version:previous?.version,guess});if(!alive.current)return;
    let restored='';
    if(!previous)try{restored=readDailyDraft(sessionStorage.getItem(dailyDraftKey(token.current)),next);}catch{}
+   const receivedAt=Date.now();clockOffset.current=dailyClockOffset(next.serverNow,receivedAt);setNow(receivedAt+clockOffset.current);
    latest.current=next;setData(next);
    // A background refresh must not erase typing; changed progress invalidates the draft.
    setGuess(value=>sameDailyProgress(previous,next)?value:restored);
@@ -33,7 +36,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   alive.current=true;
   try{const saved=localStorage.getItem(passKey);token.current=saved&&/^[0-9a-f-]{36}$/i.test(saved)?saved:crypto.randomUUID();localStorage.setItem(passKey,token.current);}
   catch{token.current||=crypto.randomUUID();setStorageWarning('Browser storage is blocked. Your progress lasts while this screen stays open.');}
-  void request();const timer=setInterval(()=>setNow(Date.now()),1000);
+  void request();const timer=setInterval(()=>setNow(Date.now()+clockOffset.current),1000);
   const sync=()=>{if(document.visibilityState==='visible')void request();};document.addEventListener('visibilitychange',sync);
   return()=>{alive.current=false;clearInterval(timer);document.removeEventListener('visibilitychange',sync);};
  },[]);
