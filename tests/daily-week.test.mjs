@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {dailyWeek} from '../lib/daily-week.ts';
+const history=[{date:'2026-10-01',score:300,marks:['hit']},{date:'2026-10-16',score:0,marks:['skip','skip','skip']},{date:'2026-10-18',score:100,marks:['miss','miss','hit']}];
+const before=JSON.stringify(history),days=dailyWeek('2026-10-19',history);
+assert.equal(days.length,7);assert.equal(days[0].date,'2026-10-13');assert.equal(days[6].status,'open');
+assert.equal(days[3].status,'revealed');assert.equal(days[5].status,'won');assert.equal(days[5].score,100);
+assert.equal(days[0].status,'unplayed');assert.equal(days.filter(d=>d.today).length,1);
+assert.equal(JSON.stringify(history),before);
+assert.equal(dailyWeek('2027-01-02',[])[0].date,'2026-12-27');
+assert.equal(dailyWeek('2028-03-01',[])[5].date,'2028-02-29');
+assert.equal(dailyWeek('2026-10-18',history)[6].status,'won');
+assert.deepEqual(dailyWeek('invalid',[]),[]);
+assert.ok(days.every(d=>!('marks' in d)&&!('title' in d)),'no answer or guess data in calendar');
+console.log('PASS: seven UTC calendar days include gaps, reveals, wins, today and date boundaries without spoilers.');

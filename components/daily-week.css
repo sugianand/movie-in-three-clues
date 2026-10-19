@@ -1,0 +1,6 @@
+.daily-week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:0;margin:18px 0;list-style:none}
+.daily-week-grid li{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 1px;border:1px solid #aeb8ca44;border-radius:8px;color:var(--foreground);min-width:0}
+.daily-week-grid li[aria-current=date]{border:2px solid var(--brand-accent);padding:9px 0}
+.daily-week-grid li[data-status=won]{background:color-mix(in srgb,var(--brand-accent) 25%,transparent)}
+.daily-week-grid span,.daily-week-grid small{font-size:10px;line-height:1.3}
+.daily-week-grid strong{font-size:20px;line-height:1.2}
