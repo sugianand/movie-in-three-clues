@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import {movies} from '../lib/game.ts';
+import {isGameResponse} from '../lib/game-snapshot.ts';
 const base=process.env.GAME_TEST_URL||'http://localhost:4173';
-async function api(body,expected=200){const res=await fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify(body)});const text=await res.text();assert.equal(res.status,expected,text||JSON.stringify([...res.headers]));const data=JSON.parse(text);return data;}
+async function api(body,expected=200){const res=await fetch(base+'/api/game',{method:'POST',headers:{'Content-Type':'application/json','Origin':new URL(base).origin},body:JSON.stringify(body)});const text=await res.text();assert.equal(res.status,expected,text||JSON.stringify([...res.headers]));const data=JSON.parse(text);assert(isGameResponse(data,body,res.ok),'Compiled API response must pass client validation');return data;}
 const a=await api({action:'create',name:'Host'});const b=await api({action:'join',name:'Host',code:' '+a.code.toLowerCase().split('').join(' ')+' '});const host={code:a.code,token:a.token},guest={code:a.code,token:b.token};
 const joined=await api({...host,action:'state'});assert.equal(joined.players.length,2);assert.deepEqual(joined.players.map(p=>p.name),['Host','Host 2']);
 await api({...guest,action:'start'},400);let game=await api({...host,action:'start'});const deck=[];const firstRoundStarted=game.roundStarted;assert.equal(typeof firstRoundStarted,'number');

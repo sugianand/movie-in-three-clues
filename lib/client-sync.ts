@@ -1,4 +1,5 @@
 import type {GameSettings} from './game-settings.ts';
+import {isGameResponse} from './game-snapshot.ts';
 export type SnapshotStamp={version:number;serverNow:number};
 export function acceptsSnapshot(incoming:SnapshotStamp,current:SnapshotStamp){
  return incoming.version>current.version||(incoming.version===current.version&&incoming.serverNow>=current.serverNow);
@@ -37,6 +38,7 @@ export async function gameRequest<T>(body:unknown,options:{signal?:AbortSignal;t
   const response=await fetch('/api/game',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:controller.signal,cache:'no-store'});
   const raw=await response.text();let data:T;
   try{data=JSON.parse(raw) as T;}catch{throw Error('The game could not respond. Please try again in a moment.');}
+  if(!isGameResponse(data,body,response.ok))throw Error('The game returned an incomplete response. Reconnecting without changing your progress.');
   return {ok:response.ok,status:response.status,data};
  }catch(error){
   if(timedOut)throw Error('Connection timed out. Check your connection and try again.');

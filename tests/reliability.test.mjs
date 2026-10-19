@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {movies,matches} from '../lib/game.ts';
+import {movies,matches,newRoom,player,view} from '../lib/game.ts';
 import {acceptsSnapshot,clueAnnouncement,errorAfterRecovery,gameRequest,runActionOnce} from '../lib/client-sync.ts';
 for(const title of ['Toy Story','Frozen','Shrek','Moana']){const movie=movies.find(m=>m.title===title);assert(matches(title,movie));assert(!matches(title+' 2',movie),title);}
 assert(matches('Jurasic Park',movies.find(m=>m.title==='Jurassic Park')));
@@ -31,7 +31,8 @@ release('done');assert.equal(await firstAction,'done');assert.equal(actionLock.c
 await assert.rejects(runActionOnce(actionLock,async()=>{throw Error('failed');}),/failed/);assert.equal(actionLock.current,false);
 const original=globalThis.fetch;
 try{
- globalThis.fetch=async()=>new Response(JSON.stringify({code:'ABC234'}),{status:200});
+ const host=player('Host');const snapshot={...view(newRoom('ABC234',host,1000),host.token,1000),token:host.token};
+ globalThis.fetch=async()=>new Response(JSON.stringify(snapshot),{status:200});
  const result=await gameRequest({action:'create'});assert.equal(result.data.code,'ABC234');
  globalThis.fetch=async()=>new Response('<html>Unavailable</html>',{status:503});
  await assert.rejects(gameRequest({action:'state'}),/could not respond/);
