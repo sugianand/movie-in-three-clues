@@ -1,5 +1,6 @@
 import {movies,matches} from './game.ts';
 import {dailyPerformance} from './daily-performance.ts';
+import {isRepeatedDailyGuess,dailyRepeatMessage} from './daily-repeat.ts';
 import type {DailyResult,DailyView} from './daily-types.ts';
 export type DailyProfile={date:string;title:string;stage:number;done:boolean;score:number;guesses?:(string|null)[];marks:DailyResult['marks'];history:DailyResult[]};
 const dayMs=86400000;
@@ -18,6 +19,7 @@ export function dailyAction(p:DailyProfile,action:unknown,guess:unknown){
  if(p.done)return;
  if(action!=='guess'&&action!=='skip')throw Error('Choose a guess or reveal the next clue.');
  if(action==='guess'&&(typeof guess!=='string'||!guess.trim()||guess.length>150))throw Error('Enter a movie title up to 150 characters.');
+ if(action==='guess'&&isRepeatedDailyGuess(guess as string,p.guesses))throw Error(dailyRepeatMessage);
  const movie=movies.find(m=>m.title===p.title);if(!movie)throw Error('Today’s movie is unavailable.');
  const correct=action==='guess'&&matches(guess as string,movie);
  // Older profiles retain their marks without inventing missing guess text.

@@ -8,6 +8,9 @@ const movie=dailyMovie(state.date);assert(!JSON.stringify(state).includes(movie.
 const attempt={token,action:'guess',date:state.date,version:state.version,guess:'wrong movie title'};
 const [a,b]=await Promise.all([api(attempt),api(attempt)]);assert.equal(a.stage,1);assert.equal(b.stage,1);assert.equal(a.version,b.version);
 state=await api({token,action:'state'});assert.equal(state.stage,1);assert.equal(state.marks.length,1);assert.deepEqual(state.guesses,['wrong movie title']);
+const repeat=await api({token,action:'guess',date:state.date,version:state.version,guess:'WRONG-MOVIE TITLE!'},400);
+assert.match(repeat.error,/already tried/);
+assert.deepEqual(await api({token,action:'state'}).then(({serverNow,...rest})=>rest),(({serverNow,...rest})=>rest)(state),'Rejected repeat must not consume a clue or change the version');
 state=await api({token,action:'guess',date:state.date,version:state.version,guess:movie.title});assert.equal(state.done,true);assert.equal(state.score,200);assert.equal(state.stats.played,1);assert.deepEqual(state.guesses,['wrong movie title',movie.title]);
 const again=await api(attempt);assert.equal(again.score,200);assert.equal(again.history.length,1);
 assert.equal((await api({token,action:'state'})).score,200);
