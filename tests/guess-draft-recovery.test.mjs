@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {readGuessDraft,writeGuessDraft} from '../lib/guess-draft.ts';
+const game={code:'ABC123',round:0,roundStarted:100,status:'playing',me:{id:'p1',attempt:-1,solved:false}};
+const raw=writeGuessDraft(game,'The Dark Knight');
+assert.equal(readGuessDraft(raw,game),'The Dark Knight');
+assert.equal(readGuessDraft(raw,{...game,stage:2}),'The Dark Knight');
+for(const next of [null,{...game,round:1},{...game,roundStarted:200},{...game,code:'XYZ123'},{...game,status:'reveal'},{...game,me:{...game.me,id:'p2'}},{...game,me:{...game.me,attempt:0}},{...game,me:{...game.me,solved:true}},{...game,me:{...game.me,spectator:true}}])assert.equal(readGuessDraft(raw,next),'');
+for(const value of ['', ' ', 'x'.repeat(151)])assert.equal(writeGuessDraft(game,value),null);
+for(const corrupt of [null,'bad','null','{}',JSON.stringify({value:12}), 'x'.repeat(1001)])assert.equal(readGuessDraft(corrupt,game),'');
+assert.deepEqual(Object.keys(JSON.parse(raw)).sort(),['context','value']);
+assert.ok(!raw.includes('token')&&!raw.includes('doubleDown'));
+console.log('PASS: tab-local guess recovery is scoped to player/round/attempt and excludes credentials and Double Down.');
