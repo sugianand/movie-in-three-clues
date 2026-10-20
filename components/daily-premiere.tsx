@@ -2,6 +2,7 @@
 import {isRepeatedDailyGuess,dailyRepeatMessage} from '@/lib/daily-repeat';
 import {dailySkipConfirmation} from '@/lib/daily-skip';
 import {createDailyClock} from '@/lib/daily-clock';
+import {shouldAutoOpenDaily} from '@/lib/daily-rollover';
 import {dailyRequest} from '@/lib/daily-request';
 import {DailyWeek} from '@/components/daily-week';
 import {DailyPerformance} from '@/components/daily-performance';
@@ -16,7 +17,7 @@ const passKey='three-clues-daily-pass';
 function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join('');return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\nCan you beat my score?\n${window.location.origin}/?daily=1`;}
 export function DailyPremiere({onBack}:{onBack:()=>void}){
  const [data,setData]=useState<DailyView|null>(null),[guess,setGuess]=useState(''),[revealOpen,setRevealOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[storageWarning,setStorageWarning]=useState(''),[shareFallback,setShareFallback]=useState(''),[now,setNow]=useState(Date.now());
- const clock=useRef<((elapsedNow:number)=>number)|null>(null);
+ const clock=useRef<((elapsedNow:number)=>number)|null>(null),rolloverDate=useRef('');
  const token=useRef(''),lock=useRef(false),latest=useRef<DailyView|null>(null),alive=useRef(true),field=useRef<HTMLInputElement>(null);
  async function request(action='state'){
   if(action==='guess'&&isRepeatedDailyGuess(guess,latest.current?.guesses)){setError(dailyRepeatMessage);return;}
@@ -27,11 +28,13 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
    let restored='';
    if(!previous)try{restored=readDailyDraft(sessionStorage.getItem(dailyDraftKey(token.current)),next);}catch{}
    const elapsedAt=performance.now();clock.current=createDailyClock(next.serverNow,Date.now(),elapsedAt);setNow(clock.current(elapsedAt));
+   const dateChanged=!!previous&&next.date!==previous.date;
    latest.current=next;setData(next);
    // A background refresh must not erase typing; changed progress invalidates the draft.
    setGuess(value=>sameDailyProgress(previous,next)?value:restored);
    if(!sameDailyProgress(previous,next))setRevealOpen(false);
-   setNotice(action==='guess'?(next.date!==previous?.date?'A new Daily Premiere has arrived.':next.done?(next.score?'You got it! Your result is saved.':'That’s a wrap. Tomorrow is another movie.'):next.stage>previous!.stage?'Not quite. Here’s your next clue.':'Your progress is up to date.'):action==='skip'?(next.done?'Movie revealed. Your result is saved.':'Next clue revealed.'):restored?'Your unfinished guess is back. Review it, then tap Guess.':'');
+   if(dateChanged)setShareFallback('');
+   setNotice(dateChanged?'Today’s new Daily Premiere is ready.':action==='guess'?(next.done?(next.score?'You got it! Your result is saved.':'That’s a wrap. Tomorrow is another movie.'):next.stage>previous!.stage?'Not quite. Here’s your next clue.':'Your progress is up to date.'):action==='skip'?(next.done?'Movie revealed. Your result is saved.':'Next clue revealed.'):restored?'Your unfinished guess is back. Review it, then tap Guess.':'');
   }catch(e){if(alive.current)setError(e instanceof Error&&e.name==='TimeoutError'?'Connection timed out. Retry to recover your saved progress.':e instanceof Error?e.message:'Connection lost. Please try again.');}
   finally{lock.current=false;if(alive.current){setBusy(false);if(action!=='state')setTimeout(()=>field.current?.focus(),0);}}
  }
@@ -43,6 +46,10 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   const sync=()=>{if(document.visibilityState==='visible')void request();};document.addEventListener('visibilitychange',sync);
   return()=>{alive.current=false;clearInterval(timer);document.removeEventListener('visibilitychange',sync);};
  },[]);
+ useEffect(()=>{
+  if(!data||!shouldAutoOpenDaily(data.date,data.nextAt,now,rolloverDate.current,document.visibilityState==='visible'))return;
+  rolloverDate.current=data.date;void request();
+ },[data,now]);
  useEffect(()=>{
   if(!data||!token.current)return;
   try{const key=dailyDraftKey(token.current),draft=writeDailyDraft(data,guess);if(draft)sessionStorage.setItem(key,draft);else sessionStorage.removeItem(key);}catch{}
