@@ -18,6 +18,7 @@ import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertD
 import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
 import {Table,TableHeader,TableBody,TableRow,TableHead,TableCell} from '@/components/ui/table';
 import {MatchShare} from '@/components/match-share';
+import {startVisiblePolling} from '@/lib/visible-polling';
 import {acceptsSnapshot,roundAnnouncement,timeWarning,errorAfterRecovery,gameRequest,runActionOnce} from '@/lib/client-sync';
 import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select';
 import {collections,eras,difficulties,matchLengths,settingsLabel,type GameSettings} from '@/lib/game-settings';
@@ -39,11 +40,12 @@ export default function Home(){
  function accept(data:Game){if(!acceptsSnapshot(data,latest.current))return;latest.current={version:data.version,serverNow:data.serverNow};setFatalError('');setError(errorAfterRecovery(recovering.current));recovering.current=false;offset.current=data.serverNow-Date.now();setGame(data);setNow(Date.now()+offset.current);setOnline(true);}
  useEffect(()=>{const invite=normalizeRoomCode(new URLSearchParams(window.location.search).get('room')||'');if(!invite&&new URLSearchParams(window.location.search).has('daily'))setEntryStep('daily');if(invite){setCode(invite);setMode('join');setEntryStep('rooms');}try{const value=JSON.parse(sessionStorage.getItem('movie-clues-session')||'null');if(value?.code&&value?.token&&(!invite||value.code===invite)){current.current=value;setSession(value);return;}const recent=parseRecoverableSession(localStorage.getItem(recentRoomKey));if(recent&&(!invite||recent.session.code===invite))setResumeSession(recent.session);else if(localStorage.getItem(recentRoomKey))clearRecoverableSession(localStorage);}catch{}},[]);
  useEffect(()=>{const id=setInterval(()=>setNow(Date.now()+offset.current),200);return()=>clearInterval(id);},[]);
- useEffect(()=>{if(!session)return;let alive=true;let terminal=false;let timer:ReturnType<typeof setTimeout>;const controller=new AbortController();
+ useEffect(()=>{if(!session)return;let alive=true;let terminal=false;const controller=new AbortController();
  async function poll(){try{const response=await gameRequest<Game & {error?:string}>({...session,action:'state'},{signal:controller.signal});const data=response.data;
  if(alive&&current.current===session){if(!response.ok){setOnline(false);if(response.status===400||response.status===403){terminal=true;try{clearRecoverableSession(localStorage);}catch{}setResumeSession(null);setFatalError(data.error||'This room is no longer available.');}else {recovering.current=true;setError(data.error||'Unable to load this room.');}}else accept(data);}}
- catch{if(alive&&current.current===session){recovering.current=true;setOnline(false);}}finally{if(alive&&!terminal)timer=setTimeout(poll,800);}}
- poll();return()=>{alive=false;clearTimeout(timer);controller.abort();};},[session]);
+ catch{if(alive&&current.current===session){recovering.current=true;setOnline(false);}}return !terminal;}
+ const stopPolling=startVisiblePolling(poll,()=>{if(alive&&current.current===session){recovering.current=true;setOnline(false);}},document);
+ return()=>{alive=false;stopPolling();controller.abort();};},[session]);
  const draftContext=guessDraftContext(game);
  useEffect(()=>{if(!game){setGuess('');return;}let restored='';try{restored=readGuessDraft(sessionStorage.getItem(multiplayerDraftKey),game);if(!restored)sessionStorage.removeItem(multiplayerDraftKey);}catch{}setGuess(restored);},[draftContext]);
  function changeGuess(value:string){setGuess(value);try{const draft=writeGuessDraft(game,value);if(draft)sessionStorage.setItem(multiplayerDraftKey,draft);else sessionStorage.removeItem(multiplayerDraftKey);}catch{}}
