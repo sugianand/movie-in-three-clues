@@ -253,3 +253,75 @@ html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .resume-room :i
   html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide small{font-size:9px;margin-left:2px}
   html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide span:last-child{font-size:10px}
 }
+
+/* Cinematic theme environments; existing IDs preserve saved preferences. */
+.theme-gallery{width:min(390px,calc(100vw - 32px));padding:18px;max-height:calc(100dvh - 160px);overflow:auto;background:#11151bf5;backdrop-filter:blur(24px);color:#f5f5f7;border:1px solid #ffffff30}
+.theme-gallery-heading{display:grid;gap:4px;margin:0 0 16px}
+.theme-gallery-heading>span{font-size:10px;letter-spacing:.2em;color:#c4b8ba}
+.theme-gallery-heading>strong{font-size:22px;letter-spacing:-.04em}
+.theme-options{display:grid;gap:10px}
+.theme-option{display:block;width:100%;padding:0;overflow:hidden;text-align:left;background:#1c2028;border:1px solid #ffffff25;border-radius:12px;color:#fff}
+.theme-option[aria-pressed=true]{border-color:var(--ring);box-shadow:0 0 0 1px var(--ring)}
+.theme-art{display:flex;align-items:center;justify-content:center;height:64px;letter-spacing:.28em;font-size:13px;font-weight:800}
+.theme-option-premiere .theme-art{background:linear-gradient(125deg,#462721,#180f0d);color:#f1cf9d;border-block:4px double #bd8e5350}
+.theme-option-midnight .theme-art{background:radial-gradient(ellipse at bottom,#981b3b80,transparent 70%),#100b18;color:#ff7388;font-family:Georgia,serif;text-shadow:0 0 14px #fa2b58}
+.theme-option-arena .theme-art{background:repeating-linear-gradient(135deg,#65dfc911 0 1px,transparent 1px 22px),linear-gradient(110deg,#124a43,#301028);color:#ff6cad;font-size:30px}
+.theme-option-copy{display:flex;align-items:center;gap:10px;padding:12px}
+.theme-option-copy strong{display:block;font-size:14px}
+.theme-option-copy small{display:block;margin-top:3px;font-size:11px;line-height:1.45;color:#bec6d3}
+.theme-option-number{font-size:10px;color:#b5bdc9;align-self:flex-start;padding-top:3px}
+.theme-option-check{margin-left:auto;flex-shrink:0;color:#fff}
+.theme-gallery .theme-gallery-note{display:block;margin-top:14px;color:#bac3d0}
+.theme-environment{display:none;position:absolute;inset:0;overflow:hidden}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]){--primary-foreground:#fff;--acid:var(--ring)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .cinema-backdrop-reel{display:none}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .theme-environment{display:block}
+:root[data-cinema-theme=midnight] .theme-environment{background:radial-gradient(ellipse at 50% 35%,#601029 0,transparent 48%),linear-gradient(#080b19,#170a15 65%,#060910)}
+:root[data-cinema-theme=arena] .theme-environment{background:radial-gradient(ellipse at 12% 25%,#14594b,transparent 55%),radial-gradient(ellipse at 94% 60%,#63163d,transparent 50%),#071c20}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .cinema-backdrop-shade{background:linear-gradient(#06081033,#06081011 35%,#060810b0)}
+.theme-orbit{position:absolute;left:50%;top:8%;width:min(72vw,820px);aspect-ratio:1;transform:translateX(-50%);border-radius:50%;border:1px solid #fa344e60;box-shadow:0 0 65px #ed21492b,inset 0 0 90px #ed21491c}
+.theme-orbit:after{content:'';position:absolute;inset:6%;border:1px solid #ee335735;border-radius:50%}
+.theme-horizon{position:absolute;inset:65% -50% -35%;background:repeating-linear-gradient(0deg,#ee35572b 0 1px,transparent 1px 42px),repeating-linear-gradient(90deg,#ee35572b 0 1px,transparent 1px 75px);transform:perspective(450px) rotateX(55deg);mask-image:linear-gradient(transparent,#000)}
+:root[data-cinema-theme=arena] .theme-orbit{border-radius:24px;border-color:#66edcf25;transform:translateX(-50%) rotate(45deg);box-shadow:0 0 120px #3acba015}
+:root[data-cinema-theme=arena] .theme-orbit:after{border-radius:12px;border-color:#66edcf20}
+:root[data-cinema-theme=arena] .theme-horizon{background:repeating-linear-gradient(0deg,#81edd32b 0 1px,transparent 1px 42px),repeating-linear-gradient(90deg,#81edd32b 0 1px,transparent 1px 75px)}
+.theme-geometry{display:none}
+:root[data-cinema-theme=arena] .theme-geometry{display:flex;position:absolute;inset:20% 5% auto;justify-content:space-between;align-items:center;opacity:.32}
+.theme-geometry i{width:clamp(50px,13vw,180px);aspect-ratio:1;border:3px solid #fa4594;box-shadow:0 0 40px #f42b7120;transform:rotate(-12deg)}
+.theme-geometry i:first-child{border-radius:50%}
+.theme-geometry i:nth-child(2){border:0;background:#6bf5ce;clip-path:polygon(50% 0,100% 100%,0 100%,50% 0,50% 7%,5% 96%,95% 96%,50% 7%);transform:translateY(28vh) rotate(9deg)}
+.theme-particles{position:absolute;inset:0}
+.theme-particles i{position:absolute;left:8%;top:80%;width:3px;height:3px;background:#ff829e;border-radius:50%;box-shadow:0 0 12px #ff5a85;animation:theme-drift 16s ease-in-out infinite}
+.theme-particles i:nth-child(3n){left:72%;top:65%;animation-delay:-6s}
+.theme-particles i:nth-child(3n + 1){left:28%;top:40%;animation-delay:-10s}
+.theme-particles i:nth-child(4n){left:90%;top:22%;animation-delay:-3s}
+.theme-particles i:nth-child(5n){left:48%;top:92%;animation-delay:-13s}
+:root[data-cinema-theme=arena] .theme-particles i{background:#9effdc;box-shadow:0 0 12px #5fffc3}
+@keyframes theme-drift{0%,100%{transform:translate(0,0);opacity:.2}50%{transform:translate(35px,-100px);opacity:.8}}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) main>header{background:color-mix(in srgb,var(--background) 78%,transparent);backdrop-filter:blur(18px);border-color:color-mix(in srgb,var(--ring) 18%,transparent);box-shadow:none}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .intro{padding:36px 28px;border:1px solid color-mix(in srgb,var(--ring) 25%,transparent);border-radius:24px;background:color-mix(in srgb,var(--background) 68%,transparent);box-shadow:0 24px 90px #0005;backdrop-filter:blur(8px)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .intro>.eyebrow{display:flex;color:var(--ring);font-size:10px;letter-spacing:.16em;margin-bottom:24px}
+:root[data-cinema-theme=midnight] .reel-brand-hero .reel-brand-words{color:#230b17;-webkit-text-stroke:1px #ff637b;text-shadow:0 0 8px #fa345a88,0 0 35px #ed294955;font-size:clamp(64px,10vw,116px);border-block:2px solid #e63d58;padding:12px 18px;line-height:.92}
+:root[data-cinema-theme=arena] .reel-brand-hero .reel-brand-words{font-size:clamp(68px,11vw,130px);font-weight:900;letter-spacing:-.055em;color:#f1fff8;text-shadow:4px 4px 0 #b8246d}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero:after{content:'AFTER DARK';height:auto;width:auto;background:none;color:var(--ring);font:600 10px/1.5 var(--font-body);letter-spacing:.45em;margin-top:12px}
+:root[data-cinema-theme=arena] .reel-brand-hero:after{content:'○  △  □';font-size:22px}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing-actions :is(.primary,.secondary){border-radius:10px;min-height:56px}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .primary{box-shadow:0 5px 28px color-mix(in srgb,var(--brand-accent) 25%,transparent)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%;padding:0;border:0;margin-top:28px}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide>div{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:18px;border:1px solid color-mix(in srgb,var(--ring) 25%,transparent);border-radius:12px;background:color-mix(in srgb,var(--card) 85%,transparent)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide b{font-size:32px}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide span:last-child{display:block;font-size:11px;white-space:normal;color:var(--muted-foreground)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.pool-preview strong,.clue-num,.room-code,.screen h1 em){color:var(--ring)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) :is(.daily-stats,.daily-history,.daily-party,.resume-room,.rematch-ready,.host-mode,.team-picker){background:var(--card);border-color:var(--border)}
+:root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .entry-tab-list [data-state=active]{background:var(--brand-accent)!important;color:#fff!important}
+.cinema-backdrop-subdued .theme-environment{opacity:.45}
+@media(max-width:650px){
+ .theme-gallery{right:16px;top:132px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .intro{padding:24px 14px;border-radius:18px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .reel-brand-hero .reel-brand-words{font-size:clamp(50px,13vw,84px);padding:10px 8px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide{gap:6px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide>div{padding:12px 8px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .landing .score-guide b{font-size:25px}
+ :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .intro>.eyebrow{font-size:8px;letter-spacing:.08em}
+}
+@media(prefers-reduced-motion:reduce){.theme-particles i{animation:none}.theme-option{transition:none}}
