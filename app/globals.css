@@ -325,3 +325,39 @@ html:not([data-cinema-theme=midnight],[data-cinema-theme=arena]) .resume-room :i
  :root:is([data-cinema-theme=midnight],[data-cinema-theme=arena]) .intro>.eyebrow{font-size:8px;letter-spacing:.08em}
 }
 @media(prefers-reduced-motion:reduce){.theme-particles i{animation:none}.theme-option{transition:none}}
+
+/* Keep decorative layers above the body paint and below every interactive surface. */
+main{isolation:isolate}
+.reel-brand-symbol{display:block;visibility:visible;opacity:1;min-width:40px;min-height:40px;overflow:visible}
+.reel-brand-words{visibility:visible;opacity:1}
+.upside-vines,.arena-lookouts{display:none;position:absolute;inset:0;pointer-events:none}
+:root[data-cinema-theme=midnight] .upside-vines,:root[data-cinema-theme=arena] .arena-lookouts{display:block}
+.vine-edge{position:absolute;top:-3%;height:106%;width:clamp(95px,18vw,260px);overflow:visible;filter:drop-shadow(2px 0 9px #e9254340)}
+.vine-edge-left{left:-30px}
+.vine-edge-right{right:-30px;transform:scaleX(-1)}
+.vine-trunks{stroke:#301522;stroke-width:17;filter:drop-shadow(2px 2px 0 #8b3447)}
+.vine-tendrils{stroke:#733044;stroke-width:5;transform-origin:0 50%;animation:vine-reach 13s ease-in-out infinite}
+.vine-edge-right .vine-tendrils{animation-delay:-6s}
+.vine-veins{stroke:#f04466;stroke-width:2;stroke-dasharray:18 90;animation:vine-current 12s linear infinite;opacity:.65}
+@keyframes vine-reach{0%,100%{transform:scaleX(.83) rotate(-1deg)}50%{transform:scaleX(1) rotate(2deg)}}
+@keyframes vine-current{to{stroke-dashoffset:-216}}
+.arena-guard{position:absolute;top:36%;width:clamp(100px,15vw,210px);transform-origin:50% 80%;filter:drop-shadow(0 10px 30px #0009)}
+.arena-guard svg{display:block;width:100%;height:auto}
+.arena-guard-left{left:0;animation:guard-peek-left 18s ease-in-out infinite}
+.arena-guard-right{right:0;animation:guard-peek-right 18s ease-in-out infinite;animation-delay:-9s}
+.guard-hand{position:absolute;top:60%;right:7%;display:flex;flex-direction:column;gap:2px;transform:rotate(-9deg)}
+.guard-hand i{display:block;width:24px;height:10px;border-radius:8px;background:#171b25;border:1px solid #4f5260}
+.arena-guard-right .guard-hand{right:auto;left:7%;transform:rotate(9deg)}
+@keyframes guard-peek-left{0%,12%,72%,100%{transform:translateX(-91%) rotate(-12deg)}25%,54%{transform:translateX(-44%) rotate(10deg)}38%{transform:translateX(-39%) rotate(7deg)}}
+@keyframes guard-peek-right{0%,12%,72%,100%{transform:translateX(91%) rotate(12deg)}25%,54%{transform:translateX(44%) rotate(-10deg)}38%{transform:translateX(39%) rotate(-7deg)}}
+.cinema-backdrop-subdued :is(.upside-vines,.arena-lookouts){opacity:.25}
+@media(max-width:650px){
+ .vine-edge{width:90px;opacity:.7}
+ .arena-guard{width:95px;top:58%;opacity:.75}
+ .guard-hand i{width:13px;height:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ .vine-tendrils,.vine-veins,.arena-guard{animation:none}
+ .arena-guard-left{transform:translateX(-70%)}
+ .arena-guard-right{transform:translateX(70%)}
+}
