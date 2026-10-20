@@ -1,0 +1,5 @@
+.match-share{margin:24px 0;padding:24px 0;border-top:1px solid currentColor;display:grid;gap:12px;background:transparent}
+.match-share h2{font-size:1.15rem;margin:0 0 6px}
+.match-share p{margin:0}
+.match-share .invite-actions{flex-wrap:wrap}
+.match-share textarea{width:100%;max-width:100%}
