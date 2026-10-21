@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {act,movies,newRoom,player,view} from '../lib/game.ts';
+
+const host=player('Solo'),room=newRoom('SOLO23',host,1000);room.practice=true;
+let state=view(room,host.token,1000);assert.equal(state.practice,true);assert.equal(state.players.length,1);
+act(room,host.token,{action:'settings',settings:{...room.settings,mode:'teams',rounds:3}},1000);
+assert.equal(room.settings.mode,'individual','practice cannot drift into an invalid team room');
+act(room,host.token,{action:'start'},1000);state=view(room,host.token,1001);
+assert.equal(state.status,'playing');assert.equal(state.totalRounds,3);
+act(room,host.token,{action:'guess',round:0,stage:0,guess:movies[room.deck[0]].title},1001);
+assert.equal(room.status,'reveal');assert.equal(host.score,300);
+const standardHost=player('Host'),standard=newRoom('ROOM23',standardHost,1000);
+assert.throws(()=>act(standard,standardHost.token,{action:'start'},1000),/two players/);
+console.log('PASS: Solo Practice starts with one player, preserves settings, scores normally and stays individual.');

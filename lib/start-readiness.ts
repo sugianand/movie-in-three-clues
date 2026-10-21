@@ -1,5 +1,6 @@
 // Preview the server's queued-seat promotion and team assignment without changing seats.
-export function startReadiness(game:{players:{team?:string}[];spectators:unknown[];settings:{mode?:string}}){
+export function startReadiness(game:{players:{team?:string}[];spectators:unknown[];settings:{mode?:string};practice?:boolean}){
+ if(game.practice)return '';
  const players=game.players.map(player=>({...player}));
  const teams=game.settings.mode==='teams';
  let queued=Math.min(game.spectators.length,Math.max(0,8-players.length));

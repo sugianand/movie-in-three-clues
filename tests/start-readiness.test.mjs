@@ -10,6 +10,7 @@ assert.equal(startReadiness(room(['purple','gold'],'teams',1)),'');
 assert.equal(startReadiness(room(['purple'],'teams',1)),'');
 assert.equal(startReadiness(room([undefined,undefined])),'');
 assert.equal(startReadiness(room(['purple','purple'],'individual')),'');
+assert.equal(startReadiness({...room([undefined],'individual'),practice:true}),'');
 assert.match(startReadiness(room(['purple','purple','purple','gold'],'teams',1)),/3–1/);
 const original=room(['purple','purple','gold'],'teams',2),before=JSON.stringify(original);startReadiness(original);assert.equal(JSON.stringify(original),before);
 console.log('PASS: match readiness previews balanced teams and queued seats without mutating the room.');
