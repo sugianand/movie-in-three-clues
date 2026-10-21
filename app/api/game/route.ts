@@ -8,8 +8,8 @@ export async function POST(req:Request){try{
  if(Number(req.headers.get('content-length')||0)>4096)return reply({error:'Request too large.'},413);
  const raw=await req.text();if(raw.length>4096)return reply({error:'Request too large.'},413);const b=JSON.parse(raw);const db=roomDb();
  if(b.action==='create'){
- if(b.mode!==undefined&&!['individual','teams'].includes(b.mode))throw Error('Choose Solo or Teams.');
- const p=player(b.name);for(let n=0;n<5;n++){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const code=Array.from(crypto.getRandomValues(new Uint8Array(6)),x=>alphabet[x%alphabet.length]).join('');const r=newRoom(code,p);r.settings!.mode=b.mode??'individual';if(b.mode==='teams')assignTeams(r);
+ if(b.mode!==undefined&&!['individual','teams','practice'].includes(b.mode))throw Error('Choose Free-for-all, Teams, or Solo Practice.');
+ const p=player(b.name);for(let n=0;n<5;n++){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const code=Array.from(crypto.getRandomValues(new Uint8Array(6)),x=>alphabet[x%alphabet.length]).join('');const r=newRoom(code,p);r.practice=b.mode==='practice';r.settings!.mode=b.mode==='teams'?'teams':'individual';if(b.mode==='teams')assignTeams(r);
  const result=await db.prepare('INSERT OR IGNORE INTO rooms (code,state,version,created) VALUES (?,?,0,?)').bind(code,JSON.stringify(r),r.created).run();if(result.meta.changes)return reply({token:p.token,...view(r,p.token)});}
  throw Error('Could not create a room. Please try again.');
  }
