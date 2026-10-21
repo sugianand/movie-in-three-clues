@@ -104,7 +104,7 @@ export function leaveRoom(r:Room,token:string){
 export function act(r:Room,token:string,body:any,now=Date.now()){
  advance(r,now);const p=r.players.find(p=>p.token===token);if(!p){if(r.spectators?.some(p=>p.token===token))throw Error('Spectators can watch this match and will join the next one when a seat is available.');throw Error('Your player session is no longer available. Rejoin the room.');}
  // Older open tabs omit this stamp; current clients bind actions to one round instance.
- if((body.action==='guess'||body.action==='next')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
+ if((body.action==='guess'||body.action==='next'||body.action==='practice-advance')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
  if(body.action==='remove-player'){
   if(p.id!==r.host)throw Error('Only the host can remove a player.');
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Players can only be removed before or between games.');
@@ -131,6 +131,14 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Teams are locked during a game.');
   if(r.settings?.mode!=='teams'||!teams.some(t=>t.id===body.team))throw Error('Choose a valid team in team mode.');
   p.team=body.team;if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
+ }
+ if(body.action==='practice-advance'){
+  if(!r.practice)throw Error('Pace controls are only available in Solo Practice.');
+  if(p.id!==r.host)throw Error('Only the practice host can reveal clues early.');
+  if(r.status!=='playing')throw Error('This round has ended.');
+  const currentStage=stage(r,now);
+  if(body.round!==r.round||body.stage!==currentStage)throw Error('A new clue has appeared. Read it before continuing.');
+  r.started-=clueSeconds(r.settings)*1000;advance(r,now);return;
  }
  if(body.action==='settings'){
   if(p.id!==r.host)throw Error('Only the host can change the settings.');

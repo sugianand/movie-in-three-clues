@@ -7,8 +7,14 @@ act(room,host.token,{action:'settings',settings:{...room.settings,mode:'teams',r
 assert.equal(room.settings.mode,'individual','practice cannot drift into an invalid team room');
 act(room,host.token,{action:'start'},1000);state=view(room,host.token,1001);
 assert.equal(state.status,'playing');assert.equal(state.totalRounds,3);
-act(room,host.token,{action:'guess',round:0,stage:0,guess:movies[room.deck[0]].title},1001);
-assert.equal(room.status,'reveal');assert.equal(host.score,300);
+act(room,host.token,{action:'practice-advance',round:0,stage:0,roundStarted:1000},1001);
+state=view(room,host.token,1001);assert.equal(state.stage,1);assert.equal(state.clues.length,2);
+act(room,host.token,{action:'practice-advance',round:0,stage:1,roundStarted:room.started},1001);
+state=view(room,host.token,1001);assert.equal(state.stage,2);assert.equal(state.clues.length,3);
+act(room,host.token,{action:'guess',round:0,stage:2,guess:movies[room.deck[0]].title},1001);
+assert.equal(room.status,'reveal');assert.equal(host.score,100);
 const standardHost=player('Host'),standard=newRoom('ROOM23',standardHost,1000);
 assert.throws(()=>act(standard,standardHost.token,{action:'start'},1000),/two players/);
-console.log('PASS: Solo Practice starts with one player, preserves settings, scores normally and stays individual.');
+standard.practice=true;act(standard,standardHost.token,{action:'start'},1000);standard.practice=false;
+assert.throws(()=>act(standard,standardHost.token,{action:'practice-advance',round:0,stage:0,roundStarted:1000},1001),/only available in Solo Practice/);
+console.log('PASS: Solo Practice starts with one player, preserves settings, controls clue pace, scores normally and stays individual.');
