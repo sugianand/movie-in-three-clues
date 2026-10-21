@@ -361,3 +361,55 @@ main{isolation:isolate}
  .arena-guard-left{transform:translateX(-70%)}
  .arena-guard-right{transform:translateX(70%)}
 }
+
+/* Modern cinema: consistent type, quieter surfaces, and a faster seamless reel. */
+:root{--font-body:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-display:var(--font-body)}
+body{font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+.cinema-backdrop-reel{animation-duration:50s}
+main{max-width:1280px;padding-inline:clamp(20px,4vw,52px)}
+main>header{min-height:82px;background:color-mix(in srgb,var(--background) 86%,transparent);backdrop-filter:blur(20px);border-bottom:1px solid #ffffff14;box-shadow:none;gap:16px}
+main>header .brand .reel-brand-words{font-family:var(--font-body);font-size:18px;line-height:1.05;letter-spacing:-.035em;gap:1px;font-weight:850;transform:none}
+main>header .brand .reel-brand-symbol{width:42px;height:42px;min-width:42px;display:block;opacity:1;visibility:visible}
+main>header .header-actions{gap:18px}
+.landing{padding:64px 0 28px;max-width:1040px}
+:root .landing .intro{max-width:900px;padding:36px 24px;border:1px solid #ffffff1f;border-radius:28px;background:linear-gradient(145deg,#0b1019d9,#0b10198c);box-shadow:0 24px 80px #0003;backdrop-filter:blur(5px)}
+:root .reel-brand-hero{gap:22px}
+:root .reel-brand-hero .reel-brand-symbol{width:76px;height:76px;display:block;filter:drop-shadow(0 8px 24px #0006)}
+:root .reel-brand-hero .reel-brand-words{font-family:var(--font-body);font-size:clamp(58px,8.2vw,104px);line-height:.98;letter-spacing:-.075em;font-weight:850;transform:none;border:0;padding:0;gap:0;color:#f7f8fc;text-shadow:0 4px 28px #0005}
+:root .reel-brand-hero .reel-brand-words>span:last-child{color:var(--brand-accent)}
+:root .reel-brand-hero:after{margin:0 auto;letter-spacing:.2em}
+.intro-line{font-size:clamp(19px,2.4vw,25px);font-weight:600;letter-spacing:-.035em;margin:24px 0 12px}
+.landing .intro-description{max-width:560px;font-size:15px;line-height:1.7;color:#ced3de;margin:0 auto 26px}
+:root .landing-actions{gap:12px;width:min(100%,520px)}
+:root .landing-actions :is(.primary,.secondary){min-width:0;flex:1;min-height:54px;border-radius:12px;font-size:15px;padding:14px 22px;letter-spacing:-.02em}
+.secondary{background:#111722b3;border-color:#ffffff40}
+.landing .landing-note{font-size:12px;line-height:1.7;max-width:480px;color:#b7c0cf;margin:16px auto 0}
+:root .landing .score-guide{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:min(100%,620px);gap:12px;padding:0;border:0;margin:30px auto 0}
+:root .landing .score-guide>div,:root .landing .score-guide>div:first-child{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:16px 20px;background:#ffffff07;border:1px solid #ffffff1c;border-radius:12px}
+:root .landing .score-guide b{font-family:var(--font-body);font-size:28px;font-weight:750;letter-spacing:-.04em;color:#f7f8fc}
+:root .landing .score-guide small{color:#abb6c9;font-size:10px;font-weight:500}
+:root .landing .score-guide .score-step{font-size:10px!important;color:#aebbd0!important;letter-spacing:.1em!important}
+.landing .micro{font-size:12px;margin-top:24px;color:#bec7d6}
+.practice-launch{width:100%;max-width:1040px;margin:12px auto 48px;border-radius:20px;background:#0e1420db;border-color:#ffffff24;box-shadow:none;padding:26px}
+.practice-launch h2{font-family:var(--font-body);font-size:clamp(23px,3vw,30px);line-height:1.15;letter-spacing:-.045em}
+:root :is(.ticket h2,.settings-heading h2,.daily-heading h1,.players h2){font-family:var(--font-body);letter-spacing:-.04em}
+:root :is(.ticket,.settings-panel,.players,.screen,.daily-screen){border-radius:20px}
+@media(max-width:650px){
+ main>header{min-height:76px;gap:12px;padding:12px 0}
+ main>header .header-actions{gap:12px}
+ main>header .brand .reel-brand-words{font-size:15px;flex-direction:column}
+ main>header .brand .reel-brand-symbol{width:36px;height:36px;min-width:36px}
+ .landing{padding:28px 0 18px}
+ :root .landing .intro{padding:26px 16px;border-radius:20px}
+ :root .reel-brand-hero .reel-brand-words{font-size:clamp(52px,13vw,80px)}
+ :root .reel-brand-hero .reel-brand-symbol{width:60px;height:60px}
+ .landing .intro-description{font-size:14px;margin-bottom:20px}
+ :root .landing-actions{flex-direction:column}
+ :root .landing-actions :is(.primary,.secondary){width:100%;flex:auto}
+ :root .landing .score-guide{gap:8px;margin-top:24px}
+ :root .landing .score-guide>div,:root .landing .score-guide>div:first-child{padding:12px 10px}
+ :root .landing .score-guide b{font-size:24px}
+ .practice-launch{padding:22px;gap:16px}
+}
+@media(max-width:420px){main>header .header-actions{width:100%;justify-content:space-between}.landing .micro{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.cinema-backdrop-reel{animation:none}}
