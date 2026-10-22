@@ -1,0 +1,10 @@
+'use client';
+import {useEffect,useMemo,useState} from 'react';
+import {practiceBestKey,recordPracticeBest,summarizePractice,type PracticeRecap} from '@/lib/practice-progress';
+
+export function PracticeProgress({recap,rounds,score,format,speedBonus}:{recap:PracticeRecap[];rounds:number;score:number;format:string;speedBonus:boolean}){
+ const summary=useMemo(()=>summarizePractice(recap,rounds,score,format,speedBonus),[recap,rounds,score,format,speedBonus]);const [best,setBest]=useState(score),[newBest,setNewBest]=useState(false);
+ useEffect(()=>{try{const result=recordPracticeBest(localStorage,practiceBestKey(format,rounds),score);setBest(result.best);setNewBest(result.isNew);}catch{}},[format,rounds,score]);
+ const headline=summary.efficiency>=80?'Premiere-ready.':summary.efficiency>=50?'A strong cut.':'Warm-up complete.';const next=summary.solved<rounds?'Next goal: solve one more movie before the reveal.':summary.firstClue<summary.solved?'Next goal: turn one solve into a first-clue read.':'Perfect reads. Try a harder timer or a new collection.';
+ return <section className="practice-progress" aria-label="Solo Practice performance"><div className="practice-progress-heading"><div><span>SOLO COACH</span><h2>{headline}</h2></div><strong>{score} PTS</strong></div><div className="practice-progress-grid"><div><b>{summary.solved}/{rounds}</b><span>Solved</span></div><div><b>{format==='lightning'?(summary.averageMs===null?'—':`${(summary.averageMs/1000).toFixed(1)}s`):summary.firstClue}</b><span>{format==='lightning'?'Avg solve':'First clue'}</span></div><div><b>{format==='lightning'?`${summary.efficiency}%`:(summary.averageClue===null?'—':summary.averageClue.toFixed(1))}</b><span>{format==='lightning'?'Efficiency':'Avg clue'}</span></div><div><b>{best}</b><span>{newBest?'New best':'Personal best'}</span></div></div><div className="practice-progress-meter" aria-label={`${summary.efficiency}% of maximum available score`}><span style={{width:`${summary.efficiency}%`}}/></div><p>{next}</p><small>Personal best is saved only in this browser for {format==='lightning'?'Lightning':`${rounds}-round Classic`} practice.</small></section>;
+}
