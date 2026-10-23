@@ -32,9 +32,13 @@ export function practiceChallengeStreak(days:string[],now=Date.now()){
  const completed=new Set(days.map(day=>Math.floor(Date.parse(`${day}T00:00:00.000Z`)/dayMs)));
  let cursor=dayNumber(now);if(!completed.has(cursor))cursor--;let streak=0;while(completed.has(cursor)){streak++;cursor--;}return streak;
 }
+export function practiceChallengeWeek(days:string[],now=Date.now()){
+ const completed=new Set(days),today=dayNumber(now),labels=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+ return Array.from({length:7},(_,index)=>{const value=today-6+index,date=new Date(value*dayMs),day=date.toISOString().slice(0,10);return {day,label:labels[date.getUTCDay()],completed:completed.has(day),today:value===today};});
+}
 export function practiceChallengeState(storage:Pick<Storage,'getItem'>,now=Date.now()){
  const days=readPracticeChallengeDays(storage),day=practiceDayKey(now);
- return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now)};
+ return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now),week:practiceChallengeWeek(days,now)};
 }
 export function recordPracticeChallenge(storage:Pick<Storage,'getItem'|'setItem'>,session:PracticeSession,now=Date.now()){
  const challenge=practiceChallengeFor(now),day=practiceDayKey(now),days=readPracticeChallengeDays(storage),alreadyCompleted=days.includes(day),qualifies=practiceChallengeMatches(challenge,session);
