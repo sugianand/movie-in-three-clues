@@ -35,3 +35,13 @@ export function recordPracticeChallenge(storage:Pick<Storage,'getItem'|'setItem'
  const next=alreadyCompleted||!qualifies?days:[day,...days].slice(0,90);if(!alreadyCompleted&&qualifies)storage.setItem(practiceChallengeHistoryKey,JSON.stringify(next));
  return {challenge,day,completed:alreadyCompleted||qualifies,completedNow:!alreadyCompleted&&qualifies,streak:practiceChallengeStreak(next,now)};
 }
+
+export function practiceChallengeShareText(result:{challenge:PracticeChallenge;day:string;streak:number},href:string){
+ const current=new URL(href);if(!['http:','https:'].includes(current.protocol))return null;
+ return ['Three Clues · Daily Practice',`✅ ${result.challenge.title}`,`🔥 ${result.streak}-day challenge streak`,result.day,'No movie spoilers. Can you complete today’s challenge?',`${current.origin}/`].join('\n');
+}
+export async function sharePracticeChallenge(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>}){
+ if(platform.share){try{await platform.share({title:'Three Clues · Daily Practice',text});return 'shared';}catch(error){if(error&&typeof error==='object'&&'name' in error&&error.name==='AbortError')return 'cancelled';}}
+ if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
+ return 'manual';
+}
