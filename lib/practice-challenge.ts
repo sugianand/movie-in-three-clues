@@ -19,6 +19,12 @@ export function practiceChallengeMatches(challenge:PracticeChallenge,session:Pra
  if(challenge.key==='sharp-cut')return session.efficiency>=60;
  return session.format==='lightning'&&session.solved>=5;
 }
+export function practiceChallengeProgress(challenge:PracticeChallenge,session:PracticeSession){
+ if(challenge.key==='first-look'){const target=2,value=Math.min(session.firstClue,target),remaining=Math.max(0,target-session.firstClue);return {value,target,percent:value/target*100,label:`${session.firstClue} / ${target} first-clue solves`,guidance:remaining?`Solve ${remaining} more ${remaining===1?'movie':'movies'} on clue one in a single run.`:'First-look target reached.'};}
+ if(challenge.key==='clean-sweep'){const target=session.rounds,value=Math.min(session.solved,target),remaining=Math.max(0,target-session.solved);return {value,target,percent:target?value/target*100:0,label:`${session.solved} / ${target} movies solved`,guidance:remaining?`Solve ${remaining} more ${remaining===1?'movie':'movies'} before the reveal.`:'Clean sweep secured.'};}
+ if(challenge.key==='sharp-cut'){const target=60,value=Math.min(session.efficiency,target),remaining=Math.max(0,target-session.efficiency);return {value,target,percent:value/target*100,label:`${session.efficiency}% / ${target}% efficiency`,guidance:remaining?`Raise score efficiency by ${remaining} percentage ${remaining===1?'point':'points'}.`:'Efficiency target reached.'};}
+ const target=5,value=session.format==='lightning'?Math.min(session.solved,target):0,remaining=Math.max(0,target-value);return {value,target,percent:value/target*100,label:session.format==='lightning'?`${session.solved} / ${target} Lightning solves`:'Lightning format required',guidance:session.format==='lightning'?(remaining?`Solve ${remaining} more ${remaining===1?'movie':'movies'} in one Lightning run.`:'Lightning target reached.'):'Switch Format to Lightning, then solve 5 movies in one run.'};
+}
 export function readPracticeChallengeDays(storage:Pick<Storage,'getItem'>){
  try{const value=JSON.parse(storage.getItem(practiceChallengeHistoryKey)??'[]');if(!Array.isArray(value))return [];return [...new Set(value.filter((day):day is string=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&Number.isFinite(Date.parse(`${day}T00:00:00.000Z`))))].slice(0,90);}catch{return [];}
 }
@@ -33,7 +39,7 @@ export function practiceChallengeState(storage:Pick<Storage,'getItem'>,now=Date.
 export function recordPracticeChallenge(storage:Pick<Storage,'getItem'|'setItem'>,session:PracticeSession,now=Date.now()){
  const challenge=practiceChallengeFor(now),day=practiceDayKey(now),days=readPracticeChallengeDays(storage),alreadyCompleted=days.includes(day),qualifies=practiceChallengeMatches(challenge,session);
  const next=alreadyCompleted||!qualifies?days:[day,...days].slice(0,90);if(!alreadyCompleted&&qualifies)storage.setItem(practiceChallengeHistoryKey,JSON.stringify(next));
- return {challenge,day,completed:alreadyCompleted||qualifies,completedNow:!alreadyCompleted&&qualifies,streak:practiceChallengeStreak(next,now)};
+ return {challenge,day,completed:alreadyCompleted||qualifies,completedNow:!alreadyCompleted&&qualifies,streak:practiceChallengeStreak(next,now),progress:practiceChallengeProgress(challenge,session)};
 }
 
 export function practiceChallengeShareText(result:{challenge:PracticeChallenge;day:string;streak:number},href:string){
