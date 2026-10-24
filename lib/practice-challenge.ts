@@ -56,5 +56,6 @@ export async function sharePracticeChallenge(text:string,platform:{share?:(data:
  if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
  return 'manual';
 }
+export function normalizePracticeName(value:string){const name=value.trim().replace(/\s+/g,' ');return name&&name.length<=20?name:'';}
 export function readPracticeName(storage:Pick<Storage,'getItem'>){try{const name=storage.getItem(practiceNameKey)?.trim()??'';return name&&name.length<=20?name:'';}catch{return '';}}
-export function writePracticeName(storage:Pick<Storage,'setItem'|'removeItem'>,value:string){const name=value.trim().replace(/\s+/g,' ');if(!name||name.length>20){storage.removeItem(practiceNameKey);return '';}storage.setItem(practiceNameKey,name);return name;}
+export function writePracticeName(storage:Pick<Storage,'setItem'|'removeItem'>,value:string){const name=normalizePracticeName(value);try{if(!name)storage.removeItem(practiceNameKey);else storage.setItem(practiceNameKey,name);}catch{}return name;}
