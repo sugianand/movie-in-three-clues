@@ -2,6 +2,7 @@ import type {PracticeSession} from './practice-progress';
 
 export type PracticeChallenge={key:'first-look'|'clean-sweep'|'sharp-cut'|'lightning-strike';title:string;description:string};
 export const practiceChallengeHistoryKey='three-clues-practice-challenges-v1';
+export const practiceNameKey='three-clues-practice-name-v1';
 const dayMs=86_400_000;
 const challenges:PracticeChallenge[]=[
  {key:'first-look',title:'First Look',description:'Solve at least 2 movies on clue one in a single practice match.'},
@@ -55,3 +56,5 @@ export async function sharePracticeChallenge(text:string,platform:{share?:(data:
  if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
  return 'manual';
 }
+export function readPracticeName(storage:Pick<Storage,'getItem'>){try{const name=storage.getItem(practiceNameKey)?.trim()??'';return name&&name.length<=20?name:'';}catch{return '';}}
+export function writePracticeName(storage:Pick<Storage,'setItem'|'removeItem'>,value:string){const name=value.trim().replace(/\s+/g,' ');if(!name||name.length>20){storage.removeItem(practiceNameKey);return '';}storage.setItem(practiceNameKey,name);return name;}
