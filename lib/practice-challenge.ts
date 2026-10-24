@@ -37,8 +37,8 @@ export function practiceChallengeWeek(days:string[],now=Date.now()){
  return Array.from({length:7},(_,index)=>{const value=today-6+index,date=new Date(value*dayMs),day=date.toISOString().slice(0,10);return {day,label:labels[date.getUTCDay()],completed:completed.has(day),today:value===today};});
 }
 export function practiceChallengeState(storage:Pick<Storage,'getItem'>,now=Date.now()){
- const days=readPracticeChallengeDays(storage),day=practiceDayKey(now);
- return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now),week:practiceChallengeWeek(days,now)};
+ const days=readPracticeChallengeDays(storage),day=practiceDayKey(now),week=practiceChallengeWeek(days,now),weeklyGoal=5;
+ return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now),week,weeklyCompleted:week.filter(item=>item.completed).length,weeklyGoal};
 }
 export function recordPracticeChallenge(storage:Pick<Storage,'getItem'|'setItem'>,session:PracticeSession,now=Date.now()){
  const challenge=practiceChallengeFor(now),day=practiceDayKey(now),days=readPracticeChallengeDays(storage),alreadyCompleted=days.includes(day),qualifies=practiceChallengeMatches(challenge,session);
