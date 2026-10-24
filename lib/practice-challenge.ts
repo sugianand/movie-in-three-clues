@@ -14,6 +14,7 @@ const challenges:PracticeChallenge[]=[
 const dayNumber=(now:number)=>Math.floor(now/dayMs);
 export const practiceDayKey=(now=Date.now())=>new Date(dayNumber(now)*dayMs).toISOString().slice(0,10);
 export function practiceChallengeFor(now=Date.now()){const index=((dayNumber(now)%challenges.length)+challenges.length)%challenges.length;return challenges[index];}
+export function practiceChallengeCountdown(now=Date.now()){const next=(dayNumber(now)+1)*dayMs,totalMinutes=Math.max(1,Math.ceil((next-now)/60_000)),hours=Math.floor(totalMinutes/60),minutes=totalMinutes%60;return {dateTime:new Date(next).toISOString(),totalMinutes,label:hours?(minutes?`${hours}h ${minutes}m`:`${hours}h`):`${minutes}m`};}
 export function practiceChallengeMatches(challenge:PracticeChallenge,session:PracticeSession){
  if(challenge.key==='first-look')return session.firstClue>=2;
  if(challenge.key==='clean-sweep')return session.solved===session.rounds;
