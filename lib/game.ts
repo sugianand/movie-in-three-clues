@@ -121,11 +121,11 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Teams can only be balanced before or between games.');
   if(r.settings?.mode!=='teams')throw Error('Switch to Teams before balancing players.');
   if(r.players.length<2||r.players.length%2)throw Error('Balancing needs an even number of active players. Invite one more player.');
-  balanceTeams(r);if(r.status==='finished')r.players.forEach(x=>x.ready=false);
+  balanceTeams(r);r.players.forEach(x=>x.ready=false);
   const size=r.players.length/2;r.notice=`${p.name} balanced the teams ${size}–${size}.`;return;
  }
  if(body.action==='ready'){
-  if(r.status!=='finished')throw Error('Rematch readiness opens after the final reveal.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Readiness opens in the lobby or after the final reveal.');
   if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
   p.ready=body.ready;return;
  }
@@ -141,7 +141,7 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if(body.action==='team'){
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Teams are locked during a game.');
   if(r.settings?.mode!=='teams'||!teams.some(t=>t.id===body.team))throw Error('Choose a valid team in team mode.');
-  p.team=body.team;if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
+  p.team=body.team;p.ready=false;if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
  }
  if(body.action==='practice-advance'){
   if(!r.practice)throw Error('Pace controls are only available in Solo Practice.');
@@ -154,7 +154,7 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if(body.action==='settings'){
   if(p.id!==r.host)throw Error('Only the host can change the settings.');
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Settings can only change before or between games.');
-  const settings=parseSettings(body.settings);if(r.practice)settings.mode='individual';if(eligibleMovies(settings).length<5)throw Error('Choose a collection with enough movies for this match.');r.settings=settings;if(settings.mode==='teams')assignTeams(r);if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
+  const settings=parseSettings(body.settings);if(r.practice)settings.mode='individual';if(eligibleMovies(settings).length<5)throw Error('Choose a collection with enough movies for this match.');r.settings=settings;if(settings.mode==='teams')assignTeams(r);r.players.forEach(x=>x.ready=false);return;
  }
  if(body.action==='start'||body.action==='next'||body.action==='replay'){
   if(p.id!==r.host)throw Error('Only the host can do that.');
