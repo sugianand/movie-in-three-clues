@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import {act,newRoom,player,view} from '../lib/game.ts';
 
 const host=player('Host'),guest=player('Guest'),room=newRoom('READY2',host,0);room.players.push(guest);
-assert.throws(()=>act(room,guest.token,{action:'ready',ready:true}),/after the final reveal/);
-act(room,host.token,{action:'start'},1000);room.status='finished';room.result={winners:['Host'],teams:[]};
+act(room,guest.token,{action:'ready',ready:true});assert.equal(guest.ready,true);
+act(room,host.token,{action:'start'},1000);assert.equal(guest.ready,false);assert.throws(()=>act(room,guest.token,{action:'ready',ready:true}),/lobby or after/);room.status='finished';room.result={winners:['Host'],teams:[]};
 act(room,guest.token,{action:'ready',ready:true});
 let hostView=view(room,host.token);assert.equal(hostView.players.find(p=>p.id===guest.id).ready,true);assert.equal(hostView.me.ready,false);
 assert.throws(()=>act(room,host.token,{action:'ready',ready:'yes'}),/valid rematch status/);
