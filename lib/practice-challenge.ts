@@ -2,6 +2,7 @@ import type {PracticeSession} from './practice-progress';
 
 export type PracticeChallenge={key:'first-look'|'clean-sweep'|'sharp-cut'|'lightning-strike';title:string;description:string};
 export const practiceChallengeHistoryKey='three-clues-practice-challenges-v1';
+export const practiceChallengeBestKey='three-clues-practice-challenge-best-v1';
 export const practiceNameKey='three-clues-practice-name-v1';
 const dayMs=86_400_000;
 const challenges:PracticeChallenge[]=[
@@ -27,6 +28,11 @@ export function practiceChallengeProgress(challenge:PracticeChallenge,session:Pr
  if(challenge.key==='sharp-cut'){const target=60,value=Math.min(session.efficiency,target),remaining=Math.max(0,target-session.efficiency);return {value,target,percent:value/target*100,label:`${session.efficiency}% / ${target}% efficiency`,guidance:remaining?`Raise score efficiency by ${remaining} percentage ${remaining===1?'point':'points'}.`:'Efficiency target reached.'};}
  const target=5,value=session.format==='lightning'?Math.min(session.solved,target):0,remaining=Math.max(0,target-value);return {value,target,percent:value/target*100,label:session.format==='lightning'?`${session.solved} / ${target} Lightning solves`:'Lightning format required',guidance:session.format==='lightning'?(remaining?`Solve ${remaining} more ${remaining===1?'movie':'movies'} in one Lightning run.`:'Lightning target reached.'):'Switch Format to Lightning, then solve 5 movies in one run.'};
 }
+export type PracticeChallengeProgress=ReturnType<typeof practiceChallengeProgress>;
+type SavedPracticeChallengeBest={day:string;challengeKey:PracticeChallenge['key'];progress:PracticeChallengeProgress};
+export function readPracticeChallengeBest(storage:Pick<Storage,'getItem'>,now=Date.now()):PracticeChallengeProgress|null{
+ try{const value=JSON.parse(storage.getItem(practiceChallengeBestKey)??'null') as SavedPracticeChallengeBest|null,challenge=practiceChallengeFor(now),day=practiceDayKey(now),progress=value?.progress;if(!value||value.day!==day||value.challengeKey!==challenge.key||!progress||!Number.isFinite(progress.value)||!Number.isFinite(progress.target)||!Number.isFinite(progress.percent)||progress.value<0||progress.target<=0||progress.percent<0||progress.percent>100||typeof progress.label!=='string'||typeof progress.guidance!=='string')return null;return progress;}catch{return null;}
+}
 export function readPracticeChallengeDays(storage:Pick<Storage,'getItem'>){
  try{const value=JSON.parse(storage.getItem(practiceChallengeHistoryKey)??'[]');if(!Array.isArray(value))return [];return [...new Set(value.filter((day):day is string=>typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&Number.isFinite(Date.parse(`${day}T00:00:00.000Z`))))].slice(0,90);}catch{return [];}
 }
@@ -40,12 +46,12 @@ export function practiceChallengeWeek(days:string[],now=Date.now()){
 }
 export function practiceChallengeState(storage:Pick<Storage,'getItem'>,now=Date.now()){
  const days=readPracticeChallengeDays(storage),day=practiceDayKey(now),week=practiceChallengeWeek(days,now),weeklyGoal=5;
- return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now),week,weeklyCompleted:week.filter(item=>item.completed).length,weeklyGoal};
+ return {challenge:practiceChallengeFor(now),day,completed:days.includes(day),streak:practiceChallengeStreak(days,now),week,weeklyCompleted:week.filter(item=>item.completed).length,weeklyGoal,bestProgress:readPracticeChallengeBest(storage,now)};
 }
 export function recordPracticeChallenge(storage:Pick<Storage,'getItem'|'setItem'>,session:PracticeSession,now=Date.now()){
- const challenge=practiceChallengeFor(now),day=practiceDayKey(now),days=readPracticeChallengeDays(storage),alreadyCompleted=days.includes(day),qualifies=practiceChallengeMatches(challenge,session);
- const next=alreadyCompleted||!qualifies?days:[day,...days].slice(0,90);if(!alreadyCompleted&&qualifies)storage.setItem(practiceChallengeHistoryKey,JSON.stringify(next));
- return {challenge,day,completed:alreadyCompleted||qualifies,completedNow:!alreadyCompleted&&qualifies,streak:practiceChallengeStreak(next,now),progress:practiceChallengeProgress(challenge,session)};
+ const challenge=practiceChallengeFor(now),day=practiceDayKey(now),days=readPracticeChallengeDays(storage),alreadyCompleted=days.includes(day),qualifies=practiceChallengeMatches(challenge,session),progress=practiceChallengeProgress(challenge,session),previousBest=readPracticeChallengeBest(storage,now),bestProgress=!previousBest||progress.percent>previousBest.percent?progress:previousBest;
+ const next=alreadyCompleted||!qualifies?days:[day,...days].slice(0,90);try{if(!alreadyCompleted&&qualifies)storage.setItem(practiceChallengeHistoryKey,JSON.stringify(next));storage.setItem(practiceChallengeBestKey,JSON.stringify({day,challengeKey:challenge.key,progress:bestProgress}));}catch{}
+ return {challenge,day,completed:alreadyCompleted||qualifies,completedNow:!alreadyCompleted&&qualifies,streak:practiceChallengeStreak(next,now),progress,bestProgress};
 }
 
 export function practiceChallengeShareText(result:{challenge:PracticeChallenge;day:string;streak:number},href:string){
