@@ -340,3 +340,5 @@ main>header .brand .reel-brand-words{font-family:var(--font-display);font-size:2
 
 /* Invitation controls remain usable when sharing or clipboard permissions fail. */
 .invite-actions{display:flex;flex-wrap:wrap;gap:8px}.room-invite .invite-panel{flex-wrap:wrap}.room-invite .invite-status{font-size:13px;line-height:1.5;color:var(--muted-foreground);margin:8px 0}.invite-status:empty{display:none}.invite-fallback{margin:12px 0}.invite-fallback input{font-size:16px}.invite-actions button{min-height:44px}@media(max-width:650px){.invite-actions{width:100%}.invite-actions button{flex:1}.room-invite .invite-panel{gap:14px}}
+
+.team-balance{display:flex;align-items:center;gap:12px;flex-basis:100%;padding:14px;border:1px solid #535d6b;border-radius:12px;background:#191c20}.team-balance p{margin:0;line-height:1.45}.team-balance button{flex-shrink:0}@media(max-width:600px){.team-balance{align-items:stretch;flex-direction:column}.team-balance button{width:100%}}
