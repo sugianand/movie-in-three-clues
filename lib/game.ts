@@ -62,6 +62,9 @@ export function matches(guess:string,m:typeof movies[number]){
 export function assignTeams(r:Room){
  for(const p of r.players)if(!teams.some(t=>t.id===p.team))p.team=r.players.filter(x=>x.team==='purple').length<=r.players.filter(x=>x.team==='gold').length?'purple':'gold';
 }
+export function balanceTeams(r:Room){
+ r.players.forEach((p,index)=>{p.team=teams[index%teams.length].id;});
+}
 function teamScores(r:Room,hidden=false):TeamScore[]{return teams.map(t=>({...t,name:r.teamNames?.[t.id]??t.name,members:r.players.filter(p=>p.team===t.id).length,score:r.players.filter(p=>p.team===t.id).reduce((n,p)=>n+p.score-(hidden?p.gain:0),0)}));}
 function winners(r:Room){const rows=r.matchMode==='teams'?teamScores(r):r.players;return rows.filter(p=>p.score===Math.max(...rows.map(x=>x.score))).map(p=>p.name);}
 export function comebackHighlight(recap:RoundRecap[]|undefined,winningNames:string[]){
@@ -112,6 +115,14 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   const target=r.players.find(player=>player.id===body.playerId);
   if(!target)throw Error('Choose another active player to remove.');
   r.players=r.players.filter(player=>player.id!==target.id);r.notice=`${target.name} was removed by the host.`;return;
+ }
+ if(body.action==='balance-teams'){
+  if(p.id!==r.host)throw Error('Only the host can balance teams.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Teams can only be balanced before or between games.');
+  if(r.settings?.mode!=='teams')throw Error('Switch to Teams before balancing players.');
+  if(r.players.length<2||r.players.length%2)throw Error('Balancing needs an even number of active players. Invite one more player.');
+  balanceTeams(r);if(r.status==='finished')r.players.forEach(x=>x.ready=false);
+  const size=r.players.length/2;r.notice=`${p.name} balanced the teams ${size}–${size}.`;return;
  }
  if(body.action==='ready'){
   if(r.status!=='finished')throw Error('Rematch readiness opens after the final reveal.');
