@@ -193,3 +193,7 @@ Multiplayer matches now open every round with a server-timed three-second countd
 ## Reveal Guess Board
 
 After each multiplayer answer reveal, the room can compare every submitted title in a responsive Guess Board. Near misses stay private while the clue timer is active, correct entries are marked only after the answer appears, and each round starts with a clean board. Spectators receive the same reveal without gaining access to in-progress guesses.
+
+## Private Guess Tray
+
+During a multiplayer round, each active player gets a compact private tray containing only their own submitted titles. The server rejects punctuation- or spacing-equivalent repeat guesses on later clues without consuming the new attempt. Other players and spectators receive no private entries; the shared Guess Board remains locked until the answer reveal.
