@@ -32,6 +32,7 @@ Open http://localhost:3000 after startup. Port 3000 must be free.
 - Correct guesses score 300, 200, or 100 points, depending on the clue. Punctuation/case and small typos are accepted; very short titles must match exactly.
 - Correct answers, new points, and other players' guesses stay hidden until the reveal.
 - A round ends after 90/45/30 seconds (Easy/Normal/Hard) or when everyone gets the movie. The host advances to the next round.
+- During a reveal, the host can opt into Auto Continue. It visibly waits eight seconds, then advances to the next round or final results. The preference is saved only in that host's browser, defaults off, and can be cancelled from any reveal, even while reconnecting. Switching apps or hiding the host tab pauses Auto Continue; returning starts a fresh eight-second countdown. Reconnecting or completing another action also restarts the countdown. If an advance fails, the host can continue manually or switch Auto Continue off and on to retry.
 - Highest score after five rounds wins; tied leaders share the win. The host can start another game.
 - Refresh the same tab to reconnect when browser storage is available. If storage is blocked, joining still works but the tab must stay open. Keep the host tab available to advance rounds. New players can join only in the lobby. Rooms expire after 24 hours.
 
@@ -134,13 +135,65 @@ A random browser pass in localStorage identifies a D1 profile stored under the `
 
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
 
-## Vercel frontend deployment
+## Daily guess trail and safe reveal
 
-Import this repository into Vercel with Root Directory `vercel`, enable access to source files outside that directory, and use the included Next.js preset and build configuration. `npm ci --workspaces=false` installs the independent locked dependencies. Each build copies the current shared frontend, so GitHub updates rebuild the Vercel UI without a second copy to maintain.
+Daily Premiere now keeps each submitted movie title beside its clue, including after reloading or recovering a request. Skips are labeled separately, and completed games show attempts in the clue recap. Existing passes keep all progress and stats; guesses made before this update show their outcome without fabricated text. Guess text is limited to the current daily puzzle and is excluded from spoiler-free sharing.
 
-Vercel serves the frontend and same-origin API forwarding functions. Room state, scoring, timers, and Daily Premiere remain on the existing Cloudflare/D1 deployment at `movie-in-three-clues.sugianand89.chatgpt.site`; that backend must stay deployed. This is not a migration of D1 into Vercel. Forwarding checks the browser origin, limits request size, uses a fixed upstream destination, disables caching, and times out after 15 seconds. No credentials or API keys are required.
+The final Give up action asks for confirmation and explains the remaining 100-point chance and streak impact. Cancel keeps the puzzle open. Guess scoring, retry protection, movie rotation, branding, and multiplayer are unchanged.
 
-Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build --prefix vercel`.
+## Daily result images
+
+Finish Daily Premiere and choose **Create spoiler-free result image** to preview a 1080×1080 card in the default Missing Frame identity. **Share image** opens native file sharing where supported; **Save PNG** downloads a file for messaging and social posts. Text sharing remains available. The image is generated on demand in the browser without external fonts, images, APIs, or dependencies.
+
+Only the puzzle number, date, score, and clue outcomes enter the card. Movie titles, clues, typed guesses, browser passes, and history are excluded. PNG preparation finishes before the sharing tap to preserve mobile user activation; cancelling the share sheet is harmless. Unsupported file sharing points users to the download and text options. Object URLs are released when the preview closes or the result changes.
+
+Validation: all 11 unit test files, TypeScript, production build and compiled Worker integration passed. Card layout inspected via server-side SVG rendering; native sharing/download interaction on Safari/iPhone and Chrome remains unverified because browser QA is unavailable here. This change does not include the separate in-progress Phase 1 transport/autocomplete work.
+
+## Daily draft recovery
+
+Daily Premiere retains an unfinished movie title when returning to the tab or recovering an unchanged server snapshot. With session storage available, that draft also survives a reload in the same tab. It is restored only after the server confirms the exact date, version and clue stage; another tab advancing the puzzle, completion, or a new day discards stale input. Restoration never submits a guess. Only typed input and its progress stamp are stored, separately from the browser pass and saved results. Storage failures do not block gameplay.
+
+Validation: `tests/daily-draft.test.mjs` covers recovery, stale progress, malformed storage, pass isolation and the persisted-data allowlist. All 14 unit test files, TypeScript, production build and compiled Worker integration passed. Chrome and real Safari/iPhone interaction checks remain unverified.
+
+## Movie Night Recap
+
+Finished multiplayer matches now include an optional recap below the results: every movie, each solver, the clue they solved it on, points earned that round, and players who missed it. A comeback callout compares the eventual winner with the standings after round one. Team matches use team standings for the comeback calculation while keeping individual solves in each round.
+
+The recap is recorded server-side at reveal and is never returned during live play or the reveal screen, so it cannot leak answers or other players' results. Existing saved rooms without recap data remain compatible and simply omit the panel. Replay starts a fresh recap. Validation covers privacy, idempotent round capture, clue/point accuracy, comeback ranking and legacy rooms.
+
+## Rematch ready check
+
+After the final results, every active player can mark themselves ready for another match. Readiness syncs to the room so the host can see the count and each player’s status before choosing Play again. It is informational only and never auto-starts a match. Spectators stay queued separately, legacy rooms default to not ready, and readiness resets on replay or when the next match settings or teams change.
+
+Hosts now get a final safety check if they try to start the first match or a rematch while anyone is still unready. The confirmation names those players and offers Wait for everyone or Start anyway, so readiness remains advisory without letting an accidental tap burn the opening clue timer. Solo Practice bypasses the confirmation.
+
+## Synchronized round countdown
+
+Multiplayer matches now open every round with a server-timed three-second countdown. All devices receive the same future start timestamp, clues remain server-hidden and guesses are rejected until it expires, and only then does the full clue timer begin. The host’s manual Next round and optional Auto Continue use the same countdown. Legacy clients that omit the opt-in field retain immediate starts, while Solo Practice stays instant. The countdown animation is disabled when reduced motion is preferred.
+
+## Reveal Guess Board
+
+After each multiplayer answer reveal, the room can compare every submitted title in a responsive Guess Board. Near misses stay private while the clue timer is active, correct entries are marked only after the answer appears, and each round starts with a clean board. Spectators receive the same reveal without gaining access to in-progress guesses.
+
+## Private Guess Tray
+
+During a multiplayer round, each active player gets a compact private tray containing only their own submitted titles. The server rejects punctuation- or spacing-equivalent repeat guesses on later clues without consuming the new attempt. Other players and spectators receive no private entries; the shared Guess Board remains locked until the answer reveal.
+
+## Lightning format
+
+Hosts can switch the next match from Classic Three Clues to Lightning: ten movies, one middle-difficulty clue and ten seconds per round. A correct answer earns 100 points before optional Speed Bonus; Double Down earns 200 on a hit or costs 100 on a miss. Only the single Lightning clue is sent to clients, and Classic remains the default for existing rooms.
+
+## Movie Night Series
+
+Completed multiplayer matches now feed a room-level series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. The table persists across rematches, format and settings changes for the life of the room, while match scores still reset normally. Legacy rooms begin at zero, and retrying the final action cannot award the same match twice.
+
+## Reveal reactions
+
+Every answer reveal includes four lightweight room reactions: Great pick, No way, So close and Great clue. Each active player has one reaction per round and can change it until the host advances. Counts synchronize to players and spectators without exposing who chose what, adding a shared movie-night moment without chat or spoilers. Reactions clear for the next round and never affect scores.
+
+## Voluntary host handoff
+
+The current host can make any other active player the host from the lobby or finished results. A confirmation explains that the new host receives control of settings, match starts and round advancement while the original host stays in the room as a player. Scores, readiness, series wins, movie history and settings are preserved. Hosting cannot change during an active round or reveal, spectators cannot receive it, and server authorization prevents non-hosts from using the action.
 
 ## Personal cinema themes
 
@@ -150,6 +203,8 @@ The browser-local theme picker offers Blue Premiere, Midnight Signal, Neon Arena
 
 Every completed multiplayer match now updates a browser-local Movie Night Passport with matches, win rate, movie solves, first-clue solves, current and best win streaks, best score, fastest solve and perfect matches. A room/match stamp prevents polling, reloads and repeated result views from counting the same match twice. Solo and team wins are recognized separately, spectators never affect the record, and malformed or older saved values fall back safely. The Passport appears with finished results without an account; clearing browser data resets it.
 
+The Passport also derives six milestone stamps from that same saved record: first match, first win, five matches, five first-clue solves, a solve under five seconds, and a perfect match. Locked stamps show progress, earned stamps unlock automatically for existing players, and no additional personal data or server storage is introduced.
+
 ## Opt-in cinema sound
 
 The global Sound control is off by default and persists only in the current browser. After a user enables it, lightweight Web Audio cues mark a new round, a newly revealed clue, the player’s own correct answer, the big reveal and the final results. Cues are synthesized locally with no audio downloads, never play on initial room recovery or unchanged polling snapshots, and wait for a browser-approved interaction before creating audio. Spectators receive shared round/reveal cues but never a personal correct cue.
@@ -158,38 +213,6 @@ The global Sound control is off by default and persists only in the current brow
 
 Supported mobile and desktop browsers can opt in to keeping the display awake during active multiplayer rounds and reveals. The browser-local preference defaults to off, releases the Screen Wake Lock whenever the match is not active or the tab is hidden, and reacquires it when play resumes. Unsupported browsers simply omit the control; no permission workaround or fallback timer is used.
 
-
 ## Host seat management
 
 Between matches, the host can remove an inactive player after a confirmation. The seat opens immediately without resetting room settings, movie rotation, series history, or completed results. Server authorization prevents guests and spectators from removing anyone, active rounds cannot be interrupted, and the host cannot remove their own seat through this control. Removed players can join again later with the room code.
-
-
-## Passport stamps
-
-The Movie Night Passport derives six milestone stamps from the browser-local record: first match, first win, five matches, five first-clue solves, a solve under five seconds, and a perfect match. Locked stamps show progress, earned stamps unlock automatically for existing players, and no additional personal data or server storage is introduced.
-
-
-## Host Auto Continue
-
-During an answer reveal, the host can opt into an eight-second Auto Continue countdown. It advances through the existing authenticated next-round action, changes the final-round label to results, pauses while offline or another action is active, and can be cancelled from any reveal. The preference defaults off and stays only in that host's browser.
-
-Auto Continue pauses when the host switches apps or hides the tab, then gives a fresh eight seconds on return. Its status explains connection and action pauses; cancellation remains available offline. After a failed advance, continue manually or switch Auto Continue off and on to retry.
-
-## Preventing Vercel preview failures
-
-Before pushing a frontend change, install the locked Vercel dependencies and run `npm run typecheck --prefix vercel` followed by `npm run build --prefix vercel`. The root build targets Cloudflare and is not a substitute for this Next.js build. Start new work from current `main`; branches created before the Vercel adapter was added must incorporate it before deploying. Do not redeploy an old failed SHA expecting it to include newer fixes.
-
-The Vercel frontend forwards to an independently deployed backend. Client features must tolerate fields absent from that backend: Classic is the default when `settings.format` is absent, and Movie Night Passport uses the final-round start timestamp when no series counter is supplied. Publishing a preview does not update the Cloudflare backend.
-
-
-## Ready-start safeguard
-
-Hosts get a final safety check if they try to start the first match or a rematch while anyone is still unready. The confirmation names those players and offers Wait for everyone or Start anyway, so readiness remains advisory without letting an accidental tap burn the opening clue timer. Solo Practice bypasses the confirmation.
-
-## Synchronized round countdown
-
-Multiplayer matches now open every round with a server-timed three-second countdown. All devices receive the same future start timestamp, clues remain server-hidden and guesses are rejected until it expires, and only then does the full clue timer begin. The host’s manual Next round and optional Auto Continue use the same countdown. Legacy clients that omit the opt-in field retain immediate starts, while Solo Practice stays instant. The countdown animation is disabled when reduced motion is preferred.
-
-## Reveal Guess Board
-
-After each multiplayer answer reveal, the room can compare every submitted title in a responsive Guess Board. Near misses stay private while the clue timer is active, correct entries are marked only after the answer appears, and each round starts with a clean board. Spectators receive the same reveal without gaining access to in-progress guesses.

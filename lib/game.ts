@@ -1,6 +1,7 @@
 import popularAmerican from '../data/popular-american.json' with {type:'json'};
-import {defaultSettings,parseSettings,collections,eras,teams,clueSeconds,roundCount,type GameSettings} from './game-settings.ts';
+import {defaultSettings,parseSettings,collections,eras,teams,clueSeconds,clueCount,clueIndex,cluePoints,roundCount,type GameSettings} from './game-settings.ts';
 import {movies} from './movie-bank.ts';
+import {isRevealReaction,revealReactionCounts,type RevealReaction} from './reveal-reactions.ts';
 export {movies};
 export const roundCountdownMs=3000;
 const selectedAmerican=new Set(popularAmerican);
@@ -13,18 +14,18 @@ export type MovieResult={title:string;plays:number;players:number;first:number;s
 export type RoundRecap={round:number;title:string;solvers:{name:string;clue:number;points:number;ms?:number}[];missed:string[];totals:{name:string;score:number}[]};
 export type FastestSolve={name:string;title:string;clue:number;points:number;ms:number};
 export type RoundSpotlight={solved:number;players:number;fastest:{name:string;clue:number;points:number;ms:number}|null};
-export type Room={code:string;created:number;host:string;status:'lobby'|'playing'|'reveal'|'finished';round:number;started:number;deck:number[];players:Player[];spectators?:Spectator[];version:number;seen?:number[];stats?:Record<string,MovieResult>;cycle?:number;settings?:GameSettings;notice?:string;teamNames?:Record<string,string>;matchMode?:string;recap?:RoundRecap[];result?:{winners:string[];teams:TeamScore[]};practice?:boolean};
+export type Room={code:string;created:number;host:string;status:'lobby'|'playing'|'reveal'|'finished';round:number;started:number;deck:number[];players:Player[];spectators?:Spectator[];version:number;seen?:number[];stats?:Record<string,MovieResult>;cycle?:number;settings?:GameSettings;practice?:boolean;notice?:string;teamNames?:Record<string,string>;matchMode?:string;recap?:RoundRecap[];seriesMatches?:number;seriesWins?:Record<string,number>;reactions?:Record<string,RevealReaction>;result?:{winners:string[];teams:TeamScore[]}};
 export function player(name:unknown,token=crypto.randomUUID()):Player{if(typeof name!=='string'||!name.trim()||name.trim().length>20)throw Error('Use a name between 1 and 20 characters.');return {id:crypto.randomUUID(),token,name:name.trim(),score:0,solved:false,attempt:-1,gain:0};}
 export function newRoom(code:string,p:Player,now=Date.now()):Room{return {code,created:now,host:p.id,status:'lobby',round:0,started:0,deck:[],players:[p],version:0,seen:[],stats:{},cycle:1,settings:{...defaultSettings}};}
 export function spectator(p:Player,now=Date.now()):Spectator{return {id:p.id,token:p.token,name:p.name,joined:now};}
-export function stage(r:Room,now:number){return Math.min(2,Math.max(0,Math.floor((now-r.started)/(clueSeconds(r.settings)*1000))));}
+export function stage(r:Room,now:number){return Math.min(clueCount(r.settings)-1,Math.max(0,Math.floor((now-r.started)/(clueSeconds(r.settings)*1000))));}
 export function speedBonus(r:Room,now:number){
  if(!r.settings?.speedBonus)return 0;
  const clueMs=clueSeconds(r.settings)*1000,elapsed=Math.max(0,(now-r.started)%clueMs),remaining=Math.max(0,clueMs-elapsed);
  return Math.max(5,Math.ceil(remaining/clueMs*10)*5);
 }
 export function advance(r:Room,now:number){
- if(r.status!=='playing'||!(now-r.started>=clueSeconds(r.settings)*3000||r.players.every(p=>p.solved)))return;
+ if(r.status!=='playing'||!(now-r.started>=clueSeconds(r.settings)*clueCount(r.settings)*1000||r.players.every(p=>p.solved)))return;
  r.status='reveal';r.stats??={};const movie=movies[r.deck[r.round]];
  const result=r.stats[movie.title]??{title:movie.title,plays:0,players:0,first:0,second:0,third:0,missed:0};
  result.plays++;result.players+=r.players.length;
@@ -68,6 +69,15 @@ export function balanceTeams(r:Room){
 }
 function teamScores(r:Room,hidden=false):TeamScore[]{return teams.map(t=>({...t,name:r.teamNames?.[t.id]??t.name,members:r.players.filter(p=>p.team===t.id).length,score:r.players.filter(p=>p.team===t.id).reduce((n,p)=>n+p.score-(hidden?p.gain:0),0)}));}
 function winners(r:Room){const rows=r.matchMode==='teams'?teamScores(r):r.players;return rows.filter(p=>p.score===Math.max(...rows.map(x=>x.score))).map(p=>p.name);}
+function winningPlayerIds(r:Room){
+ if(r.matchMode!=='teams'){const high=Math.max(...r.players.map(p=>p.score));return r.players.filter(p=>p.score===high).map(p=>p.id);}
+ const scores=teamScores(r),high=Math.max(...scores.map(t=>t.score));const winningTeams=new Set(scores.filter(t=>t.score===high).map(t=>t.id));
+ return r.players.filter(p=>p.team&&winningTeams.has(p.team)).map(p=>p.id);
+}
+function finishMatch(r:Room){
+ const winningIds=winningPlayerIds(r);r.status='finished';delete r.reactions;r.result={winners:winners(r),teams:teamScores(r)};r.seriesMatches=(r.seriesMatches??0)+1;r.seriesWins??={};
+ for(const id of winningIds)r.seriesWins[id]=(r.seriesWins[id]??0)+1;
+}
 export function comebackHighlight(recap:RoundRecap[]|undefined,winningNames:string[]){
  const first=recap?.[0];if(!first||!winningNames.length)return null;
  const ranked=[...first.totals].sort((a,b)=>b.score-a.score);
@@ -101,6 +111,7 @@ export function leaveRoom(r:Room,token:string){
  if(wasHost)r.host=r.players[0]?.id??'';
  if(r.status!=='lobby'){
   r.status='lobby';r.round=0;r.started=0;delete r.result;delete r.matchMode;
+  delete r.reactions;
   r.players.forEach(x=>{x.score=0;x.gain=0;x.solved=false;x.attempt=-1;x.ready=false;delete x.guesses;delete x.solveMs;delete x.speedBonus;});
  }
  r.notice=`${p.name} left the room.${wasRunning?' The match ended; get ready for a new game.':''}${wasHost&&r.players.length?` ${r.players[0].name} is now the host.`:''}`;
@@ -108,7 +119,20 @@ export function leaveRoom(r:Room,token:string){
 export function act(r:Room,token:string,body:any,now=Date.now()){
  advance(r,now);const p=r.players.find(p=>p.token===token);if(!p){if(r.spectators?.some(p=>p.token===token))throw Error('Spectators can watch this match and will join the next one when a seat is available.');throw Error('Your player session is no longer available. Rejoin the room.');}
  // Older open tabs omit this stamp; current clients bind actions to one round instance.
- if((body.action==='guess'||body.action==='next'||body.action==='practice-advance')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
+ if((body.action==='guess'||body.action==='next'||body.action==='react'||body.action==='practice-advance')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
+ if(body.action==='ready'){
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Readiness opens in the lobby or after the final reveal.');
+  if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
+  p.ready=body.ready;return;
+ }
+ if(body.action==='transfer-host'){
+  if(p.id!==r.host)throw Error('Only the host can pass hosting.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Hosting can only change before or between games.');
+  if(typeof body.playerId!=='string'||body.playerId===p.id)throw Error('Choose another active player to host.');
+  const nextHost=r.players.find(player=>player.id===body.playerId);
+  if(!nextHost)throw Error('Choose another active player to host.');
+  r.host=nextHost.id;r.notice=`${nextHost.name} is now the host.`;return;
+ }
  if(body.action==='remove-player'){
   if(p.id!==r.host)throw Error('Only the host can remove a player.');
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Players can only be removed before or between games.');
@@ -125,10 +149,11 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   balanceTeams(r);r.players.forEach(x=>x.ready=false);
   const size=r.players.length/2;r.notice=`${p.name} balanced the teams ${size}–${size}.`;return;
  }
- if(body.action==='ready'){
-  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Readiness opens in the lobby or after the final reveal.');
-  if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
-  p.ready=body.ready;return;
+ if(body.action==='react'){
+  if(r.status!=='reveal')throw Error('Reactions open after the answer is revealed.');
+  if(body.round!==r.round||body.roundStarted!==r.started)throw Error('That reaction belongs to an earlier round.');
+  if(!isRevealReaction(body.reaction))throw Error('Choose a valid reaction.');
+  r.reactions??={};r.reactions[p.id]=body.reaction;return;
  }
  if(body.action==='rename-team'){
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Team names are locked during a game.');
@@ -163,22 +188,25 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   if(body.action==='start'||body.action==='replay'){
    if(r.status!==(body.action==='start'?'lobby':'finished'))throw Error('The game has already moved on.');promoteSpectators(r);if(!r.practice&&r.players.length<2)throw Error('At least two players are needed.');
    if(r.settings?.mode==='teams'){assignTeams(r);const counts=teamScores(r).map(t=>t.members);if(!counts[0]||counts[0]!==counts[1])throw Error('Team play needs two equally sized teams (2, 4, 6 or 8 players). Choose your teams before starting.');}
-   r.matchMode=r.settings?.mode??'individual';delete r.notice;delete r.result;r.recap=[];chooseDeck(r);r.round=0;r.players.forEach(p=>{p.score=0;p.doubleUsed=false;p.ready=false;});
-  }else {if(r.status!=='reveal'||body.round!==r.round)throw Error('Wait for the round to finish.');if(r.round===r.deck.length-1){r.status='finished';r.result={winners:winners(r),teams:teamScores(r)};return;}r.round++;}
-  r.status='playing';r.started=now+(body.countdown&&!r.practice?roundCountdownMs:0);r.players.forEach(p=>{p.solved=false;p.attempt=-1;p.gain=0;p.guesses=[];delete p.solvedStage;delete p.solveMs;delete p.speedBonus;});
+   r.matchMode=r.settings?.mode??'individual';delete r.notice;delete r.result;delete r.reactions;r.recap=[];chooseDeck(r);r.round=0;r.players.forEach(p=>{p.score=0;p.doubleUsed=false;p.ready=false;});
+  }else {if(r.status!=='reveal'||body.round!==r.round)throw Error('Wait for the round to finish.');if(r.round===r.deck.length-1){finishMatch(r);return;}r.round++;}
+  delete r.reactions;r.status='playing';r.started=now+(body.countdown&&!r.practice?roundCountdownMs:0);r.players.forEach(p=>{p.solved=false;p.attempt=-1;p.gain=0;p.guesses=[];delete p.solvedStage;delete p.solveMs;delete p.speedBonus;});
  }else if(body.action==='guess'){
   if(r.status!=='playing')throw Error('This round has ended.');if(now<r.started)throw Error('Wait for the opening countdown to finish.');const s=stage(r,now);if(body.round!==r.round||body.stage!==s)throw Error('A new clue has appeared. Read it and submit again.');
   if(p.solved)throw Error('You already got this movie.');if(p.attempt===s)throw Error('You have used this guess. Wait for the next clue.');
   if(typeof body.guess!=='string'||!body.guess.trim()||body.guess.length>150)throw Error('Enter a movie title.');
   if(body.doubleDown!==undefined&&typeof body.doubleDown!=='boolean')throw Error('Choose a valid Double Down option.');
   if(body.doubleDown&&p.doubleUsed)throw Error('Double Down has already been used this match.');
+  if(p.guesses?.some(guess=>norm(guess)===norm(body.guess)))throw Error('You already tried that title this round. Choose a different guess.');
   p.attempt=s;p.guesses??=[];p.guesses.push(body.guess.trim());if(body.doubleDown)p.doubleUsed=true;
-  if(matches(body.guess,movies[r.deck[r.round]])){p.solved=true;p.solvedStage=s;p.solveMs=Math.max(0,now-(r.started+s*clueSeconds(r.settings)*1000));p.speedBonus=speedBonus(r,now);const points=(3-s)*100*(body.doubleDown?2:1)+p.speedBonus;p.gain+=points;p.score+=points;}else if(body.doubleDown){p.gain-=100;p.score-=100;}advance(r,now);
+  if(matches(body.guess,movies[r.deck[r.round]])){p.solved=true;p.solvedStage=clueIndex(r.settings,s);p.solveMs=Math.max(0,now-(r.started+s*clueSeconds(r.settings)*1000));p.speedBonus=speedBonus(r,now);const points=cluePoints(r.settings,s)*(body.doubleDown?2:1)+p.speedBonus;p.gain+=points;p.score+=points;}else if(body.doubleDown){p.gain-=100;p.score-=100;}advance(r,now);
  }else throw Error('Unknown action.');
 }
 export function view(r:Room,token:string,now=Date.now()){
  advance(r,now);const watcher=r.spectators?.find(p=>p.token===token),me=r.players.find(p=>p.token===token);if(!me&&!watcher)throw Error('Player session not found.');const s=stage(r,now);const reveal=r.status==='reveal'||r.status==='finished';const m=movies[r.deck[r.round]];
  const settings={...defaultSettings,...r.settings};const pool=eligibleMovies(settings);const seen=new Set(r.seen??r.deck);
  const winningNames=r.status==='finished'?(r.result?.winners??winners(r)):[];
- return {practice:!!r.practice,totalRounds:r.status==='lobby'?roundCount(settings):(r.deck.length||roundCount(settings)),notice:r.notice??null,settings,teamOptions:teams.map(t=>({...t,name:r.teamNames?.[t.id]??t.name})),clueSeconds:clueSeconds(settings),matchMode:r.matchMode??settings.mode,teams:r.status==='finished'&&r.result?r.result.teams:teamScores(r,r.status==='playing'),poolOptions:collections.flatMap(c=>eras.map(e=>({collection:c.value,era:e.value,count:eligibleMovies({collection:c.value,era:e.value}).length}))),answerYear:reveal?m?.year:null,answerLanguage:reveal?m?.language:null,totalMovieCount:activeMovieIds.length,movieCount:pool.length,rotationCycle:r.cycle??1,unseenCount:pool.filter(i=>!seen.has(i)).length,report:r.status==='finished'&&me?.id===r.host?Object.values(r.stats??{}):[],recap:r.status==='finished'?(r.recap??[]):[],roundSpotlight:roundSpotlight(r),roundGuesses:reveal?r.players.map(p=>({id:p.id,name:p.name,guesses:[...(p.guesses??[])],solved:p.solved})):[],comeback:r.status==='finished'?comebackHighlight(r.recap,winningNames):null,fastest:r.status==='finished'?fastestSolve(r.recap):null,code:r.code,status:r.status,round:r.round,roundStarted:r.started,stage:s,serverNow:now,deadline:r.started+(s+1)*clueSeconds(settings)*1000,roundEnd:r.started+clueSeconds(settings)*3000,host:r.host,version:r.version,me:{spectator:!!watcher,ready:!!me?.ready,doubleUsed:!!me?.doubleUsed,speedBonus:me?.speedBonus??0,team:me?.team,id:(me??watcher)!.id,solved:me?.solved??false,attempt:me?.attempt??-1,gain:me?.gain??0},spectators:(r.spectators??[]).map(p=>({id:p.id,name:p.name})),clues:r.status==='lobby'||(r.status==='playing'&&now<r.started)?[]:m.clues.slice(0,reveal?3:s+1),answer:reveal?m.title:null,players:r.players.map(p=>({ready:!!p.ready,team:p.team,id:p.id,name:p.name,score:reveal||r.status==='lobby'?p.score:p.score-p.gain,gain:reveal?p.gain:0})),winners:winningNames};
+ const waitingToOpen=r.status==='playing'&&now<r.started;
+ const visibleClues=waitingToOpen||r.status==='lobby'?[]:settings.format==='lightning'?[m.clues[1]]:m.clues.slice(0,reveal?3:s+1);
+ return {practice:!!r.practice,totalRounds:r.status==='lobby'?roundCount(settings):(r.deck.length||roundCount(settings)),seriesMatches:r.seriesMatches??0,notice:r.notice??null,settings,teamOptions:teams.map(t=>({...t,name:r.teamNames?.[t.id]??t.name})),clueSeconds:clueSeconds(settings),matchMode:r.matchMode??settings.mode,teams:r.status==='finished'&&r.result?r.result.teams:teamScores(r,r.status==='playing'),poolOptions:collections.flatMap(c=>eras.map(e=>({collection:c.value,era:e.value,count:eligibleMovies({collection:c.value,era:e.value}).length}))),answerYear:reveal?m?.year:null,answerLanguage:reveal?m?.language:null,totalMovieCount:activeMovieIds.length,movieCount:pool.length,rotationCycle:r.cycle??1,unseenCount:pool.filter(i=>!seen.has(i)).length,report:r.status==='finished'&&me?.id===r.host?Object.values(r.stats??{}):[],recap:r.status==='finished'?(r.recap??[]):[],roundSpotlight:roundSpotlight(r),roundGuesses:reveal?r.players.map(p=>({id:p.id,name:p.name,guesses:[...(p.guesses??[])],solved:p.solved})):[],reactions:r.status==='reveal'?revealReactionCounts(Object.values(r.reactions??{})):[],comeback:r.status==='finished'?comebackHighlight(r.recap,winningNames):null,fastest:r.status==='finished'?fastestSolve(r.recap):null,code:r.code,status:r.status,round:r.round,roundStarted:r.started,stage:s,serverNow:now,deadline:r.started+(s+1)*clueSeconds(settings)*1000,roundEnd:r.started+clueSeconds(settings)*clueCount(settings)*1000,host:r.host,version:r.version,me:{spectator:!!watcher,ready:!!me?.ready,reaction:r.status==='reveal'&&me?r.reactions?.[me.id]??null:null,doubleUsed:!!me?.doubleUsed,speedBonus:me?.speedBonus??0,guesses:watcher?[]:[...(me?.guesses??[])],team:me?.team,id:(me??watcher)!.id,solved:me?.solved??false,attempt:me?.attempt??-1,gain:me?.gain??0},spectators:(r.spectators??[]).map(p=>({id:p.id,name:p.name})),clues:visibleClues,answer:reveal?m.title:null,players:r.players.map(p=>({ready:!!p.ready,seriesWins:r.seriesWins?.[p.id]??0,team:p.team,id:p.id,name:p.name,score:reveal||r.status==='lobby'?p.score:p.score-p.gain,gain:reveal?p.gain:0})),winners:winningNames};
 }
