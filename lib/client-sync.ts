@@ -9,10 +9,11 @@ export function errorAfterRecovery(recovered:boolean){return (message:string)=>r
 export function clueAnnouncement(stage:number,clue:string,format='classic'){
  return format==='lightning'?`Lightning clue, worth 100 points: ${clue}`:`Clue ${stage+1} of 3, worth ${(3-stage)*100} points: ${clue}`;
 }
-type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null;settings:GameSettings & {format?:string}};
+type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null;roundStarted?:number;serverNow?:number;settings:GameSettings & {format?:string}};
 export function roundAnnouncement(game:AnnouncedRound|null){
  if(!game)return '';
  const round=`Round ${game.round+1} of ${game.totalRounds}.`;
+ if(game.status==='playing'&&game.roundStarted!==undefined&&game.serverNow!==undefined&&game.roundStarted>game.serverNow)return `${round} Get ready. First clue in ${Math.ceil((game.roundStarted-game.serverNow)/1000)} seconds.`;
  if(game.status==='playing')return `${round} ${clueAnnouncement(game.stage,game.clues[game.stage]??'',game.settings.format)}`;
  if(game.status==='reveal'&&game.answer)return `${round} The movie was ${game.answer}.`;
  if(game.status==='finished')return 'Match complete. Final standings are ready.';

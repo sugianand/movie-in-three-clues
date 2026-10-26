@@ -185,3 +185,7 @@ The Vercel frontend forwards to an independently deployed backend. Client featur
 ## Ready-start safeguard
 
 Hosts get a final safety check if they try to start the first match or a rematch while anyone is still unready. The confirmation names those players and offers Wait for everyone or Start anyway, so readiness remains advisory without letting an accidental tap burn the opening clue timer. Solo Practice bypasses the confirmation.
+
+## Synchronized round countdown
+
+Multiplayer matches now open every round with a server-timed three-second countdown. All devices receive the same future start timestamp, clues remain server-hidden and guesses are rejected until it expires, and only then does the full clue timer begin. The host’s manual Next round and optional Auto Continue use the same countdown. Legacy clients that omit the opt-in field retain immediate starts, while Solo Practice stays instant. The countdown animation is disabled when reduced motion is preferred.

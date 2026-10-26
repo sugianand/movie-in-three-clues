@@ -346,3 +346,6 @@ main>header .brand .reel-brand-words{font-family:var(--font-display);font-size:2
 .lobby-ready{margin:22px 0;background:#10182788}.lobby-ready .rematch-ready-note{text-align:center}
 
 .ready-start-dialog .rematch-ready-people{margin:0}.ready-start-dialog .rematch-ready-people span{border-color:#ffbf69;color:var(--foreground)}
+
+/* Give every multiplayer screen the same calm beat before a clue appears. */
+.round-countdown{min-height:430px;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center}.round-countdown>span{color:var(--ring);font-size:12px;font-weight:800;letter-spacing:.14em}.round-countdown>strong{font-family:var(--font-display);font-size:clamp(96px,24vw,180px);line-height:.78;color:var(--foreground);text-shadow:0 0 42px color-mix(in srgb,var(--brand-accent) 58%,transparent)}.round-countdown h2{margin:14px 0 0;font-size:clamp(24px,5vw,38px)}.round-countdown p{max-width:360px;margin:0;color:var(--muted-foreground)}@media(max-width:600px){.round-countdown{min-height:360px}.round-countdown>strong{font-size:112px}}@media(prefers-reduced-motion:no-preference){.round-countdown>strong{animation:countdown-pulse .8s ease-out infinite}}@keyframes countdown-pulse{0%{transform:scale(.88);opacity:.55}35%{transform:scale(1);opacity:1}100%{transform:scale(1.04);opacity:.9}}
