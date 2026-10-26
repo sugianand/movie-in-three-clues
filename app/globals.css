@@ -344,3 +344,5 @@ main>header .brand .reel-brand-words{font-family:var(--font-display);font-size:2
 .team-balance{display:flex;align-items:center;gap:12px;flex-basis:100%;padding:14px;border:1px solid #535d6b;border-radius:12px;background:#191c20}.team-balance p{margin:0;line-height:1.45}.team-balance button{flex-shrink:0}@media(max-width:600px){.team-balance{align-items:stretch;flex-direction:column}.team-balance button{width:100%}}
 
 .lobby-ready{margin:22px 0;background:#10182788}.lobby-ready .rematch-ready-note{text-align:center}
+
+.ready-start-dialog .rematch-ready-people{margin:0}.ready-start-dialog .rematch-ready-people span{border-color:#ffbf69;color:var(--foreground)}

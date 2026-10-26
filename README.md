@@ -180,3 +180,8 @@ Auto Continue pauses when the host switches apps or hides the tab, then gives a 
 Before pushing a frontend change, install the locked Vercel dependencies and run `npm run typecheck --prefix vercel` followed by `npm run build --prefix vercel`. The root build targets Cloudflare and is not a substitute for this Next.js build. Start new work from current `main`; branches created before the Vercel adapter was added must incorporate it before deploying. Do not redeploy an old failed SHA expecting it to include newer fixes.
 
 The Vercel frontend forwards to an independently deployed backend. Client features must tolerate fields absent from that backend: Classic is the default when `settings.format` is absent, and Movie Night Passport uses the final-round start timestamp when no series counter is supplied. Publishing a preview does not update the Cloudflare backend.
+
+
+## Ready-start safeguard
+
+Hosts get a final safety check if they try to start the first match or a rematch while anyone is still unready. The confirmation names those players and offers Wait for everyone or Start anyway, so readiness remains advisory without letting an accidental tap burn the opening clue timer. Solo Practice bypasses the confirmation.
