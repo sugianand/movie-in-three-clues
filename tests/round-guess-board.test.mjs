@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {act,movies,newRoom,player,view} from '../lib/game.ts';
+const host=player('Host'),guest=player('Guest'),room=newRoom('GUESSES',host,0);room.players.push(guest);
+act(room,host.token,{action:'start'},1000);const answer=movies[room.deck[0]].title;
+act(room,host.token,{action:'guess',round:0,stage:0,roundStarted:room.started,guess:'  A memorable near miss  '},1001);
+assert.deepEqual(view(room,host.token,1002).roundGuesses,[]);
+act(room,guest.token,{action:'guess',round:0,stage:0,roundStarted:room.started,guess:answer},1003);
+act(room,host.token,{action:'guess',round:0,stage:1,roundStarted:room.started,guess:answer},16001);
+const revealed=view(room,guest.token,16002);assert.equal(revealed.status,'reveal');
+assert.deepEqual(revealed.roundGuesses,[{id:host.id,name:'Host',guesses:['A memorable near miss',answer],solved:true},{id:guest.id,name:'Guest',guesses:[answer],solved:true}]);
+act(room,host.token,{action:'next',round:0,roundStarted:room.started},17000);
+assert.deepEqual(room.players.map(p=>p.guesses),[[],[]]);
+const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8'),css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
+assert.match(page,/THE GUESS BOARD/);assert.match(page,/Guesses stay private until the answer is revealed/);assert.match(css,/\.guess-board/);
+console.log('PASS: the reveal Guess Board is spoiler-safe, trims entries and resets each round.');
