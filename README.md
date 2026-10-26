@@ -189,3 +189,7 @@ Hosts get a final safety check if they try to start the first match or a rematch
 ## Synchronized round countdown
 
 Multiplayer matches now open every round with a server-timed three-second countdown. All devices receive the same future start timestamp, clues remain server-hidden and guesses are rejected until it expires, and only then does the full clue timer begin. The host’s manual Next round and optional Auto Continue use the same countdown. Legacy clients that omit the opt-in field retain immediate starts, while Solo Practice stays instant. The countdown animation is disabled when reduced motion is preferred.
+
+## Reveal Guess Board
+
+After each multiplayer answer reveal, the room can compare every submitted title in a responsive Guess Board. Near misses stay private while the clue timer is active, correct entries are marked only after the answer appears, and each round starts with a clean board. Spectators receive the same reveal without gaining access to in-progress guesses.
