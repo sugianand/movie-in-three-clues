@@ -415,7 +415,7 @@ main>header .header-actions{gap:18px}
 @media(prefers-reduced-motion:reduce){.cinema-backdrop-reel{animation:none}}
 
 /* Let the moving poster wall show through the landing content. */
-:root .landing .intro{background:transparent;border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
-:root :is(.practice-launch,.practice-challenge,.practice-progress){background:rgba(8,12,20,.32);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:#ffffff24}
+:root .landing .intro{background:transparent;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+:root :is(.practice-launch,.practice-challenge,.practice-progress){background:rgba(8,12,20,.32);box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:#ffffff24}
 :root .landing .score-guide>div,:root .landing .score-guide>div:first-child{background:rgba(8,12,20,.2);border-color:#ffffff26}
 :root :is(.landing .intro-line,.landing .intro-description,.landing .landing-note,.landing .micro,.practice-launch h2,.practice-launch p){color:#f0f3fa;text-shadow:0 2px 8px #000,0 0 20px #0009}
