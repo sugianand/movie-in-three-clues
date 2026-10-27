@@ -145,3 +145,5 @@ Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build 
 ## Ready for the next round
 
 During every answer reveal, seated players can signal that they are ready to continue. The room sees a live ready count and each player’s status, while the host keeps final control of when to advance. Signals are tied to one round, reject stale updates, exclude spectators, and clear before the next movie.
+
+When the host has opted into Auto Continue, a unanimous ready check shortens the remaining reveal window to a fresh three-second countdown. Removing a ready signal restores the normal eight-second window, background tabs cannot catch up and skip the reveal, and manual host controls remain available throughout.
