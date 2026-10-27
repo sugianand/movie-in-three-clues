@@ -197,3 +197,7 @@ After each multiplayer answer reveal, the room can compare every submitted title
 ## Private Guess Tray
 
 During a multiplayer round, each active player gets a compact private tray containing only their own submitted titles. The server rejects punctuation- or spacing-equivalent repeat guesses on later clues without consuming the new attempt. Other players and spectators receive no private entries; the shared Guess Board remains locked until the answer reveal.
+
+## Ready for the next round
+
+During every answer reveal, seated players can signal that they are ready to continue. The room sees a live ready count and each player’s status, while the host keeps final control of when to advance. Signals are tied to one round, reject stale updates, exclude spectators, and clear before the next countdown.
