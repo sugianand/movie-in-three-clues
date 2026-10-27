@@ -141,3 +141,7 @@ Import this repository into Vercel with Root Directory `vercel`, enable access t
 Vercel serves the frontend and same-origin API forwarding functions. Room state, scoring, timers, and Daily Premiere remain on the existing Cloudflare/D1 deployment at `movie-in-three-clues.sugianand89.chatgpt.site`; that backend must stay deployed. This is not a migration of D1 into Vercel. Forwarding checks the browser origin, limits request size, uses a fixed upstream destination, disables caching, and times out after 15 seconds. No credentials or API keys are required.
 
 Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build --prefix vercel`.
+
+## Ready for the next round
+
+During every answer reveal, seated players can signal that they are ready to continue. The room sees a live ready count and each player’s status, while the host keeps final control of when to advance. Signals are tied to one round, reject stale updates, exclude spectators, and clear before the next movie.
