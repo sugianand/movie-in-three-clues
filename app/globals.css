@@ -76,7 +76,7 @@
 /* One full poster-width per lap: continuous leftward motion, no reversal. */
 main{position:relative;isolation:isolate}
 .cinema-backdrop{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#0c0e10}
-.cinema-backdrop-reel{--reel-width:max(198vh,1440px);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 70s linear infinite;will-change:transform}
+.cinema-backdrop-reel{--panel-width:max(198vh,1440px);--reel-width:calc(var(--panel-width) * 2);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 70s linear infinite;will-change:transform}
 .cinema-backdrop-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0c0e1070 0%,#0c0e1030 30%,#0c0e10bb 85%,#0c0e10e8 100%),radial-gradient(ellipse at center,#11131599 10%,#11131566 48%,#11131522 100%)}
 .cinema-backdrop-subdued .cinema-backdrop-reel{opacity:.26}
 .landing .intro{background:linear-gradient(135deg,#1b1e2370,#10121440);border-color:#98a0ab50;box-shadow:0 24px 90px #0005}
@@ -419,3 +419,10 @@ main>header .header-actions{gap:18px}
 :root :is(.practice-launch,.practice-challenge,.practice-progress){background:rgba(8,12,20,.32);box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-color:#ffffff24}
 :root .landing .score-guide>div,:root .landing .score-guide>div:first-child{background:rgba(8,12,20,.2);border-color:#ffffff26}
 :root :is(.landing .intro-line,.landing .intro-description,.landing .landing-note,.landing .micro,.practice-launch h2,.practice-launch p){color:#f0f3fa;text-shadow:0 2px 8px #000,0 0 20px #0009}
+
+/* Two panels per seamless lap: expanded movie selection at 3x the previous speed. */
+.cinema-backdrop-reel{display:flex;width:calc(var(--reel-width) * 2);background-image:none}
+.cinema-poster-panel{flex:0 0 var(--panel-width);width:var(--panel-width);height:100%;overflow:hidden}
+.cinema-poster-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;padding:8px;background:#0c0e10}
+.cinema-poster-grid img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}
+.cinema-poster-original{background:url('/movie-poster-wall.png') left center/var(--panel-width) auto repeat-x}
