@@ -153,3 +153,5 @@ When the host has opted into Auto Continue, a unanimous ready check shortens the
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
 
 Reaching three crowns the current leader or tied leaders. The host can confirm a fresh series without clearing movie rotation, teams, settings, or the completed match.
+
+A completed first-to-three series now closes rematches at both the UI and server boundary. The host must confirm a fresh series before another match can start, preventing the championship score from running past its finish line while preserving room history and settings.

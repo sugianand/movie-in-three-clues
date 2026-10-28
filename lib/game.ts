@@ -74,6 +74,7 @@ function finishMatch(r:Room){
  const winningIds=winningPlayerIds(r);r.status='finished';r.result={winners:winners(r),teams:teamScores(r)};r.seriesMatches=(r.seriesMatches??0)+1;r.seriesWins??={};
  for(const id of winningIds)r.seriesWins[id]=(r.seriesWins[id]??0)+1;
 }
+function hasSeriesChampion(r:Room){return Math.max(0,...Object.values(r.seriesWins??{}))>=seriesGoal;}
 export function comebackHighlight(recap:RoundRecap[]|undefined,winningNames:string[]){
  const first=recap?.[0];if(!first||!winningNames.length)return null;
  const ranked=[...first.totals].sort((a,b)=>b.score-a.score);
@@ -117,6 +118,7 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if((body.action==='guess'||body.action==='next'||body.action==='round-ready')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
  if(body.action==='ready'){
   if(r.status!=='finished')throw Error('Rematch readiness opens after the final reveal.');
+  if(hasSeriesChampion(r))throw Error('This Movie Night Series is complete. Start a new series before readying up.');
   if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
   p.ready=body.ready;return;
  }
@@ -154,7 +156,9 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if(body.action==='start'||body.action==='next'||body.action==='replay'){
   if(p.id!==r.host)throw Error('Only the host can do that.');
   if(body.action==='start'||body.action==='replay'){
-   if(r.status!==(body.action==='start'?'lobby':'finished'))throw Error('The game has already moved on.');promoteSpectators(r);if(r.players.length<2)throw Error('At least two players are needed.');
+   if(r.status!==(body.action==='start'?'lobby':'finished'))throw Error('The game has already moved on.');
+   if(body.action==='replay'&&hasSeriesChampion(r))throw Error('Start a new Movie Night Series before playing another match.');
+   promoteSpectators(r);if(r.players.length<2)throw Error('At least two players are needed.');
    if(r.settings?.mode==='teams'){assignTeams(r);const counts=teamScores(r).map(t=>t.members);if(!counts[0]||counts[0]!==counts[1])throw Error('Team play needs two equally sized teams (2, 4, 6 or 8 players). Choose your teams before starting.');}
    r.matchMode=r.settings?.mode??'individual';delete r.notice;delete r.result;r.recap=[];chooseDeck(r);r.round=0;r.players.forEach(p=>{p.score=0;p.doubleUsed=false;p.ready=false;});
   }else {if(r.status!=='reveal'||body.round!==r.round)throw Error('Wait for the round to finish.');if(r.round===r.deck.length-1){finishMatch(r);return;}r.round++;}
