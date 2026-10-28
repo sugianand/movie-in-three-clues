@@ -21,11 +21,14 @@ act(room,host.token,{action:'replay'},4000);finish(room,host,[200,200]);
 state=view(room,host.token,5000);assert.equal(state.seriesMatches,3);assert.deepEqual(state.players.map(p=>p.seriesWins),[2,2],'ties award every winner');
 
 room.seriesMatches=5;room.seriesWins={[host.id]:3,[guest.id]:2};room.seen=[1,2,3];room.players.forEach(p=>p.ready=true);
+assert.throws(()=>act(room,host.token,{action:'replay'},5001),/new Movie Night Series/);
+assert.throws(()=>act(room,host.token,{action:'ready',ready:true},5001),/series is complete/i);
 assert.throws(()=>act(room,guest.token,{action:'reset-series'},5001),/Only the host/);
 act(room,host.token,{action:'reset-series'},5002);state=view(room,guest.token,5003);
 assert.equal(state.seriesMatches,0);assert.deepEqual(state.players.map(p=>p.seriesWins),[0,0]);assert(state.players.every(p=>!p.ready));assert.deepEqual(room.seen,[1,2,3]);assert.equal(room.status,'finished');
 
-room.status='playing';assert.throws(()=>act(room,host.token,{action:'reset-series'},5004),/before or between games/);
+act(room,host.token,{action:'replay'},5004);assert.equal(room.status,'playing','replay unlocks after a fresh series');
+assert.throws(()=>act(room,host.token,{action:'reset-series'},5005),/before or between games/);
 const page=fs.readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8'),css=fs.readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
-assert.match(page,/SERIES CHAMPION/);assert.match(page,/Start a new Movie Night Series/);assert.match(css,/\.series-champion/);
+assert.match(page,/SERIES CHAMPION/);assert.match(page,/Start a new Movie Night Series/);assert.match(page,/Series complete · start a new series/);assert.match(css,/\.series-champion/);
 console.log('PASS: first-to-three championships persist, crown winners, reset safely, and preserve room history.');
