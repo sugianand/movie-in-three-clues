@@ -147,3 +147,9 @@ Local Vercel build: `npm ci --prefix vercel --workspaces=false && npm run build 
 During every answer reveal, seated players can signal that they are ready to continue. The room sees a live ready count and each player’s status, while the host keeps final control of when to advance. Signals are tied to one round, reject stale updates, exclude spectators, and clear before the next movie.
 
 When the host has opted into Auto Continue, a unanimous ready check shortens the remaining reveal window to a fresh three-second countdown. Removing a ready signal restores the normal eight-second window, background tabs cannot catch up and skip the reveal, and manual host controls remain available throughout.
+
+## Movie Night Series Championship
+
+Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
+
+Reaching three crowns the current leader or tied leaders. The host can confirm a fresh series without clearing movie rotation, teams, settings, or the completed match.
