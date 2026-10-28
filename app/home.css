@@ -90,3 +90,23 @@ header.tc-header{position:sticky;top:0;z-index:60;height:auto;display:block;padd
 .entry-tab-list [role=tab]{flex:1 1 0;display:inline-flex;align-items:center;justify-content:center;padding:0 14px;border:0;border-radius:8px;cursor:pointer;white-space:nowrap}
 .room-tabs [role=tab]{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 16px;border:0;border-radius:8px;cursor:pointer}
 .entry-tab-list [role=tab]:not([data-state=active]):hover,.room-tabs [role=tab]:not([data-state=active]):hover{background:var(--tc-soft);color:var(--foreground)}
+
+/* Moving poster wall. Overrides the older single-strip reel rules in globals.css. */
+.cinema-backdrop .tc-wall{--poster-h:clamp(170px,30vh,300px);--poster-w:calc(var(--poster-h) * 2 / 3);--gap:clamp(10px,1.4vh,16px);
+ position:absolute;inset:auto;top:50%;left:50%;width:max(150vw,1700px);height:auto;display:flex;flex-direction:column;gap:var(--gap);
+ transform:translate(-50%,-50%) rotate(-7deg);background:none;animation:none;will-change:auto;opacity:.78}
+.tc-wall-row{display:flex;width:max-content;gap:var(--gap);will-change:transform;animation:tc-wall-left 64s linear infinite}
+.tc-wall-row-2{animation-name:tc-wall-right;animation-duration:78s;margin-left:calc(var(--poster-w) * -.5)}
+.tc-wall-row-3{animation-duration:56s;margin-left:calc(var(--poster-w) * -.25)}
+.tc-wall-row-4{animation-name:tc-wall-right;animation-duration:70s;margin-left:calc(var(--poster-w) * -.75)}
+.tc-wall-set{display:flex;gap:var(--gap)}
+.tc-wall-set img{flex:none;width:var(--poster-w);height:var(--poster-h);object-fit:cover;border-radius:10px;display:block;box-shadow:0 12px 30px #000a;user-select:none}
+/* Each row holds three copies; one copy plus one gap is a third of (row + gap), so moving by
+   that much loops cleanly. */
+@keyframes tc-wall-left{from{transform:translate3d(0,0,0)}to{transform:translate3d(calc(-100% / 3 - var(--gap) / 3),0,0)}}
+@keyframes tc-wall-right{from{transform:translate3d(calc(-100% / 3 - var(--gap) / 3),0,0)}to{transform:translate3d(0,0,0)}}
+/* Darker edges and centre glow keep the title and buttons readable over the posters. */
+.cinema-backdrop .cinema-backdrop-shade{background:radial-gradient(ellipse 70% 60% at 50% 45%,#0b0d12b3,#0b0d1266 55%,#0b0d1222 100%),linear-gradient(180deg,#0b0d12aa 0%,#0b0d1200 22%,#0b0d1200 70%,#0b0d12f0 100%)}
+.cinema-backdrop-subdued .tc-wall{opacity:.24}
+@media (max-width:650px){.cinema-backdrop .tc-wall{--poster-h:clamp(150px,25vh,220px);width:260vw;opacity:.7}}
+@media (prefers-reduced-motion:reduce){.tc-wall-row{animation:none}}
