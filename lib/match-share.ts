@@ -1,4 +1,9 @@
-export type ShareMatch={status:string;totalRounds:number;matchMode:string;me:{id:string;spectator?:boolean};players:{id:string;name:string;score:number}[];recap?:{solvers:{name:string}[]}[]};
+export type ShareMatch={status:string;totalRounds:number;matchMode:string;seriesGoal?:number;seriesMatches?:number;me:{id:string;spectator?:boolean};players:{id:string;name:string;score:number;seriesWins?:number}[];recap?:{solvers:{name:string}[]}[]};
+export function seriesShareStatus(game:ShareMatch){
+ const player=game.players.find(p=>p.id===game.me.id),goal=game.seriesGoal,matches=game.seriesMatches,wins=player?.seriesWins;
+ if(typeof goal!=='number'||!Number.isInteger(goal)||goal<1||typeof matches!=='number'||!Number.isInteger(matches)||matches<0||typeof wins!=='number'||!Number.isInteger(wins)||wins<0)return null;
+ return {champion:wins>=goal,line:`${wins>=goal?'Series champion':'Movie Night Series'}: ${wins}/${goal} wins · ${matches} ${matches===1?'match':'matches'}`};
+}
 export function matchShareText(game:ShareMatch,href:string){
  if(game.status!=='finished'||game.me.spectator)return null;
  const player=game.players.find(p=>p.id===game.me.id);if(!player)return null;
@@ -9,6 +14,7 @@ export function matchShareText(game:ShareMatch,href:string){
   const solved=game.recap.filter(r=>r.solvers.some(s=>s.name===player.name)).length;
   lines.push(`Movies solved: ${solved}/${game.totalRounds}`);
  }
+ const series=seriesShareStatus(game);if(series)lines.push(series.line);
  lines.push('Think you can beat me?',`${current.origin}/`);
  return lines.join('\n');
 }
