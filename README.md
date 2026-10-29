@@ -155,3 +155,5 @@ Completed multiplayer matches now feed a room-level, first-to-three series table
 Reaching three crowns the current leader or tied leaders. The host can confirm a fresh series without clearing movie rotation, teams, settings, or the completed match.
 
 A completed first-to-three series now closes rematches at both the UI and server boundary. The host must confirm a fresh series before another match can start, preventing the championship score from running past its finish line while preserving room history and settings.
+
+The Series Match Reel records each completed match in the current race and shows its winner or shared winners to players and spectators. Team matches snapshot the winning team name at the time of the match. Starting a fresh series clears the reel while preserving the defending champion, movie rotation, teams and settings; legacy rooms begin with an empty reel.
