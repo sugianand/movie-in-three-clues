@@ -76,7 +76,7 @@
 /* One full poster-width per lap: continuous leftward motion, no reversal. */
 main{position:relative;isolation:isolate}
 .cinema-backdrop{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:#0c0e10}
-.cinema-backdrop-reel{--panel-width:max(198vh,1440px);--reel-width:calc(var(--panel-width) * 2);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 70s linear infinite;will-change:transform}
+.cinema-backdrop-reel{--panel-width:max(198vh,1440px);--reel-width:calc(var(--panel-width) * 2);position:absolute;top:-12vh;bottom:-12vh;left:0;width:calc(100% + var(--reel-width));background-image:url('/movie-poster-wall.png');background-size:var(--reel-width) auto;background-repeat:repeat-x;background-position:left center;opacity:.9;animation:cinema-scroll 150s linear infinite;will-change:transform}
 .cinema-backdrop-shade{position:absolute;inset:0;background:linear-gradient(180deg,#0c0e1070 0%,#0c0e1030 30%,#0c0e10bb 85%,#0c0e10e8 100%),radial-gradient(ellipse at center,#11131599 10%,#11131566 48%,#11131522 100%)}
 .cinema-backdrop-subdued .cinema-backdrop-reel{opacity:.26}
 .landing .intro{background:linear-gradient(135deg,#1b1e2370,#10121440);border-color:#98a0ab50;box-shadow:0 24px 90px #0005}
@@ -365,7 +365,7 @@ main{isolation:isolate}
 /* Modern cinema: consistent type, quieter surfaces, and a faster seamless reel. */
 :root{--font-body:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;--font-display:var(--font-body)}
 body{font-family:var(--font-body);-webkit-font-smoothing:antialiased}
-.cinema-backdrop-reel{animation-duration:50s}
+.cinema-backdrop-reel{animation-duration:150s}
 main{max-width:1280px;padding-inline:clamp(20px,4vw,52px)}
 main>header{min-height:82px;background:color-mix(in srgb,var(--background) 86%,transparent);backdrop-filter:blur(20px);border-bottom:1px solid #ffffff14;box-shadow:none;gap:16px}
 main>header .brand .reel-brand-words{font-family:var(--font-body);font-size:18px;line-height:1.05;letter-spacing:-.035em;gap:1px;font-weight:850;transform:none}
