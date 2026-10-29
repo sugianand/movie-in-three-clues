@@ -74,7 +74,11 @@ function finishMatch(r:Room){
  const winningIds=winningPlayerIds(r);r.status='finished';r.result={winners:winners(r),teams:teamScores(r)};r.seriesMatches=(r.seriesMatches??0)+1;r.seriesWins??={};
  for(const id of winningIds)r.seriesWins[id]=(r.seriesWins[id]??0)+1;
 }
-function hasSeriesChampion(r:Room){return Math.max(0,...Object.values(r.seriesWins??{}))>=seriesGoal;}\nfunction seriesChampionNames(r:Room){\n const high=Math.max(0,...Object.values(r.seriesWins??{}));\n return high<seriesGoal?[]:r.players.filter(player=>(r.seriesWins?.[player.id]??0)===high).map(player=>player.name);\n}
+function hasSeriesChampion(r:Room){return Math.max(0,...Object.values(r.seriesWins??{}))>=seriesGoal;}
+function seriesChampionNames(r:Room){
+ const high=Math.max(0,...Object.values(r.seriesWins??{}));
+ return high<seriesGoal?[]:r.players.filter(player=>(r.seriesWins?.[player.id]??0)===high).map(player=>player.name);
+}
 export function comebackHighlight(recap:RoundRecap[]|undefined,winningNames:string[]){
  const first=recap?.[0];if(!first||!winningNames.length)return null;
  const ranked=[...first.totals].sort((a,b)=>b.score-a.score);
@@ -125,7 +129,8 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if(body.action==='reset-series'){
   if(p.id!==r.host)throw Error('Only the host can start a new series.');
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('A new series can only start before or between games.');
-  const champions=seriesChampionNames(r);if(champions.length)r.defendingChampions=champions;\n  r.seriesMatches=0;r.seriesWins={};r.players.forEach(player=>player.ready=false);
+  const champions=seriesChampionNames(r);if(champions.length)r.defendingChampions=champions;
+  r.seriesMatches=0;r.seriesWins={};r.players.forEach(player=>player.ready=false);
   r.notice=`${p.name} started a new Movie Night Series.`;return;
  }
  if(body.action==='round-ready'){
