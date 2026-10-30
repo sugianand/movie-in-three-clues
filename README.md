@@ -165,3 +165,9 @@ When the first-to-three race ends, Series Honors celebrate more than the crown: 
 Repeat champions now build a Dynasty Streak. Winning with the same champion or tied champion set increments the consecutive-title count on the championship and defending-crown banners; a new winner starts a fresh run. Older rooms with an existing defending champion safely begin at one title.
 
 Completed championships now survive roster changes. The server snapshots the winning name or tied names when the crown is clinched, so a champion who leaves cannot strand the room or erase the result. The remaining host still sees the champion card, cannot accidentally start another match from the lobby, and can reset the race while carrying the departed winner into the defending-crown banner.
+
+## Movie Night Passport
+
+Finished multiplayer matches now build a private, browser-local Movie Night Passport with match and win totals, solves, first-clue solves, win streaks, personal bests, perfect matches, Series titles, and the best Dynasty streak. Eight progress stamps include Crown Collector and Dynasty. No account or server-side profile is required, spectators are excluded, and older saved values migrate safely.
+
+Match identity uses the server's round timestamp rather than the within-series match number. Starting another first-to-three race in the same room therefore cannot cause its first match or championship to be skipped as a duplicate.
