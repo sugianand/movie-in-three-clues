@@ -161,3 +161,5 @@ The Series Match Reel records each completed match in the current race and shows
 The reel also carries a live Series MVP race. Every player's final match score is added to their first-to-three series total, including personal contributions in team games and Double Down penalties. Tied points leaders share the spotlight. Starting a new series resets the points race with the win table, while legacy rooms begin at zero.
 
 When the first-to-three race ends, Series Honors celebrate more than the crown: the points MVP, the player or tied players with the most first-clue solves, and the fastest solve across every match. The honors reset with a new series and safely default for rooms created before the feature.
+
+Repeat champions now build a Dynasty Streak. Winning with the same champion or tied champion set increments the consecutive-title count on the championship and defending-crown banners; a new winner starts a fresh run. Older rooms with an existing defending champion safely begin at one title.
