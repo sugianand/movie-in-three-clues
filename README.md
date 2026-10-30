@@ -159,3 +159,5 @@ A completed first-to-three series now closes rematches at both the UI and server
 The Series Match Reel records each completed match in the current race and shows its winner or shared winners to players and spectators. Team matches snapshot the winning team name at the time of the match. Starting a fresh series clears the reel while preserving the defending champion, movie rotation, teams and settings; legacy rooms begin with an empty reel.
 
 The reel also carries a live Series MVP race. Every player's final match score is added to their first-to-three series total, including personal contributions in team games and Double Down penalties. Tied points leaders share the spotlight. Starting a new series resets the points race with the win table, while legacy rooms begin at zero.
+
+When the first-to-three race ends, Series Honors celebrate more than the crown: the points MVP, the player or tied players with the most first-clue solves, and the fastest solve across every match. The honors reset with a new series and safely default for rooms created before the feature.
