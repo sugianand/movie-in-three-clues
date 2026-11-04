@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {emptyMovieNightPassport,parseMovieNightPassport,passportAchievements,recordMovieNight} from '../lib/movie-night-passport.ts';
 
 const solo={status:'finished',code:'ABC234',seriesMatches:1,roundStarted:1000,totalRounds:3,matchMode:'individual',winners:['Sugi'],me:{id:'p1',spectator:false},players:[{id:'p1',name:'Sugi',score:700,seriesWins:1},{id:'p2',name:'Guest',score:300,seriesWins:0}],teams:[],recap:[
@@ -23,4 +24,8 @@ stamps=passportAchievements(profile);assert(stamps.find(stamp=>stamp.id==='crown
 const nextSeries={...solo,seriesMatches:1,roundStarted:5000,winners:['Guest'],players:[{...solo.players[0],seriesWins:0}],recap:[]};
 assert.equal(recordMovieNight(profile,nextSeries).matches,5,'new series match one in the same room must not collide with the old series');
 assert.deepEqual(parseMovieNightPassport({matches:-4,wins:'x',fastestMs:-2,recorded:['ok','ok',7]}),{matches:0,wins:0,solves:0,firstClueSolves:0,perfectMatches:0,seriesTitles:0,bestTitleStreak:0,currentStreak:0,bestStreak:0,bestScore:0,fastestMs:null,recorded:['ok']});
+const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
+const resultCard=readFileSync(new URL('../components/multiplayer-result-card.tsx',import.meta.url),'utf8');
+assert.match(page,/game\?\.status==='finished'&&!game\.me\.spectator&&<MovieNightPassport result=\{game\}/,'the Passport must record the championship-clinching match');
+assert.doesNotMatch(resultCard,/<MovieNightPassport/,'Passport recording must not depend on the result-card panel or an unfinished Series');
 console.log('PASS: Movie Night Passport tracks matches, Series crowns and Dynasty streaks without cross-series collisions.');
