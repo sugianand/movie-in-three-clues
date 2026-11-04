@@ -27,5 +27,6 @@ assert.deepEqual(parseMovieNightPassport({matches:-4,wins:'x',fastestMs:-2,recor
 const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
 const resultCard=readFileSync(new URL('../components/multiplayer-result-card.tsx',import.meta.url),'utf8');
 assert.match(page,/game\?\.status==='finished'&&!game\.me\.spectator&&<MovieNightPassport result=\{game\}/,'the Passport must record the championship-clinching match');
+assert.match(page,/!session&&entryStep==='landing'&&<MovieNightPassport\/>/,'returning players must be able to see their saved Passport from the landing page');
 assert.doesNotMatch(resultCard,/<MovieNightPassport/,'Passport recording must not depend on the result-card panel or an unfinished Series');
 console.log('PASS: Movie Night Passport tracks matches, Series crowns and Dynasty streaks without cross-series collisions.');
