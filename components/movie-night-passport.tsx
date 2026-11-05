@@ -1,16 +1,17 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {Award,Check,Copy,Crown,Flame,LockKeyhole,Share2,Sparkles,Timer,Trophy} from 'lucide-react';
-import {emptyMovieNightPassport,movieNightPassportKey,newlyUnlockedPassportStamps,parseMovieNightPassport,passportAchievements,passportShareText,recordMovieNight,shareMovieNightPassport,type MovieNightPassport,type PassportResult} from '@/lib/movie-night-passport';
+import {emptyMovieNightPassport,movieNightPassportKey,newPassportPersonalBests,newlyUnlockedPassportStamps,parseMovieNightPassport,passportAchievements,passportShareText,recordMovieNight,shareMovieNightPassport,type MovieNightPassport,type PassportResult} from '@/lib/movie-night-passport';
 
 export function MovieNightPassport({result}:Readonly<{result?:PassportResult|null}>) {
- const shareLock=useRef(false),[profile,setProfile]=useState<MovieNightPassport|null>(null),[newStamps,setNewStamps]=useState<string[]>([]),[sharing,setSharing]=useState(false),[shareNotice,setShareNotice]=useState(''),[shareFallback,setShareFallback]=useState('');
+ const shareLock=useRef(false),[profile,setProfile]=useState<MovieNightPassport|null>(null),[newStamps,setNewStamps]=useState<string[]>([]),[newBests,setNewBests]=useState<string[]>([]),[sharing,setSharing]=useState(false),[shareNotice,setShareNotice]=useState(''),[shareFallback,setShareFallback]=useState('');
  useEffect(()=>{
   let previous=emptyMovieNightPassport();
   try{previous=parseMovieNightPassport(JSON.parse(localStorage.getItem(movieNightPassportKey)||'null'));}catch{}
   let next=previous;
   if(result)next=recordMovieNight(next,result);
   setNewStamps(result?newlyUnlockedPassportStamps(previous,next).map(item=>item.title):[]);
+  setNewBests(result?newPassportPersonalBests(previous,next):[]);
   try{localStorage.setItem(movieNightPassportKey,JSON.stringify(next));}catch{}
   setProfile(next);
  },[result?.code,result?.roundStarted,result?.seriesMatches,result?.status]);
@@ -29,7 +30,7 @@ export function MovieNightPassport({result}:Readonly<{result?:PassportResult|nul
  const achievements=passportAchievements(profile),unlocked=achievements.filter(item=>item.unlocked).length;
  return <section className="movie-night-passport" aria-label="Your Movie Night Passport">
   <div className="passport-heading"><div><span>YOUR MOVIE NIGHT PASSPORT</span><h2>Your cinema record.</h2></div><Trophy size={28}/></div>
-  {newStamps.length>0&&<div className="passport-unlocked" role="status"><Sparkles size={22}/><div><span>{newStamps.length===1?'NEW PASSPORT STAMP':'NEW PASSPORT STAMPS'}</span><strong>{newStamps.join(' · ')}</strong><p>Added to your cinema record.</p></div></div>}
+  {(newStamps.length>0||newBests.length>0)&&<div className="passport-celebrations" role="status">{newStamps.length>0&&<div className="passport-unlocked"><Sparkles size={22}/><div><span>{newStamps.length===1?'NEW PASSPORT STAMP':'NEW PASSPORT STAMPS'}</span><strong>{newStamps.join(' · ')}</strong><p>Added to your cinema record.</p></div></div>}{newBests.length>0&&<div className="passport-personal-best"><Award size={22}/><div><span>{newBests.length===1?'NEW PERSONAL BEST':'NEW PERSONAL BESTS'}</span><strong>{newBests.join(' · ')}</strong><p>Your previous record was beaten.</p></div></div>}</div>}
   <div className="passport-stats"><div><b>{profile.matches}</b><span>Matches</span></div><div><b>{winRate}%</b><span>Win rate</span></div><div><b>{profile.solves}</b><span>Movies solved</span></div><div><b>{profile.firstClueSolves}</b><span>Clue 1 solves</span></div></div>
   <div className="passport-highlights"><span><Flame size={16}/><b>{profile.currentStreak}</b> win streak · best {profile.bestStreak}</span><span><Award size={16}/><b>{profile.bestScore}</b> best score</span><span><Timer size={16}/><b>{fastest}</b> fastest solve</span></div>
   {profile.seriesTitles>0&&<div className="passport-crown"><Crown size={18}/><span><b>{profile.seriesTitles}</b> Series {profile.seriesTitles===1?'title':'titles'} · best {profile.bestTitleStreak} straight</span></div>}

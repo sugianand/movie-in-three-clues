@@ -63,6 +63,17 @@ export function newlyUnlockedPassportStamps(before:MovieNightPassport,after:Movi
  return passportAchievements(after).filter(item=>item.unlocked&&!earned.has(item.id));
 }
 
+export function newPassportPersonalBests(before:MovieNightPassport,after:MovieNightPassport){
+ const previous=parseMovieNightPassport(before),next=parseMovieNightPassport(after);
+ if(previous.matches===0||next.matches<=previous.matches)return [];
+ const bests:string[]=[];
+ if(next.bestScore>previous.bestScore)bests.push(`Score · ${next.bestScore}`);
+ if(next.fastestMs!==null&&(previous.fastestMs===null||next.fastestMs<previous.fastestMs))bests.push(`Fastest solve · ${(next.fastestMs/1000).toFixed(1)}s`);
+ if(next.bestStreak>previous.bestStreak)bests.push(`Win streak · ${next.bestStreak}`);
+ if(next.bestTitleStreak>previous.bestTitleStreak)bests.push(`Title streak · ${next.bestTitleStreak}`);
+ return bests;
+}
+
 export function passportShareText(input:MovieNightPassport,href:string){
  const profile=parseMovieNightPassport(input);if(profile.matches===0)return null;
  let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
