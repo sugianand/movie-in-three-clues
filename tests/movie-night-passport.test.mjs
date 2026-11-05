@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {emptyMovieNightPassport,parseMovieNightPassport,passportAchievements,recordMovieNight} from '../lib/movie-night-passport.ts';
+import {emptyMovieNightPassport,parseMovieNightPassport,passportAchievements,passportShareText,recordMovieNight,shareMovieNightPassport} from '../lib/movie-night-passport.ts';
 
 const solo={status:'finished',code:'ABC234',seriesMatches:1,roundStarted:1000,totalRounds:3,matchMode:'individual',winners:['Sugi'],me:{id:'p1',spectator:false},players:[{id:'p1',name:'Sugi',score:700,seriesWins:1},{id:'p2',name:'Guest',score:300,seriesWins:0}],teams:[],recap:[
  {round:0,solvers:[{name:'Sugi',clue:1,ms:1400}],missed:['Guest']},
@@ -29,4 +29,11 @@ const resultCard=readFileSync(new URL('../components/multiplayer-result-card.tsx
 assert.match(page,/game\?\.status==='finished'&&!game\.me\.spectator&&<MovieNightPassport result=\{game\}/,'the Passport must record the championship-clinching match');
 assert.match(page,/!session&&entryStep==='landing'&&<MovieNightPassport\/>/,'returning players must be able to see their saved Passport from the landing page');
 assert.doesNotMatch(resultCard,/<MovieNightPassport/,'Passport recording must not depend on the result-card panel or an unfinished Series');
+const shareText=passportShareText(profile,'https://example.com/?room=CROWN3&token=secret#answer');
+assert.match(shareText,/Movie Night Passport/);assert.match(shareText,/4 matches · 75% wins/);assert.match(shareText,/1 Series title · Best title streak: 2/);assert(shareText.endsWith('https://example.com/'));
+for(const secret of ['CROWN3','secret','#answer','Sugi'])assert(!shareText.includes(secret),'Passport shares must exclude room, URL and player details');
+assert.equal(passportShareText(emptyMovieNightPassport(),'https://example.com'),null);assert.equal(passportShareText(profile,'javascript:alert(1)'),null);
+let shared,copied;assert.equal(await shareMovieNightPassport(shareText,{share:async data=>{shared=data;}}),'shared');assert.equal(shared.title,'Three Clues · Movie Night Passport');assert.equal(shared.text,shareText);
+assert.equal(await shareMovieNightPassport(shareText,{share:async()=>{throw {name:'AbortError'};},copy:async()=>{throw Error('must not copy');}}),'cancelled');
+assert.equal(await shareMovieNightPassport(shareText,{share:async()=>{throw Error('blocked');},copy:async value=>{copied=value;}}),'copied');assert.equal(copied,shareText);assert.equal(await shareMovieNightPassport(shareText,{},false),'manual');
 console.log('PASS: Movie Night Passport tracks matches, Series crowns and Dynasty streaks without cross-series collisions.');

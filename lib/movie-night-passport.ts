@@ -58,6 +58,23 @@ export function passportAchievements(input:MovieNightPassport):PassportAchieveme
  ];
 }
 
+export function passportShareText(input:MovieNightPassport,href:string){
+ const profile=parseMovieNightPassport(input);if(profile.matches===0)return null;
+ let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
+ const achievements=passportAchievements(profile),unlocked=achievements.filter(item=>item.unlocked).length;
+ const winRate=Math.round(Math.min(profile.wins,profile.matches)/profile.matches*100);
+ const lines=['Three Clues · Movie Night Passport',`${profile.matches} ${profile.matches===1?'match':'matches'} · ${winRate}% wins`,`${profile.solves} movies solved · ${profile.firstClueSolves} on Clue 1`,`Best score: ${profile.bestScore} · Best win streak: ${profile.bestStreak}`,`Passport stamps: ${unlocked}/${achievements.length}`];
+ if(profile.seriesTitles>0)lines.push(`${profile.seriesTitles} Series ${profile.seriesTitles===1?'title':'titles'} · Best title streak: ${profile.bestTitleStreak}`);
+ lines.push('Build your own cinema record:',`${page.origin}/`);
+ return lines.join('\n');
+}
+
+export async function shareMovieNightPassport(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>},native=true){
+ if(native&&platform.share){try{await platform.share({title:'Three Clues · Movie Night Passport',text});return 'shared';}catch(error){if(error&&typeof error==='object'&&'name' in error&&error.name==='AbortError')return 'cancelled';}}
+ if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
+ return 'manual';
+}
+
 export function recordMovieNight(input:MovieNightPassport,result:PassportResult):MovieNightPassport{
  const profile=parseMovieNightPassport(input);
  if(result.status!=='finished'||result.me.spectator||!result.code||result.seriesMatches<1)return profile;

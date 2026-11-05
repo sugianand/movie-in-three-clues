@@ -168,6 +168,6 @@ Completed championships now survive roster changes. The server snapshots the win
 
 ## Movie Night Passport
 
-Finished multiplayer matches now build a private, browser-local Movie Night Passport with match and win totals, solves, first-clue solves, win streaks, personal bests, perfect matches, Series titles, and the best Dynasty streak. Eight progress stamps include Crown Collector and Dynasty. Returning players can see the saved Passport from the landing page between sessions. No account or server-side profile is required, spectators are excluded, and older saved values migrate safely.
+Finished multiplayer matches now build a private, browser-local Movie Night Passport with match and win totals, solves, first-clue solves, win streaks, personal bests, perfect matches, Series titles, and the best Dynasty streak. Eight progress stamps include Crown Collector and Dynasty. Returning players can see the saved Passport from the landing page between sessions and share or copy a spoiler-free stats summary that excludes names, room codes, movie titles, and private URL details. No account or server-side profile is required, spectators are excluded, and older saved values migrate safely.
 
 The championship-clinching match is recorded before the Series can reset, so its crown and Dynasty progress reliably reach the trophy cabinet. Match identity uses the server's round timestamp rather than the within-series match number, so starting another first-to-three race in the same room cannot cause its first match or championship to be skipped as a duplicate.
