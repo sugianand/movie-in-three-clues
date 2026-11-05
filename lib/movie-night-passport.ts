@@ -58,6 +58,11 @@ export function passportAchievements(input:MovieNightPassport):PassportAchieveme
  ];
 }
 
+export function newlyUnlockedPassportStamps(before:MovieNightPassport,after:MovieNightPassport){
+ const earned=new Set(passportAchievements(before).filter(item=>item.unlocked).map(item=>item.id));
+ return passportAchievements(after).filter(item=>item.unlocked&&!earned.has(item.id));
+}
+
 export function passportShareText(input:MovieNightPassport,href:string){
  const profile=parseMovieNightPassport(input);if(profile.matches===0)return null;
  let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
