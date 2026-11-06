@@ -134,6 +134,8 @@ The home screen now offers a one-player daily puzzle alongside multiplayer. Ever
 
 A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
 
+The streak card keeps yesterday’s valid run visible before today is played and now explains exactly what today means: extend an active streak, start a new one, confirm a secured result, or begin fresh tomorrow after a miss.
+
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
 
 ## Vercel frontend deployment
