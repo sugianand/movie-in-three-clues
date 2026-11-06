@@ -75,6 +75,14 @@ export function passportAchievements(input:MovieNightPassport):PassportAchieveme
  ];
 }
 
+export function passportNextGoals(input:MovieNightPassport,limit=3){
+ const size=Number.isSafeInteger(limit)?Math.max(0,Math.min(limit,9)):3;
+ return passportAchievements(input).filter(item=>!item.unlocked).sort((a,b)=>{
+  const progressA=a.current/a.target,progressB=b.current/b.target;
+  return progressB-progressA||a.target-a.current-(b.target-b.current);
+ }).slice(0,size);
+}
+
 export function newlyUnlockedPassportStamps(before:MovieNightPassport,after:MovieNightPassport){
  const earned=new Set(passportAchievements(before).filter(item=>item.unlocked).map(item=>item.id));
  return passportAchievements(after).filter(item=>item.unlocked&&!earned.has(item.id));
