@@ -84,6 +84,8 @@ Numbered sequels no longer pass as spelling mistakes for the original film. Snap
 
 The host can open Settings in the lobby or after a match. Choose Mixed cinema (200 films), Indian cinema (100 Hindi, Tamil and Telugu films), or American cinema (100 films), then All years, Before 2010, or 2010 onward. Indian cinema is exactly 50 before 2010 and 50 from 2010 onward; American cinema is exactly 50 before 2010 and 50 from 2010 onward. The persisted `hollywood` key remains for compatibility with existing rooms. Settings sync to guests and cannot change during a match. The panel shows the matching pool and unseen count. Room history is retained when filters change; each selected pool resets only after exhaustion, with no duplicate within a match. Release year and language appear at reveal.
 
+Quick Setup offers one-tap Quick Cut, Team Feature and Marathon presets for 3-, 5- and 10-round movie nights. A preset changes the match length, play mode, difficulty and Speed Bonus together while preserving the room's movie collection and release era. Hosts can still customize every setting afterward; guests can see the selected preset but cannot change it.
+
 Tests cover all nine filter combinations through exhaustion, history across changes, host permissions and a complete two-player Indian/modern match through the compiled Worker. Exact movie titles cannot be accepted as typos for other films, including Alien and Aliens.
 
 ## Expanded catalog sources and clue design
