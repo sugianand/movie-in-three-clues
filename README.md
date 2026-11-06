@@ -150,6 +150,10 @@ During every answer reveal, seated players can signal that they are ready to con
 
 When the host has opted into Auto Continue, a unanimous ready check shortens the remaining reveal window to a fresh three-second countdown. Removing a ready signal restores the normal eight-second window, background tabs cannot catch up and skip the reveal, and manual host controls remain available throughout.
 
+## Final-round Double Down reminder
+
+An unused Double Down now gets a final-round strategy reminder while a guess is still available. The cue escalates to “last chance” on the final clue without auto-arming the risk or changing scoring.
+
 ## Movie Night Series Championship
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
