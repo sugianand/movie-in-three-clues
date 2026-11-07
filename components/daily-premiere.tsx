@@ -6,12 +6,12 @@ import {DailyResultCard} from '@/components/daily-result-card';
 import type {DailyView} from '@/lib/daily-types';
 import {dailyDraftKey,readDailyDraft,sameDailyProgress,writeDailyDraft} from '@/lib/daily-draft';
 import {dailyStreakStatus} from '@/lib/daily-streak';
-import {dailyChallengeLink,dailyChallengeState,dailyChallengeTarget} from '@/lib/daily-challenge';
+import {dailyChallengeFromSearch,dailyChallengeLink,dailyChallengeState,type DailyChallenge} from '@/lib/daily-challenge';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel} from '@/components/ui/alert-dialog';
 const passKey='three-clues-daily-pass';
-function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join(''),challenge=d.score?`Match or beat my ${d.score} points.`:'Can you solve today’s movie?';return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\n${challenge}\n${dailyChallengeLink(window.location.origin,d.score)}`;}
+function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join(''),challenge=d.score?`Match or beat my ${d.score} points.`:'Can you solve today’s movie?';return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\n${challenge}\n${dailyChallengeLink(window.location.origin,d.score,d.date)}`;}
 export function DailyPremiere({onBack}:{onBack:()=>void}){
- const [data,setData]=useState<DailyView|null>(null),[guess,setGuess]=useState(''),[revealOpen,setRevealOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[storageWarning,setStorageWarning]=useState(''),[shareFallback,setShareFallback]=useState(''),[now,setNow]=useState(Date.now()),[challengeTarget,setChallengeTarget]=useState<number|null>(null);
+ const [data,setData]=useState<DailyView|null>(null),[guess,setGuess]=useState(''),[revealOpen,setRevealOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[storageWarning,setStorageWarning]=useState(''),[shareFallback,setShareFallback]=useState(''),[now,setNow]=useState(Date.now()),[challengeLink,setChallengeLink]=useState<DailyChallenge|null>(null);
  const token=useRef(''),lock=useRef(false),latest=useRef<DailyView|null>(null),alive=useRef(true),field=useRef<HTMLInputElement>(null);
  async function request(action='state'){
   if(lock.current)return;lock.current=true;setBusy(true);setError('');
@@ -31,7 +31,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
  }
  useEffect(()=>{
   alive.current=true;
-  setChallengeTarget(dailyChallengeTarget(window.location.search));
+  setChallengeLink(dailyChallengeFromSearch(window.location.search));
   try{const saved=localStorage.getItem(passKey);token.current=saved&&/^[0-9a-f-]{36}$/i.test(saved)?saved:crypto.randomUUID();localStorage.setItem(passKey,token.current);}
   catch{token.current||=crypto.randomUUID();setStorageWarning('Browser storage is blocked. Your progress lasts while this screen stays open.');}
   void request();const timer=setInterval(()=>setNow(Date.now()),1000);
@@ -48,7 +48,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
  const remaining=data?Math.max(0,Math.ceil((data.nextAt-now)/1000)):0;
  const countdown=`${String(Math.floor(remaining/3600)).padStart(2,'0')}:${String(Math.floor(remaining%3600/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
  const streakStatus=data?dailyStreakStatus({streak:data.stats.streak,done:data.done,score:data.score}):'';
- const challenge=challengeTarget===null?null:dailyChallengeState(challengeTarget,data?.score??0,!!data?.done);
+ const challenge=!challengeLink||!data?null:dailyChallengeState(challengeLink.target,data.score,data.done,challengeLink.date,data.date);
  return <section className="daily-area"><div className="daily-nav"><button className="text-button" onClick={onBack}>Back to movie night</button><span className="daily-badge"><CalendarDays size={16}/>ONE MOVIE. EVERY DAY.</span></div>
  <div className="daily-heading"><div><span className="eyebrow">YOUR DAILY DOSE OF CINEMA</span><h1>DAILY <em>PREMIERE.</em></h1></div><p>A fresh title. Three chances.<br/>The same mystery for everyone.</p></div>
  {challenge&&<div className={`daily-challenge daily-challenge-${challenge.outcome}`} role="status"><span>FRIEND CHALLENGE</span><strong>{challenge.headline}</strong><small>{challenge.detail}</small></div>}
