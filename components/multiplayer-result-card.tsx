@@ -3,8 +3,9 @@ import {useEffect,useState} from 'react';
 import {Download,Image as ImageIcon,Share2} from 'lucide-react';
 import {dailyCardPng} from '@/lib/daily-card';
 import {multiplayerCardSvg,type MultiplayerCardResult} from '@/lib/multiplayer-card';
+import type {PassportResult} from '@/lib/movie-night-passport';
 
-export function MultiplayerResultCard({result}:{result:MultiplayerCardResult}){
+export function MultiplayerResultCard({result}:{result:MultiplayerCardResult&PassportResult}){
  const [open,setOpen]=useState(false),[image,setImage]=useState<{file:File;url:string}|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[sharing,setSharing]=useState(false);
  const signature=JSON.stringify({status:result.status,totalRounds:result.totalRounds,matchMode:result.matchMode,settings:result.settings,winners:result.winners,me:result.me,players:result.players,teams:result.teams,recap:result.recap.map(row=>({round:row.round,solvers:row.solvers.map(s=>({name:s.name,clue:s.clue})),missed:row.missed})),fastest:result.fastest&&{name:result.fastest.name,clue:result.fastest.clue,ms:result.fastest.ms}});
  useEffect(()=>{

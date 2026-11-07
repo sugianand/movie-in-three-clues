@@ -84,6 +84,8 @@ Numbered sequels no longer pass as spelling mistakes for the original film. Snap
 
 The host can open Settings in the lobby or after a match. Choose Mixed cinema (200 films), Indian cinema (100 Hindi, Tamil and Telugu films), or American cinema (100 films), then All years, Before 2010, or 2010 onward. Indian cinema is exactly 50 before 2010 and 50 from 2010 onward; American cinema is exactly 50 before 2010 and 50 from 2010 onward. The persisted `hollywood` key remains for compatibility with existing rooms. Settings sync to guests and cannot change during a match. The panel shows the matching pool and unseen count. Room history is retained when filters change; each selected pool resets only after exhaustion, with no duplicate within a match. Release year and language appear at reveal.
 
+Quick Setup offers one-tap Quick Cut, Team Feature and Marathon presets for 3-, 5- and 10-round movie nights. A preset changes the match length, play mode, difficulty and Speed Bonus together while preserving the room's movie collection and release era. Hosts can still customize every setting afterward; guests can see the selected preset but cannot change it.
+
 Tests cover all nine filter combinations through exhaustion, history across changes, host permissions and a complete two-player Indian/modern match through the compiled Worker. Exact movie titles cannot be accepted as typos for other films, including Alien and Aliens.
 
 ## Expanded catalog sources and clue design
@@ -132,6 +134,12 @@ The home screen now offers a one-player daily puzzle alongside multiplayer. Ever
 
 A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
 
+The streak card keeps yesterday’s valid run visible before today is played and now explains exactly what today means: extend an active streak, start a new one, confirm a secured result, or begin fresh tomorrow after a miss.
+
+Returning players also see a spoiler-free Daily Premiere status on the landing page: today ready, the next clue waiting, a streak at stake, or today’s streak secured. The status uses the existing browser pass and fails quietly to the normal call to action when storage or the network is unavailable.
+
+Completed results now share an optional Daily Challenge link containing only the score target. Friends opening it see a match-or-beat goal before playing and a won, tied, or missed result afterward. The URL never includes the movie, clues, guesses, browser pass, streak, or history; zero-point results keep the normal spoiler-free Daily link.
+
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
 
 ## Vercel frontend deployment
@@ -148,6 +156,10 @@ During every answer reveal, seated players can signal that they are ready to con
 
 When the host has opted into Auto Continue, a unanimous ready check shortens the remaining reveal window to a fresh three-second countdown. Removing a ready signal restores the normal eight-second window, background tabs cannot catch up and skip the reveal, and manual host controls remain available throughout.
 
+## Final-round Double Down reminder
+
+An unused Double Down now gets a final-round strategy reminder while a guess is still available. The cue escalates to “last chance” on the final clue without auto-arming the risk or changing scoring.
+
 ## Movie Night Series Championship
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
@@ -155,3 +167,25 @@ Completed multiplayer matches now feed a room-level, first-to-three series table
 Reaching three crowns the current leader or tied leaders. The host can confirm a fresh series without clearing movie rotation, teams, settings, or the completed match.
 
 A completed first-to-three series now closes rematches at both the UI and server boundary. The host must confirm a fresh series before another match can start, preventing the championship score from running past its finish line while preserving room history and settings.
+
+The Series Match Reel records each completed match in the current race and shows its winner or shared winners to players and spectators. Team matches snapshot the winning team name at the time of the match. Starting a fresh series clears the reel while preserving the defending champion, movie rotation, teams and settings; legacy rooms begin with an empty reel.
+
+The reel also carries a live Series MVP race. Every player's final match score is added to their first-to-three series total, including personal contributions in team games and Double Down penalties. Tied points leaders share the spotlight. Starting a new series resets the points race with the win table, while legacy rooms begin at zero.
+
+When the first-to-three race ends, Series Honors celebrate more than the crown: the points MVP, the player or tied players with the most first-clue solves, and the fastest solve across every match. The honors reset with a new series and safely default for rooms created before the feature.
+
+Repeat champions now build a Dynasty Streak. Winning with the same champion or tied champion set increments the consecutive-title count on the championship and defending-crown banners; a new winner starts a fresh run. Older rooms with an existing defending champion safely begin at one title.
+
+Completed championships now survive roster changes. The server snapshots the winning name or tied names when the crown is clinched, so a champion who leaves cannot strand the room or erase the result. The remaining host still sees the champion card, cannot accidentally start another match from the lobby, and can reset the race while carrying the departed winner into the defending-crown banner.
+
+## Movie Night Passport
+
+Finished multiplayer matches now build a private, browser-local Movie Night Passport with match and win totals, solves, first-clue solves, win streaks, personal bests, perfect matches, Series titles, and the best Dynasty streak. Nine progress stamps include Crown Collector, Dynasty, and Encore Week. Newly earned stamps receive an accessible post-match celebration, including multiple milestones unlocked together, while revisiting a recorded result never repeats it. Returning players can see the saved Passport from the landing page between sessions and share or copy a spoiler-free stats summary that excludes names, room codes, movie titles, and private URL details. No account or server-side profile is required, spectators are excluded, and older saved values migrate safely.
+
+The Passport's Next on the Marquee panel prioritizes the three unfinished stamps with the most progress, shows exact counts and accessible progress bars, and updates after every recorded match. Players who earn every stamp receive a completed-Passport message instead. The guidance is derived entirely from the existing browser-local record.
+
+After the first match establishes a baseline, the Passport celebrates new personal bests for score, fastest solve, win streak, and consecutive Series titles. Multiple records broken together share one accessible announcement, and repeated result views cannot replay it.
+
+The Passport now also tracks Encore Attendance across distinct local calendar days. Playing on consecutive days extends the current run, multiple matches on one day count once, a missed day starts a fresh run without erasing the personal best, and the landing-page Passport says whether to return today or tomorrow. Three straight days earn the Encore Week stamp, attendance records join personal-best celebrations, and spoiler-free sharing includes only the aggregate best—not dates. Older saved Passports migrate safely with no attendance history.
+
+The championship-clinching match is recorded before the Series can reset, so its crown and Dynasty progress reliably reach the trophy cabinet. Match identity uses the server's round timestamp rather than the within-series match number, so starting another first-to-three race in the same room cannot cause its first match or championship to be skipped as a duplicate.
