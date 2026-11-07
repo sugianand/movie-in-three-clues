@@ -138,6 +138,8 @@ The streak card keeps yesterday’s valid run visible before today is played and
 
 Returning players also see a spoiler-free Daily Premiere status on the landing page: today ready, the next clue waiting, a streak at stake, or today’s streak secured. The status uses the existing browser pass and fails quietly to the normal call to action when storage or the network is unavailable.
 
+Completed results now share an optional Daily Challenge link containing only the score target. Friends opening it see a match-or-beat goal before playing and a won, tied, or missed result afterward. The URL never includes the movie, clues, guesses, browser pass, streak, or history; zero-point results keep the normal spoiler-free Daily link.
+
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
 
 ## Vercel frontend deployment
