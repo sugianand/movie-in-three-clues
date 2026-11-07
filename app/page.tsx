@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState,type CSSProperties,type MouseEvent as ReactMouseEvent} from 'react';
 import {MovieTitleInput} from '@/components/movie-title-input';
 import {DailyPremiere} from '@/components/daily-premiere';
+import {DailyHomeLaunch} from '@/components/daily-home-launch';
 import {MultiplayerResultCard} from '@/components/multiplayer-result-card';
 import {MovieNightPassport} from '@/components/movie-night-passport';
 import {SeriesStakes} from '@/components/series-stakes';
@@ -81,7 +82,7 @@ export default function Home(){
   {resumePrompt}
   <div className="tc-actions">
    <button className="tc-btn tc-btn-primary landing-play" onClick={()=>{setEntryStep('rooms');setError('');}}>Play with friends</button>
-   <button className="tc-btn tc-btn-ghost" onClick={()=>{setEntryStep('daily');window.history.replaceState(null,'','?daily=1');}}>Daily Premiere</button>
+   <DailyHomeLaunch className="tc-btn tc-btn-ghost" onOpen={()=>{setEntryStep('daily');window.history.replaceState(null,'','?daily=1');}}/>
   </div>
   <p className="tc-fineprint">Play with 2–8 friends, each on their own phone. Playing alone? Daily Premiere is one new movie every day.</p>
   <p className="tc-facts">Free, no sign-up. 100 Indian and 100 American films.</p>

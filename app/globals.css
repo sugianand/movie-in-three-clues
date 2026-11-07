@@ -142,6 +142,9 @@ body{background:var(--background);color:var(--foreground)}header{border-bottom:0
 .daily-attempt-hit strong{color:#a9bbff}
 .daily-recap .daily-attempt{margin:0 0 14px}
 
+/* Bring a saved Daily Premiere back to the landing page without revealing the movie. */
+.daily-home-launch{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px!important;line-height:1.15}.daily-home-launch>span{font:inherit;letter-spacing:inherit;color:inherit}.daily-home-launch>small{font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:none;color:var(--muted-foreground);white-space:normal}
+
 .double-down{margin:20px 0;text-align:left;border-left:3px solid var(--brand-accent,#4169ff);padding:4px 0 4px 16px}.double-down button{width:100%;white-space:normal}.double-down button[aria-pressed=true]{background:#4169ff;color:white;border-color:#8ca4ff}.double-down p{font-size:13px;line-height:1.5;color:#ccd3e3;margin:9px 0 0}
 .double-down.has-reminder{border-left-color:var(--ring,var(--brand-accent,#4169ff))}.double-down-reminder{display:flex;flex-direction:column;gap:2px;margin:0 0 10px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--brand-accent,#4169ff) 55%,transparent);border-radius:10px;background:color-mix(in srgb,var(--brand-accent,#4169ff) 12%,transparent)}.double-down-reminder strong{font-size:13px;color:#f6f7fb}.double-down-reminder span{font-size:12px;line-height:1.45;color:#ccd3e3}.double-down-reminder.urgent{border-color:#e6b45f;background:#e6b45f18}.double-down-reminder.urgent strong{color:#ffd98c}
 

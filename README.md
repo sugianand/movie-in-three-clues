@@ -136,6 +136,8 @@ A random browser pass in localStorage identifies a D1 profile stored under the `
 
 The streak card keeps yesterday’s valid run visible before today is played and now explains exactly what today means: extend an active streak, start a new one, confirm a secured result, or begin fresh tomorrow after a miss.
 
+Returning players also see a spoiler-free Daily Premiere status on the landing page: today ready, the next clue waiting, a streak at stake, or today’s streak secured. The status uses the existing browser pass and fails quietly to the normal call to action when storage or the network is unavailable.
+
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.
 
 ## Vercel frontend deployment
