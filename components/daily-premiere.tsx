@@ -48,7 +48,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
  const remaining=data?Math.max(0,Math.ceil((data.nextAt-now)/1000)):0;
  const countdown=`${String(Math.floor(remaining/3600)).padStart(2,'0')}:${String(Math.floor(remaining%3600/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
  const streakStatus=data?dailyStreakStatus({streak:data.stats.streak,done:data.done,score:data.score}):'';
- const challenge=!challengeLink||!data?null:dailyChallengeState(challengeLink.target,data.score,data.done,challengeLink.date,data.date);
+ const challenge=!challengeLink||!data?null:dailyChallengeState(challengeLink.target,data.score,data.done,data.stage,challengeLink.date,data.date);
  return <section className="daily-area"><div className="daily-nav"><button className="text-button" onClick={onBack}>Back to movie night</button><span className="daily-badge"><CalendarDays size={16}/>ONE MOVIE. EVERY DAY.</span></div>
  <div className="daily-heading"><div><span className="eyebrow">YOUR DAILY DOSE OF CINEMA</span><h1>DAILY <em>PREMIERE.</em></h1></div><p>A fresh title. Three chances.<br/>The same mystery for everyone.</p></div>
  {challenge&&<div className={`daily-challenge daily-challenge-${challenge.outcome}`} role="status"><span>FRIEND CHALLENGE</span><strong>{challenge.headline}</strong><small>{challenge.detail}</small></div>}

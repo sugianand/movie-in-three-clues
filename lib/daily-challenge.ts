@@ -3,7 +3,7 @@ const scores=[100,200,300] as const;
 export type DailyChallengeState={
  headline:string;
  detail:string;
- outcome:'open'|'won'|'tied'|'missed'|'expired';
+ outcome:'open'|'out-of-reach'|'won'|'tied'|'missed'|'expired';
 };
 
 export type DailyChallenge={target:number;date:string};
@@ -26,11 +26,17 @@ export function dailyChallengeLink(origin:string,score:number,date:string){
   :`${root}/?daily=1`;
 }
 
-export function dailyChallengeState(target:number,score:number,done:boolean,challengeDate:string,today:string):DailyChallengeState{
+export function dailyChallengeState(target:number,score:number,done:boolean,stage:number,challengeDate:string,today:string):DailyChallengeState{
  if(challengeDate!==today){
   const label=new Date(`${challengeDate}T12:00:00Z`).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
   return {headline:'Challenge expired',detail:`That target belonged to the ${label} Premiere. Today’s movie is a fresh challenge.`,outcome:'expired'};
  }
+ const available=Math.max(100,Math.min(300,(3-stage)*100));
+ if(!done&&available<target)return {
+  headline:'Challenge target slipped away',
+  detail:`The best remaining score is ${available} points. Keep playing for your streak and personal best.`,
+  outcome:'out-of-reach'
+ };
  if(!done)return {
   headline:`Match or beat ${target} points`,
   detail:target===300?'A first-clue solve ties the challenge.':target===200?'Solve by clue 2 to tie it.':'Any correct solve ties the challenge.',
