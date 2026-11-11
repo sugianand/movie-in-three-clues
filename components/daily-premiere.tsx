@@ -6,10 +6,10 @@ import {DailyResultCard} from '@/components/daily-result-card';
 import type {DailyView} from '@/lib/daily-types';
 import {dailyDraftKey,readDailyDraft,sameDailyProgress,writeDailyDraft} from '@/lib/daily-draft';
 import {dailyStreakStatus} from '@/lib/daily-streak';
-import {dailyChallengeFromSearch,dailyChallengeLink,dailyChallengeState,type DailyChallenge} from '@/lib/daily-challenge';
+import {dailyChallengeFromSearch,dailyChallengeLink,dailyChallengeReply,dailyChallengeState,type DailyChallenge} from '@/lib/daily-challenge';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel} from '@/components/ui/alert-dialog';
 const passKey='three-clues-daily-pass';
-function resultText(d:DailyView){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join(''),challenge=d.score?`Match or beat my ${d.score} points.`:'Can you solve today’s movie?';return `Three Clues · Daily Premiere #${d.number}\n${d.date} · ${d.score}/300 points\n${marks}\n${challenge}\n${dailyChallengeLink(window.location.origin,d.score,d.date)}`;}
+function resultText(d:DailyView,received:DailyChallenge|null){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join(''),challenge=d.score?`Match or beat my ${d.score} points.`:'Can you solve today’s movie?',reply=received?dailyChallengeReply(received.target,d.score,received.date,d.date):'';return [`Three Clues · Daily Premiere #${d.number}`,`${d.date} · ${d.score}/300 points`,marks,...(reply?[reply]:[]),challenge,dailyChallengeLink(window.location.origin,d.score,d.date)].join('\n');}
 export function DailyPremiere({onBack}:{onBack:()=>void}){
  const [data,setData]=useState<DailyView|null>(null),[guess,setGuess]=useState(''),[revealOpen,setRevealOpen]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[storageWarning,setStorageWarning]=useState(''),[shareFallback,setShareFallback]=useState(''),[now,setNow]=useState(Date.now()),[challengeLink,setChallengeLink]=useState<DailyChallenge|null>(null);
  const token=useRef(''),lock=useRef(false),latest=useRef<DailyView|null>(null),alive=useRef(true),field=useRef<HTMLInputElement>(null);
@@ -44,7 +44,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
  },[data,guess]);
  function attempt(i:number){const mark=data?.marks[i];if(!mark)return null;const label=mark==='hit'?'Correct':mark==='skip'?'Skipped':'Not quite';return <p className={`daily-attempt daily-attempt-${mark}`}><strong>{label}</strong>{data?.guesses?.[i]&&<span>{data.guesses[i]}</span>}</p>;}
  const expired=!!data&&now>=data.nextAt;
- async function share(){if(!data)return;const text=resultText(data);try{if(navigator.share){await navigator.share({text});setNotice('Result shared.');}else{await navigator.clipboard.writeText(text);setNotice('Spoiler-free result copied.');}}catch(e){if(e instanceof Error&&e.name==='AbortError')return;setShareFallback(text);setNotice('Copy your result below.');}}
+ async function share(){if(!data)return;const text=resultText(data,challengeLink);try{if(navigator.share){await navigator.share({text});setNotice('Result shared.');}else{await navigator.clipboard.writeText(text);setNotice('Spoiler-free result copied.');}}catch(e){if(e instanceof Error&&e.name==='AbortError')return;setShareFallback(text);setNotice('Copy your result below.');}}
  const remaining=data?Math.max(0,Math.ceil((data.nextAt-now)/1000)):0;
  const countdown=`${String(Math.floor(remaining/3600)).padStart(2,'0')}:${String(Math.floor(remaining%3600/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
  const streakStatus=data?dailyStreakStatus({streak:data.stats.streak,done:data.done,score:data.score}):'';

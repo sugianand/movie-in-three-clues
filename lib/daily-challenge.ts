@@ -26,6 +26,13 @@ export function dailyChallengeLink(origin:string,score:number,date:string){
   :`${root}/?daily=1`;
 }
 
+export function dailyChallengeReply(target:number,score:number,challengeDate:string,today:string){
+ if(!scores.includes(target as (typeof scores)[number])||challengeDate!==today)return '';
+ if(score>target)return `Challenge result: beat the ${target}-point target by ${score-target}.`;
+ if(score===target)return `Challenge result: tied the ${target}-point target.`;
+ return `Challenge result: finished ${target-score} points short of the ${target}-point target.`;
+}
+
 export function dailyChallengeState(target:number,score:number,done:boolean,stage:number,challengeDate:string,today:string):DailyChallengeState{
  if(challengeDate!==today){
   const label=new Date(`${challengeDate}T12:00:00Z`).toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
