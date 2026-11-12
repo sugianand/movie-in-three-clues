@@ -10,7 +10,7 @@ export type MultiplayerCardResult={
  me:{id:string};
  players:{id:string;name:string;score:number}[];
  teams:{name:string;score:number}[];
- recap:{round:number;title?:string;solvers:{name:string;clue:number}[];missed:string[]}[];
+ recap:{round:number;title?:string;solvers:{id?:string;name:string;clue:number}[];missed:string[]}[];
  fastest:{name:string;title?:string;clue:number;ms:number}|null;
 };
 
@@ -26,7 +26,7 @@ export function multiplayerCardSvg(result:MultiplayerCardResult):string{
  const rows=(result.matchMode==='teams'?result.teams:result.players).slice().sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
  if(!rows.length||rows.length>8||rows.some(row=>!Number.isFinite(row.score)))throw Error('This scoreboard cannot be shared as an image.');
  const trail=Array.from({length:result.totalRounds},(_,round)=>{
-  const recap=result.recap.find(row=>row.round===round),solve=recap?.solvers.find(player=>player.name===me.name);
+  const recap=result.recap.find(row=>row.round===round),solve=recap?.solvers.find(player=>player.id?player.id===me.id:player.name===me.name);
   return solve?.clue&&solve.clue>=1&&solve.clue<=3?String(solve.clue):'—';
  });
  const cellGap=12,cellWidth=Math.min(76,(920-cellGap*(trail.length-1))/trail.length),trailWidth=cellWidth*trail.length+cellGap*(trail.length-1),trailX=(1080-trailWidth)/2;

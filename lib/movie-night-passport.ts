@@ -28,10 +28,11 @@ export type PassportResult={
  totalRounds:number;
  matchMode:string;
  winners:string[];
+ winnerIds?:string[];
  me:{id:string;spectator:boolean;team?:string};
  players:{id:string;name:string;score:number;seriesWins?:number;team?:string}[];
  teams:{id:string;name:string;score:number}[];
- recap:{round:number;solvers:{name:string;clue:number;ms?:number}[];missed:string[]}[];
+ recap:{round:number;solvers:{id?:string;name:string;clue:number;ms?:number}[];missed:string[]}[];
 };
 
 export type PassportAchievement={id:string;title:string;description:string;unlocked:boolean;current:number;target:number};
@@ -124,8 +125,8 @@ export function recordMovieNight(input:MovieNightPassport,result:PassportResult)
  const key=`${result.code}:${stamp}`;
  if(profile.recorded.includes(key))return profile;
  const me=result.players.find(player=>player.id===result.me.id);if(!me)return profile;
- const mySolves=result.recap.flatMap(round=>round.solvers.filter(solver=>solver.name===me.name));
- const won=result.matchMode==='teams'?result.winners.includes(result.teams.find(team=>team.id===result.me.team)?.name??''):result.winners.includes(me.name);
+ const mySolves=result.recap.flatMap(round=>round.solvers.filter(solver=>solver.id?solver.id===me.id:solver.name===me.name));
+ const won=result.winnerIds?.length?result.winnerIds.includes(me.id):result.matchMode==='teams'?result.winners.includes(result.teams.find(team=>team.id===result.me.team)?.name??''):result.winners.includes(me.name);
  const currentStreak=won?profile.currentStreak+1:0;
  const playedDay=typeof result.roundStarted==='number'?localDay(result.roundStarted):null,previousDay=profile.lastPlayedDay?dayNumber(profile.lastPlayedDay):null,nextDay=playedDay?dayNumber(playedDay):null;
  const attendanceStreak=nextDay===null||previousDay!==null&&nextDay<previousDay?profile.attendanceStreak:nextDay===previousDay?profile.attendanceStreak:previousDay!==null&&nextDay===previousDay+1?profile.attendanceStreak+1:1;

@@ -7,7 +7,7 @@ import type {PassportResult} from '@/lib/movie-night-passport';
 
 export function MultiplayerResultCard({result}:{result:MultiplayerCardResult&PassportResult}){
  const [open,setOpen]=useState(false),[image,setImage]=useState<{file:File;url:string}|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[sharing,setSharing]=useState(false);
- const signature=JSON.stringify({status:result.status,totalRounds:result.totalRounds,matchMode:result.matchMode,resultSettings:result.resultSettings??result.settings,winners:result.winners,me:result.me,players:result.players,teams:result.teams,recap:result.recap.map(row=>({round:row.round,solvers:row.solvers.map(s=>({name:s.name,clue:s.clue})),missed:row.missed})),fastest:result.fastest&&{name:result.fastest.name,clue:result.fastest.clue,ms:result.fastest.ms}});
+ const signature=JSON.stringify({status:result.status,totalRounds:result.totalRounds,matchMode:result.matchMode,resultSettings:result.resultSettings??result.settings,winners:result.winners,me:result.me,players:result.players,teams:result.teams,recap:result.recap.map(row=>({round:row.round,solvers:row.solvers.map(s=>({id:s.id,name:s.name,clue:s.clue})),missed:row.missed})),fastest:result.fastest&&{name:result.fastest.name,clue:result.fastest.clue,ms:result.fastest.ms}});
  useEffect(()=>{
   if(!open)return;let cancelled=false,url='';setImage(null);setError('');setNotice('');
   void (async()=>{try{const blob=await dailyCardPng(multiplayerCardSvg(result));if(cancelled)return;url=URL.createObjectURL(blob);setImage({file:new File([blob],'three-clues-movie-night.png',{type:'image/png'}),url});}catch(e){if(!cancelled)setError(e instanceof Error?e.message:'Image export is unavailable.');}})();
