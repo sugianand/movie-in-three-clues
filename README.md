@@ -164,6 +164,8 @@ An unused Double Down now gets a final-round strategy reminder while a guess is 
 
 Completed result cards snapshot the finished match's difficulty and Speed Bonus setting. Hosts can safely configure the next match before everyone saves or shares a card; older rooms without a snapshot fall back to their current settings.
 
+Completed recaps include a responsive Score Journey table showing cumulative points and round-by-round leaders. Stable player and team IDs keep matching display names on separate lines, while older name-only recaps remain readable.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.

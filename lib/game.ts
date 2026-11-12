@@ -10,7 +10,7 @@ export type TeamScore={id:string;name:string;score:number;members:number};
 export type Player={ready?:boolean;roundReady?:boolean;doubleUsed?:boolean;solvedStage?:number;solveMs?:number;speedBonus?:number;team?:string;id:string;token:string;name:string;score:number;solved:boolean;attempt:number;gain:number};
 export type Spectator={id:string;token:string;name:string;joined:number};
 export type MovieResult={title:string;plays:number;players:number;first:number;second:number;third:number;missed:number};
-export type RoundRecap={round:number;title:string;solvers:{id?:string;name:string;clue:number;points:number;ms?:number}[];missed:string[];totals:{name:string;score:number}[]};
+export type RoundRecap={round:number;title:string;solvers:{id?:string;name:string;clue:number;points:number;ms?:number}[];missed:string[];totals:{id?:string;name:string;score:number}[]};
 export type FastestSolve={name:string;title:string;clue:number;points:number;ms:number};
 export type RoundSpotlight={solved:number;players:number;fastest:{name:string;clue:number;points:number;ms:number}|null};
 export type SeriesMatch={match:number;winners:string[]};
@@ -34,7 +34,7 @@ export function advance(r:Room,now:number){
  r.recap??=[];
  if(!r.recap.some(row=>row.round===r.round)){
   const standings=r.matchMode==='teams'?teamScores(r):r.players;
-  r.recap.push({round:r.round,title:movie.title,solvers:r.players.filter(p=>p.solved).sort((a,b)=>(a.solvedStage??a.attempt)-(b.solvedStage??b.attempt)||(a.solveMs??Infinity)-(b.solveMs??Infinity)||a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,clue:(p.solvedStage??p.attempt)+1,points:p.gain,...(p.solveMs===undefined?{}:{ms:p.solveMs})})),missed:r.players.filter(p=>!p.solved).map(p=>p.name),totals:standings.map(row=>({name:row.name,score:row.score}))});
+  r.recap.push({round:r.round,title:movie.title,solvers:r.players.filter(p=>p.solved).sort((a,b)=>(a.solvedStage??a.attempt)-(b.solvedStage??b.attempt)||(a.solveMs??Infinity)-(b.solveMs??Infinity)||a.name.localeCompare(b.name)).map(p=>({id:p.id,name:p.name,clue:(p.solvedStage??p.attempt)+1,points:p.gain,...(p.solveMs===undefined?{}:{ms:p.solveMs})})),missed:r.players.filter(p=>!p.solved).map(p=>p.name),totals:standings.map(row=>({id:row.id,name:row.name,score:row.score}))});
  }
 }
 export function eligibleMovies(settings:GameSettings=defaultSettings){return activeMovieIds.map(i=>({m:movies[i],i})).filter(({m})=>(settings.collection==='mixed'||m.region===settings.collection)&&(settings.era==='all'||(settings.era==='classic'?m.year<2010:m.year>=2010))).map(({i})=>i);}
