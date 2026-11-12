@@ -166,6 +166,8 @@ Completed result cards snapshot the finished match's difficulty and Speed Bonus 
 
 Completed recaps include a responsive Score Journey table showing cumulative points and round-by-round leaders. Stable player and team IDs keep matching display names on separate lines, while older name-only recaps remain readable.
 
+Each seated player also gets a private, spoiler-free Your Cut debrief after the match. It summarizes personal points, solves, first-clue hits, average solve clue and fastest solve, then offers a short next-match prompt. Spectators do not receive a player debrief, and no new result data is stored.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
