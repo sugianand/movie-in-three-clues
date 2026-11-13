@@ -170,6 +170,8 @@ Each seated player also gets a private, spoiler-free Your Cut debrief after the 
 
 Your Cut now carries a personalized Encore Mission into the next match: defend a perfect slate, find a first movie, land a first-clue solve, or improve the previous solve rate. The next unique result marks that mission complete or missed, then rolls a fresh goal; solve-rate goals stay fair when players switch between 3, 5 and 10 rounds. Progress lives only in that browser, stores no identity, answers, guesses or room code, and never reaches the server.
 
+Returning players see the active Encore Mission on the landing page with a direct path to start the next movie night. The card restores only the goal text—not the prior match, outcome, identity or room—and disappears cleanly on browsers without saved progress.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.

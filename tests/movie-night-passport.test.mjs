@@ -50,7 +50,7 @@ const resultCard=readFileSync(new URL('../components/multiplayer-result-card.tsx
 const passportComponent=readFileSync(new URL('../components/movie-night-passport.tsx',import.meta.url),'utf8');
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
 assert.match(page,/game\?\.status==='finished'&&!game\.me\.spectator&&<MovieNightPassport result=\{game\}/,'the Passport must record the championship-clinching match');
-assert.match(page,/!session&&entryStep==='landing'&&<MovieNightPassport\/>/,'returning players must be able to see their saved Passport from the landing page');
+assert.match(page,/!session&&entryStep==='landing'&&<><EncoreHome[^\n]+<MovieNightPassport\/>/,'returning players must see their saved Encore and Passport from the landing page');
 assert.doesNotMatch(resultCard,/<MovieNightPassport/,'Passport recording must not depend on the result-card panel or an unfinished Series');
 assert.match(passportComponent,/className="passport-celebrations" role="status"/);assert.match(passportComponent,/newStamps\.join\(' · '\)/);assert.match(passportComponent,/newBests\.join\(' · '\)/);assert.match(passportComponent,/className="passport-attendance"/);assert.match(passportComponent,/aria-label="Next Passport goals"/);assert.match(passportComponent,/role="progressbar"/);assert.match(css,/\.passport-personal-best\{/);assert.match(css,/\.passport-attendance\{/);assert.match(css,/\.passport-goals\{/);
 const shareText=passportShareText(profile,'https://example.com/?room=CROWN3&token=secret#answer');
