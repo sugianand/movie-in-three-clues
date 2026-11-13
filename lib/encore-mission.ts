@@ -14,10 +14,12 @@ export type EncoreOutcome={
 };
 
 export type EncoreProgress={
- version:1;
+ version:2;
  lastMatchId:string;
  active:EncoreMission;
  lastOutcome:EncoreOutcome|null;
+ streak:number;
+ bestStreak:number;
 };
 
 type StorageLike={
@@ -66,11 +68,15 @@ export function completesEncoreMission(mission:EncoreMission,summary:PersonalMat
 export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string,summary:PersonalMatchSummary,totalRounds:number):EncoreProgress{
  if(current?.lastMatchId===matchId)return current;
  const next=encoreMission(summary,totalRounds);
+ const complete=current?.active?completesEncoreMission(current.active,summary,totalRounds):null;
+ const streak=complete?(current?.streak??0)+1:complete===false?0:current?.streak??0;
  return {
-  version:1,
+  version:2,
   lastMatchId:matchId,
   active:next,
-  lastOutcome:current?.active?{complete:completesEncoreMission(current.active,summary,totalRounds),mission:current.active}:null,
+  lastOutcome:current?.active?{complete:!!complete,mission:current.active}:null,
+  streak,
+  bestStreak:Math.max(current?.bestStreak??0,streak),
  };
 }
 
@@ -84,12 +90,14 @@ function validMission(value:unknown):value is EncoreMission{
 
 export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|null{
  try{
-  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as Partial<EncoreProgress>|null;
-  if(!value||value.version!==1||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
+  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2})|null;
+  if(!value||(value.version!==1&&value.version!==2)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
   const outcome=value.lastOutcome;
   if(outcome!==null&&outcome!==undefined&&
    (!outcome||typeof outcome!=='object'||typeof outcome.complete!=='boolean'||!validMission(outcome.mission)))return null;
-  return {version:1,lastMatchId:value.lastMatchId,active:value.active,lastOutcome:outcome??null};
+  const validCount=(count:unknown)=>typeof count==='number'&&Number.isInteger(count)&&count>=0;
+  if(value.version===2&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
+  return {version:2,lastMatchId:value.lastMatchId,active:value.active,lastOutcome:outcome??null,streak:value.version===2?value.streak!:0,bestStreak:value.version===2?value.bestStreak!:0};
  }catch{return null;}
 }
 

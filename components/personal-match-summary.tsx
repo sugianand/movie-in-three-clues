@@ -28,7 +28,7 @@ export function PersonalMatchSummary({result,matchId}:{result:PersonalMatchResul
   {summary.fastestMs!==null&&<p>Fastest personal solve · {(summary.fastestMs/1000).toFixed(1)}s</p>}
   {outcome&&<div className={`encore-outcome ${outcome.complete?'is-complete':'is-missed'}`} role="status">
    <span>{outcome.complete?'ENCORE COMPLETE':'ENCORE MISSED'}</span>
-   <strong>{outcome.complete?'Goal cleared. Take the next challenge.':'Keep the reel rolling.'}</strong>
+   <strong>{outcome.complete?(progress!.streak===1?'Encore streak started.':`${progress!.streak} mission streak.`):(progress!.bestStreak?'Streak paused. Start the comeback.':'Keep the reel rolling.')}</strong>
    <small>{outcome.mission.target}</small>
   </div>}
   <div className="encore-mission" aria-label="Personal next-match goal">

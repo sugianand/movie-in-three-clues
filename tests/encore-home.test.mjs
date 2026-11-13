@@ -3,7 +3,9 @@ import {readFileSync} from 'node:fs';
 
 const component=readFileSync(new URL('../components/encore-home.tsx',import.meta.url),'utf8');
 const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
-assert.match(component,/readEncoreProgress\(localStorage\)\?\.active/,'the landing card restores only the active browser-local goal');
+assert.match(component,/setProgress\(readEncoreProgress\(localStorage\)\)/,'the landing card restores browser-local Encore progress');
+assert.match(component,/progress\.streak/,'the landing card recognizes the current completion streak');
+assert.match(component,/Best · \{progress\.bestStreak\}/,'the landing card keeps the personal best visible');
 assert.match(component,/Play your encore/,'the saved goal has a direct route back to party play');
 assert.match(component,/Saved only in this browser/,'the card explains its privacy boundary');
 assert.doesNotMatch(component,/lastOutcome|lastMatchId/,'the landing card must not expose prior result details');
