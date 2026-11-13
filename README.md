@@ -168,7 +168,7 @@ Completed recaps include a responsive Score Journey table showing cumulative poi
 
 Each seated player also gets a private, spoiler-free Your Cut debrief after the match. It summarizes personal points, solves, first-clue hits, average solve clue and fastest solve, then offers a short next-match prompt. Spectators do not receive a player debrief, and no new result data is stored.
 
-Your Cut now finishes with a personalized Encore Mission: defend a perfect slate, find a first movie, land a first-clue solve, or improve the previous solve count by one. The achievable goal is calculated from the completed match, stays private to the player, and adds no persistence or server data.
+Your Cut now carries a personalized Encore Mission into the next match: defend a perfect slate, find a first movie, land a first-clue solve, or improve the previous solve rate. The next unique result marks that mission complete or missed, then rolls a fresh goal; solve-rate goals stay fair when players switch between 3, 5 and 10 rounds. Progress lives only in that browser, stores no identity, answers, guesses or room code, and never reaches the server.
 
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 

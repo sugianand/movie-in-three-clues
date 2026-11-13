@@ -1,12 +1,28 @@
 import assert from 'node:assert/strict';
-import {encoreMission} from '../lib/encore-mission.ts';
+import {advanceEncoreProgress,completesEncoreMission,encoreMission,readEncoreProgress,writeEncoreProgress} from '../lib/encore-mission.ts';
 
 const summary={score:400,solves:2,firstClues:1,averageClue:1.5,fastestMs:1200,headline:'Match complete'};
-assert.deepEqual(encoreMission({...summary,solves:3},3),{
- title:'Hold the spotlight',target:'Solve every movie again.',detail:'A perfect slate is yours to defend.',
-},'perfect matches receive a defendable encore');
-assert.equal(encoreMission({...summary,solves:0,firstClues:0},5).target,'Solve 1 movie next match.','a scoreless match starts with an achievable goal');
-assert.equal(encoreMission({...summary,firstClues:0},5).target,'Land 1 first-clue solve.','players with solves receive an early-read challenge');
-assert.equal(encoreMission(summary,5).target,'Solve 3 of 5 movies.','the standard mission asks for one more solve');
-assert.equal(encoreMission({...summary,solves:9},10).target,'Solve 10 of 10 movies.','the solve target never exceeds the match length');
-console.log('PASS: Encore Missions set a private, achievable next-match goal for every performance path.');
+const perfect=encoreMission({...summary,solves:3},3);
+assert.equal(perfect.kind,'perfect');assert.equal(perfect.target,'Solve every movie again.');
+assert.equal(encoreMission({...summary,solves:0,firstClues:0},5).kind,'first-solve');
+assert.equal(encoreMission({...summary,firstClues:0},5).kind,'first-clue');
+const rate=encoreMission(summary,5);
+assert.equal(rate.kind,'solve-rate');assert.equal(rate.target,'Beat your 40% solve rate.');
+
+assert(completesEncoreMission(perfect,{...summary,solves:5},5),'perfect goals adapt to a new match length');
+assert(completesEncoreMission(encoreMission({...summary,solves:0},5),{...summary,solves:1},3));
+assert(completesEncoreMission(encoreMission({...summary,firstClues:0},5),{...summary,firstClues:1},10));
+assert(completesEncoreMission(rate,{...summary,solves:3},5));
+assert.equal(completesEncoreMission(rate,{...summary,solves:4},10),false,'matching the prior solve rate is not an improvement');
+
+const first=advanceEncoreProgress(null,'1000',summary,5);
+assert.equal(first.lastOutcome,null,'the first recorded match sets a mission without inventing an outcome');
+const second=advanceEncoreProgress(first,'2000',{...summary,solves:3},5);
+assert.equal(second.lastOutcome?.complete,true,'the next unique match evaluates the active mission');
+assert.equal(advanceEncoreProgress(second,'2000',{...summary,solves:0},5),second,'repeat result views cannot re-evaluate a mission');
+
+const memory=new Map(),storage={getItem:key=>memory.get(key)??null,setItem:(key,value)=>memory.set(key,value)};
+assert(writeEncoreProgress(storage,second));assert.deepEqual(readEncoreProgress(storage),second);
+memory.set('three-clues-encore-v1','{"version":1,"active":{"kind":"broken"}}');
+assert.equal(readEncoreProgress(storage),null,'malformed browser data fails quietly');
+console.log('PASS: tracked Encore Missions are private, match-length safe, duplicate-proof and storage-resilient.');
