@@ -5,11 +5,12 @@ export type MultiplayerCardResult={
  totalRounds:number;
  matchMode:string;
  settings:Pick<GameSettings,'difficulty'|'speedBonus'>;
+ resultSettings?:Pick<GameSettings,'difficulty'|'speedBonus'>;
  winners:string[];
  me:{id:string};
  players:{id:string;name:string;score:number}[];
  teams:{name:string;score:number}[];
- recap:{round:number;title?:string;solvers:{name:string;clue:number}[];missed:string[]}[];
+ recap:{round:number;title?:string;solvers:{id?:string;name:string;clue:number}[];missed:string[]}[];
  fastest:{name:string;title?:string;clue:number;ms:number}|null;
 };
 
@@ -25,13 +26,14 @@ export function multiplayerCardSvg(result:MultiplayerCardResult):string{
  const rows=(result.matchMode==='teams'?result.teams:result.players).slice().sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name));
  if(!rows.length||rows.length>8||rows.some(row=>!Number.isFinite(row.score)))throw Error('This scoreboard cannot be shared as an image.');
  const trail=Array.from({length:result.totalRounds},(_,round)=>{
-  const recap=result.recap.find(row=>row.round===round),solve=recap?.solvers.find(player=>player.name===me.name);
+  const recap=result.recap.find(row=>row.round===round),solve=recap?.solvers.find(player=>player.id?player.id===me.id:player.name===me.name);
   return solve?.clue&&solve.clue>=1&&solve.clue<=3?String(solve.clue):'—';
  });
  const cellGap=12,cellWidth=Math.min(76,(920-cellGap*(trail.length-1))/trail.length),trailWidth=cellWidth*trail.length+cellGap*(trail.length-1),trailX=(1080-trailWidth)/2;
  const marks=trail.map((mark,index)=>`<g transform="translate(${trailX+index*(cellWidth+cellGap)} 530)"><rect width="${cellWidth}" height="76" rx="14" fill="${mark==='—'?'#151B29':'#4169FF'}" stroke="#59677F"/><text x="${cellWidth/2}" y="49" text-anchor="middle" font-size="27" font-weight="800">${mark}</text></g>`).join('');
  const rowHeight=Math.min(42,260/rows.length),scoreRows=rows.map((row,index)=>`<g transform="translate(100 ${688+index*rowHeight})"><text y="0" font-size="${rows.length>6?22:25}" fill="${index===0?'#F6F7FB':'#C9D3E5'}">${index+1}. ${xml(short(row.name,28))}</text><text x="880" y="0" text-anchor="end" font-size="${rows.length>6?22:25}" font-weight="800">${row.score} PTS</text></g>`).join('');
- const winner=xml(short(result.winners.join(' & '),48)),format=`${result.matchMode==='teams'?'TEAMS':'SOLO'} · ${result.totalRounds} ROUNDS · ${(result.settings.difficulty??'standard').toUpperCase()}${result.settings.speedBonus?' · SPEED BONUS':''}`;
+ const settings=result.resultSettings??result.settings;
+ const winner=xml(short(result.winners.join(' & '),48)),format=`${result.matchMode==='teams'?'TEAMS':'SOLO'} · ${result.totalRounds} ROUNDS · ${(settings.difficulty??'standard').toUpperCase()}${settings.speedBonus?' · SPEED BONUS':''}`;
  const fastest=result.fastest?`<text x="540" y="1010" text-anchor="middle" font-size="21" fill="#C9D3E5">FASTEST · ${xml(short(result.fastest.name,28))} · ${time(result.fastest.ms)} · CLUE ${result.fastest.clue}</text>`:'';
  return `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img" aria-label="Three Clues Movie Night result">
  <rect width="1080" height="1080" fill="#0B0D12"/><rect x="24" y="24" width="1032" height="1032" rx="32" fill="none" stroke="#4169FF" stroke-width="2"/>
