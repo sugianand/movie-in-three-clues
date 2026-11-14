@@ -104,3 +104,15 @@ export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|nul
 export function writeEncoreProgress(storage:StorageLike|undefined|null,value:EncoreProgress){
  try{storage?.setItem(STORAGE_KEY,JSON.stringify(value));return !!storage;}catch{return false;}
 }
+
+export function encoreShareText(progress:EncoreProgress,href:string){
+ let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
+ const streak=progress.streak===1?'1 mission':`${progress.streak} missions`,best=progress.bestStreak===1?'1 mission':`${progress.bestStreak} missions`;
+ return ['Three Clues · My Encore',progress.active.target,`Current streak: ${streak} · Best: ${best}`,'Take on your own next-show challenge:',`${page.origin}/`].join('\n');
+}
+
+export async function shareEncore(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>},native=true){
+ if(native&&platform.share){try{await platform.share({title:'Three Clues · My Encore',text});return 'shared';}catch(error){if(error&&typeof error==='object'&&'name' in error&&error.name==='AbortError')return 'cancelled';}}
+ if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
+ return 'manual';
+}

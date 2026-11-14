@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {advanceEncoreProgress,completesEncoreMission,encoreMission,readEncoreProgress,writeEncoreProgress} from '../lib/encore-mission.ts';
+import {advanceEncoreProgress,completesEncoreMission,encoreMission,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress} from '../lib/encore-mission.ts';
 
 const summary={score:400,solves:2,firstClues:1,averageClue:1.5,fastestMs:1200,headline:'Match complete'};
 const perfect=encoreMission({...summary,solves:3},3);
@@ -35,4 +35,12 @@ memory.set('three-clues-encore-v1','{"version":1,"active":{"kind":"broken"}}');
 assert.equal(readEncoreProgress(storage),null,'malformed browser data fails quietly');
 memory.set('three-clues-encore-v1',JSON.stringify({...second,streak:3,bestStreak:2}));
 assert.equal(readEncoreProgress(storage),null,'a best streak cannot trail the current streak');
-console.log('PASS: tracked Encore Missions are private, streak-aware, migration-safe and duplicate-proof.');
+const shareProgress={...third,lastMatchId:'PRIVATE-MATCH',lastOutcome:{complete:true,mission:{...third.active,target:'SECRET PRIOR TARGET'}},active:{...third.active,target:'Land 1 first-clue solve.'},streak:2,bestStreak:4};
+const shareText=encoreShareText(shareProgress,'https://example.com/?room=SECRET-ROOM&token=PRIVATE-TOKEN#movie');
+assert.equal(shareText,'Three Clues · My Encore\nLand 1 first-clue solve.\nCurrent streak: 2 missions · Best: 4 missions\nTake on your own next-show challenge:\nhttps://example.com/');
+for(const secret of ['PRIVATE-MATCH','SECRET PRIOR TARGET','SECRET-ROOM','PRIVATE-TOKEN','#movie'])assert(!shareText.includes(secret),'Encore shares must reveal only the active target and aggregate streak');
+assert.equal(encoreShareText(shareProgress,'javascript:alert(1)'),null);
+let shared,copied;assert.equal(await shareEncore(shareText,{share:async data=>{shared=data;}}),'shared');assert.equal(shared.title,'Three Clues · My Encore');assert.equal(shared.text,shareText);
+assert.equal(await shareEncore(shareText,{share:async()=>{throw {name:'AbortError'};},copy:async()=>{throw Error('must not copy');}}),'cancelled');
+assert.equal(await shareEncore(shareText,{share:async()=>{throw Error('blocked');},copy:async value=>{copied=value;}}),'copied');assert.equal(copied,shareText);assert.equal(await shareEncore(shareText,{},false),'manual');
+console.log('PASS: tracked Encore Missions are private, streak-aware, share-safe, migration-safe and duplicate-proof.');
