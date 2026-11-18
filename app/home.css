@@ -120,3 +120,12 @@ header.tc-header{background:linear-gradient(180deg,color-mix(in srgb,var(--backg
  .tc-clues li{padding:12px 4px 4px}
  .tc-clues b{font-size:40px}
 }
+
+/* Desktop readability: the poster wall fades to a smooth dark spotlight behind the text and stays
+   vivid toward the edges, so the posters blend into one background instead of competing with it. */
+.cinema-backdrop-reel{filter:saturate(.8) brightness(.8)}
+.cinema-backdrop .cinema-backdrop-shade{background:radial-gradient(ellipse 42% 62% at 50% 42%,rgba(9,11,15,.86) 0%,rgba(9,11,15,.7) 45%,rgba(9,11,15,.35) 100%),linear-gradient(180deg,rgba(9,11,15,.45) 0%,rgba(9,11,15,0) 22%,rgba(9,11,15,0) 70%,rgba(9,11,15,.85) 100%)}
+.tc-note{display:none}
+.tc-lede{max-width:40ch;font-size:20px;line-height:1.55}
+.tc-micro{font-size:16px}
+@media (max-width:560px){.cinema-backdrop .cinema-backdrop-shade{background:linear-gradient(180deg,rgba(9,11,15,.55),rgba(9,11,15,.72) 50%,rgba(9,11,15,.85))}.tc-lede{font-size:17px}}
