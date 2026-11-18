@@ -174,7 +174,7 @@ Returning players see the active Encore Mission on the landing page with a direc
 
 Completing consecutive Encore Missions now builds a browser-local mission streak and personal best. A completed goal extends the run, a miss resets only the current streak, and duplicate result views cannot award progress twice. Existing saved missions migrate automatically with their active goal intact.
 
-The landing card can now share or copy a spoiler-free Encore challenge so friends can chase their own next-show goal. Shared text includes only the active target, current and best mission streak, and the clean public origin; it excludes prior results, match identifiers, identity, room credentials, URL parameters, and movie data. Native sharing falls back to the clipboard and then to a selectable text field.
+The landing card can now share or copy a spoiler-free Encore challenge so friends can chase their own next-show goal. Shared text includes only the active target, current and best mission streak, and an anonymous playable mission link; it excludes prior results, match identifiers, identity, room credentials, unrelated URL parameters, and movie data. A recipient can preview the rule, accept it, and head directly into party play. Accepting replaces the active mission and starts a fair new streak while preserving the browser-local personal best. Native sharing falls back to the clipboard and then to a selectable text field.
 
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 

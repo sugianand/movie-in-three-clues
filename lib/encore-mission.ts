@@ -105,10 +105,30 @@ export function writeEncoreProgress(storage:StorageLike|undefined|null,value:Enc
  try{storage?.setItem(STORAGE_KEY,JSON.stringify(value));return !!storage;}catch{return false;}
 }
 
+function invitedEncoreMission(kind:string,baselineRate?:number):EncoreMission|null{
+ if(kind==='perfect')return {kind,title:'Hold the spotlight',target:'Solve every movie again.',detail:'A perfect slate is yours to defend.'};
+ if(kind==='first-solve')return {kind,title:'Find your first frame',target:'Solve 1 movie next match.',detail:'One correct title starts the comeback.'};
+ if(kind==='first-clue')return {kind,title:'Beat the reveal',target:'Land 1 first-clue solve.',detail:'Trust the first read before the later clues arrive.'};
+ if(kind==='solve-rate'&&typeof baselineRate==='number'&&Number.isFinite(baselineRate)&&baselineRate>=0&&baselineRate<1)return {kind,title:'Raise the hit rate',target:`Beat your ${Math.round(baselineRate*100)}% solve rate.`,detail:'Any match length counts, so the goal stays fair if settings change.',baselineRate};
+ return null;
+}
+
+export function encoreInviteFromUrl(href:string){
+ let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
+ const kind=page.searchParams.get('encore')??'',rate=page.searchParams.get('rate');
+ return invitedEncoreMission(kind,rate===null||rate.trim()===''?undefined:Number(rate));
+}
+
+export function acceptEncoreInvite(current:EncoreProgress|null,mission:EncoreMission):EncoreProgress{
+ return {version:2,lastMatchId:'',active:mission,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0};
+}
+
 export function encoreShareText(progress:EncoreProgress,href:string){
  let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
  const streak=progress.streak===1?'1 mission':`${progress.streak} missions`,best=progress.bestStreak===1?'1 mission':`${progress.bestStreak} missions`;
- return ['Three Clues · My Encore',progress.active.target,`Current streak: ${streak} · Best: ${best}`,'Take on your own next-show challenge:',`${page.origin}/`].join('\n');
+ const invite=new URL('/',page.origin);invite.searchParams.set('encore',progress.active.kind);
+ if(progress.active.kind==='solve-rate'&&typeof progress.active.baselineRate==='number')invite.searchParams.set('rate',String(progress.active.baselineRate));
+ return ['Three Clues · My Encore',progress.active.target,`Current streak: ${streak} · Best: ${best}`,'Accept this next-show challenge:',invite.toString()].join('\n');
 }
 
 export async function shareEncore(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>},native=true){
