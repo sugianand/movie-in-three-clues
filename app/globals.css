@@ -424,3 +424,6 @@ main>header .header-actions{gap:18px}
 .cinema-backdrop-reel img{width:100%;height:100%;object-fit:cover;display:block}
 @keyframes poster-wall-scroll{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
 @media(prefers-reduced-motion:reduce){.cinema-backdrop-reel{animation:none}}
+/* The random poster set is chosen after load; fade the wall in once it exists. */
+.cinema-backdrop-reel{transition:opacity .8s ease}
+.cinema-backdrop-reel:not(.is-ready){opacity:0}
