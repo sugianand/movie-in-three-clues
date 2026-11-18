@@ -26,7 +26,7 @@ header.tc-header{position:sticky;top:0;z-index:60;height:auto;display:block;padd
 /* Hero */
 .tc-landing{overflow-x:clip;font-family:var(--tc-font);color:var(--foreground);padding:clamp(40px,7vw,84px) 0 clamp(48px,7vw,88px)}
 .tc-hero{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;max-width:720px;margin:0 auto}
-.tc-hero::before{content:'';position:absolute;z-index:-1;inset:-60px -18vw -40px;background:radial-gradient(closest-side,color-mix(in srgb,var(--background) 82%,transparent),transparent);pointer-events:none}
+.tc-hero::before{content:'';position:absolute;z-index:-1;inset:-60px -18vw -40px;background:radial-gradient(closest-side,color-mix(in srgb,var(--background) 40%,transparent),transparent);pointer-events:none}
 .tc-hero .tc-logo-symbol{margin-bottom:22px}
 .tc-landing .tc-wordmark{display:flex;flex-direction:column;align-items:center;margin:0;font-family:var(--tc-font);font-weight:900;font-size:clamp(76px,13vw,148px);line-height:.86;letter-spacing:-.055em;color:var(--foreground);text-shadow:0 6px 34px #000a}
 .tc-wordmark span:last-child{color:var(--brand-accent)}
