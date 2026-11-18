@@ -1,15 +1,17 @@
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
+import {readFileSync, existsSync} from 'node:fs';
 
 const css=readFileSync(new URL('../app/globals.css',import.meta.url),'utf8');
 const component=readFileSync(new URL('../components/cinema-backdrop.tsx',import.meta.url),'utf8');
+const posters=JSON.parse(component.match(/const posters = (\[.*?\]);/s)[1]);
 
-assert.match(css,/\.cinema-backdrop-reel\{[^}]*animation:cinema-scroll 100s linear infinite/,'poster reel keeps the intended 100-second expanded linear loop');
-assert.doesNotMatch(css,/\.cinema-backdrop-reel\{animation-duration:(?!100s)[^}]+\}/,'later rules cannot silently speed up or slow down the poster reel');
-assert.match(css,/@keyframes cinema-scroll\{from\{transform:translate3d\(0,0,0\)\}to\{transform:translate3d\(calc\(-1 \* var\(--reel-width\)\),0,0\)\}\}/,'poster reel travels continuously in one direction');
-assert.match(css,/@media\(prefers-reduced-motion:reduce\)\{\.cinema-backdrop-reel\{animation:none/,'reduced-motion visitors receive a stationary backdrop');
-assert.doesNotMatch(css,/animation-direction\s*:\s*(alternate|reverse)/,'the reel never reverses');
-assert.doesNotMatch(css,/animation-play-state\s*:\s*paused/,'the reel has no paused visual state');
-assert.doesNotMatch(component,/<button|pause/i,'the backdrop does not expose a pause control');
-assert.match(css,/--reel-width:calc\(var\(--panel-width\) \* 2\)/,'expanded lap covers twice the old distance, making 100s three times faster than the former 150s loop');
-console.log('PASS: poster backdrop keeps its 100-second expanded one-way loop and reduced-motion fallback.');
+assert.ok(posters.length>=30,'the wall shows at least 30 movies');
+assert.equal(posters.length%3,0,'a poster count divisible by 3 keeps every row full so the loop has no hole');
+for(const p of posters) assert.ok(existsSync(new URL(`../public/posters/${p}.webp`,import.meta.url)),`${p}.webp exists`);
+assert.doesNotMatch(component,/movie-poster-wall|cinema-poster-original/,'the old slanted collage is gone');
+assert.doesNotMatch(css,/movie-poster-wall\.png/,'no stylesheet still paints the slanted collage');
+assert.match(css,/\.cinema-backdrop-reel\{[^}]*gap:0/,'posters sit flush with no black gaps');
+assert.match(css,/to\{transform:translate3d\(-50%,0,0\)\}/,'reel scrolls one full copy for a seamless loop');
+assert.match(css,/prefers-reduced-motion:reduce\)\{\.cinema-backdrop-reel\{animation:none/,'reduced-motion visitors get a still wall');
+assert.doesNotMatch(component,/<button|pause/i,'the backdrop has no controls');
+console.log(`PASS: ${posters.length} straight, gap-free posters loop seamlessly.`);
