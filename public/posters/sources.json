@@ -223,14 +223,6 @@
   "title": "My Name Is Khan",
   "source": "https://image.tmdb.org/t/p/w500/5Y36lCiNyyV71mjq6LavgiggbhT.jpg"
  },
- "sivaji-the-boss": {
-  "title": "Sivaji: The Boss",
-  "source": "https://image.tmdb.org/t/p/w500/3ZckU1gr33fjIcVXM60exv2knaG.jpg"
- },
- "ghilli": {
-  "title": "Ghilli",
-  "source": "https://image.tmdb.org/t/p/w500/aUvUohnBgX5sbuMKNyKDAPAoVNc.jpg"
- },
  "anniyan": {
   "title": "Anniyan",
   "source": "https://image.tmdb.org/t/p/w500/fT9m4g5aWvwNVjHf0cUTqtTLJvh.jpg"
@@ -245,15 +237,7 @@
  },
  "baasha": {
   "title": "Baasha",
-  "source": "https://image.tmdb.org/t/p/w500/xPSw9PLzYFKTVphw9ErZcBPKUsd.jpg"
- },
- "mersal": {
-  "title": "Mersal",
-  "source": "https://image.tmdb.org/t/p/w500/65Q1wpRPZ5E3UVUv2V5JBbJQCcj.jpg"
- },
- "kaththi": {
-  "title": "Kaththi",
-  "source": "https://image.tmdb.org/t/p/w500/y8hvai0Y96Fz1yqyvtAG0hnATuZ.jpg"
+  "source": "https://image.tmdb.org/t/p/w500/rKpgiiXLYkvuY6vaVVZ4K99E0gH.jpg"
  },
  "soorarai-pottru": {
   "title": "Soorarai Pottru",
@@ -277,7 +261,7 @@
  },
  "magadheera": {
   "title": "Magadheera",
-  "source": "https://image.tmdb.org/t/p/w500/xK7MEV56GF291VG0U5XnVJuvNv3.jpg"
+  "source": "https://image.tmdb.org/t/p/w500/59MjxlO9OgOEvpdaFHNJp2HPVvN.jpg"
  },
  "eega": {
   "title": "Eega",
@@ -302,10 +286,6 @@
  "avatar": {
   "title": "Avatar",
   "source": "https://image.tmdb.org/t/p/w500/gKY6q7SjCkAU6FqvqWybDYgUKIF.jpg"
- },
- "ala-vaikunthapurramuloo": {
-  "title": "Ala Vaikunthapurramuloo",
-  "source": "https://image.tmdb.org/t/p/w500/2rzORJaegE2bbKNVkQXbZCeV0BP.jpg"
  },
  "the-shawshank-redemption": {
   "title": "The Shawshank Redemption",
@@ -383,10 +363,6 @@
   "title": "Knives Out",
   "source": "https://image.tmdb.org/t/p/w500/pThyQovXQrw2m0s9x82twj48Jq4.jpg"
  },
- "asoka": {
-  "title": "Asoka",
-  "source": "https://image.tmdb.org/t/p/w500/ckFDMqLjhsYo2kH3X5auV1NnjPM.jpg"
- },
  "get-out": {
   "title": "Get Out",
   "source": "https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg"
@@ -414,10 +390,6 @@
  "kal-ho-naa-ho": {
   "title": "Kal Ho Naa Ho",
   "source": "https://image.tmdb.org/t/p/w500/zhMI6I0kSLnewTMwE0A8Tz3Cj2f.jpg"
- },
- "ghajini": {
-  "title": "Ghajini",
-  "source": "https://image.tmdb.org/t/p/w500/mbqrzjSzUYFaAflMHdjtzbm1FCu.jpg"
  },
  "a-wednesday": {
   "title": "A Wednesday",
@@ -455,14 +427,6 @@
   "title": "Omkara",
   "source": "https://image.tmdb.org/t/p/w500/hRPFHoyvqWd1iu27muybtZMlbou.jpg"
  },
- "dil-se": {
-  "title": "Dil Se..",
-  "source": "https://image.tmdb.org/t/p/w500/rdnkOPYlHf8WaPRllTz3dsuzpp8.jpg"
- },
- "no-smoking": {
-  "title": "No Smoking",
-  "source": "https://image.tmdb.org/t/p/w500/reJRahEjVlMpbolmrRZRyKOcy3m.jpg"
- },
  "dostana": {
   "title": "Dostana",
   "source": "https://image.tmdb.org/t/p/w500/obwjlgNI2NFZupMuJBbKgH3IhQp.jpg"
@@ -486,14 +450,6 @@
  "dhoom-2": {
   "title": "Dhoom 2",
   "source": "https://image.tmdb.org/t/p/w500/3zJLnrP9g9LSMpX5C1wau49gGUv.jpg"
- },
- "billu": {
-  "title": "Billu",
-  "source": "https://image.tmdb.org/t/p/w500/nmWKskigmvBow3uOP4RPQOIaUux.jpg"
- },
- "kabhi-haan-kabhi-naa": {
-  "title": "Kabhi Haan Kabhi Naa",
-  "source": "https://image.tmdb.org/t/p/w500/6FtBaFCz3UFFhXyE4JHxQDn43gM.jpg"
  },
  "jaane-tu-ya-jaane-na": {
   "title": "Jaane Tu... Ya Jaane Na",
@@ -551,10 +507,6 @@
   "title": "Padmaavat",
   "source": "https://image.tmdb.org/t/p/w500/5kk71s8Vmvt8XQOojevhTA5QcB0.jpg"
  },
- "ra-one": {
-  "title": "Ra.One",
-  "source": "https://image.tmdb.org/t/p/w500/mXlS41qbd0bzhO44iPDtJqYtQt8.jpg"
- },
  "omg-oh-my-god": {
   "title": "OMG: Oh My God!",
   "source": "https://image.tmdb.org/t/p/w500/iTPzC3H2iG49xFIcMs01UfZeBXv.jpg"
@@ -566,10 +518,6 @@
  "bhediya": {
   "title": "Bhediya",
   "source": "https://image.tmdb.org/t/p/w500/iZtq44ZmxBW0E3tAeLG6UdJe9aj.jpg"
- },
- "monica-o-my-darling": {
-  "title": "Monica O My Darling",
-  "source": "https://image.tmdb.org/t/p/w500/4GvYW5pQPSw4gxSLBnOkXF2bZbf.jpg"
  },
  "chhichhore": {
   "title": "Chhichhore",
@@ -606,10 +554,6 @@
  "fight-club": {
   "title": "Fight Club",
   "source": "https://image.tmdb.org/t/p/w500/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg"
- },
- "talaash": {
-  "title": "Talaash",
-  "source": "https://image.tmdb.org/t/p/w500/IwwX8TNtjH6amniaz8W8Lg3DJC.jpg"
  },
  "the-lord-of-the-rings-the-return-of-the-king": {
   "title": "The Lord of the Rings: The Return of the King",
@@ -766,5 +710,41 @@
  "thor": {
   "title": "Thor",
   "source": "https://image.tmdb.org/t/p/w500/prSfAi1xGrhLQNxVSUFh61xQ4Qy.jpg"
+ },
+ "2-0": {
+  "title": "2.0",
+  "source": "https://image.tmdb.org/t/p/w500/utIyGFUTK9miZxBx53jzJZfqc7R.jpg"
+ },
+ "mudhalvan": {
+  "title": "Mudhalvan",
+  "source": "https://image.tmdb.org/t/p/w500/5WeXbn2DvXNsTHFPgFBA7upiCoi.jpg"
+ },
+ "simhadri": {
+  "title": "Simhadri",
+  "source": "https://image.tmdb.org/t/p/w500/j3ptDNRVLNSE3oFuZWs63mHYSNK.jpg"
+ },
+ "chatrapathi": {
+  "title": "Chatrapathi",
+  "source": "https://image.tmdb.org/t/p/w500/sW7aw6fLcQC4rVYLNcDuyXjbM0S.jpg"
+ },
+ "kgf-2": {
+  "title": "K.G.F: Chapter 2",
+  "source": "https://image.tmdb.org/t/p/w500/khNVygolU0TxLIDWff5tQlAhZ23.jpg"
+ },
+ "pushpa-2": {
+  "title": "Pushpa 2: The Rule",
+  "source": "https://image.tmdb.org/t/p/w500/qYIMFyffDrqZ5kzPov79a8GPbRf.jpg"
+ },
+ "kalki-2898-ad": {
+  "title": "Kalki 2898 AD",
+  "source": "https://image.tmdb.org/t/p/w500/rstcAnBeCkxNQjNp3YXrF6IP1tW.jpg"
+ },
+ "jailer": {
+  "title": "Jailer",
+  "source": "https://image.tmdb.org/t/p/w500/pTmMxAHqX4vsIDE6HPPxOR0Q6TN.jpg"
+ },
+ "leo": {
+  "title": "Leo",
+  "source": "https://image.tmdb.org/t/p/w500/2XUHC4lp3tDsgfFLFygNZ2x2Um9.jpg"
  }
 }

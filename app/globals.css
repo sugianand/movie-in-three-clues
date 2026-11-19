@@ -427,3 +427,7 @@ main>header .header-actions{gap:18px}
 /* The random poster set is chosen after load; fade the wall in once it exists. */
 .cinema-backdrop-reel{transition:opacity .8s ease}
 .cinema-backdrop-reel:not(.is-ready){opacity:0}
+/* Modern poster cards: rounded corners, a slim even gutter and soft depth. padding-right equals
+   the gap so each copy of the set is exactly half the reel and the loop stays seamless. */
+.cinema-backdrop-reel{--wall-gap:10px;gap:var(--wall-gap);padding:var(--wall-gap) var(--wall-gap) var(--wall-gap) 0;box-sizing:border-box;grid-auto-columns:calc((100vh - var(--wall-gap) * 4) / 3 * 2 / 3)}
+.cinema-backdrop-reel img{border-radius:14px;box-shadow:0 10px 30px #0008,inset 0 0 0 1px #ffffff14;outline:1px solid #ffffff12;outline-offset:-1px}
