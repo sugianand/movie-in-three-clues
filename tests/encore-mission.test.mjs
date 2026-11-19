@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {acceptEncoreInvite,advanceEncoreProgress,completesEncoreMission,encoreInviteFromUrl,encoreMission,encoreOutcomeShareText,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress} from '../lib/encore-mission.ts';
+import {acceptEncoreInvite,advanceEncoreProgress,completesEncoreMission,encoreInviteFromUrl,encoreMission,encoreMissionProgress,encoreOutcomeShareText,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress} from '../lib/encore-mission.ts';
 
 const summary={score:400,solves:2,firstClues:1,averageClue:1.5,fastestMs:1200,headline:'Match complete'};
 const perfect=encoreMission({...summary,solves:3},3);
@@ -14,6 +14,9 @@ assert(completesEncoreMission(encoreMission({...summary,solves:0},5),{...summary
 assert(completesEncoreMission(encoreMission({...summary,firstClues:0},5),{...summary,firstClues:1},10));
 assert(completesEncoreMission(rate,{...summary,solves:3},5));
 assert.equal(completesEncoreMission(rate,{...summary,solves:4},10),false,'matching the prior solve rate is not an improvement');
+assert.deepEqual(encoreMissionProgress(perfect,2,1,5),{current:2,target:5,reached:false,label:'2 of 5 movies secured.'},'perfect missions adapt their live target to match length');
+assert.deepEqual(encoreMissionProgress(rate,2,1,5),{current:2,target:3,reached:false,label:'2 of 3 movies secured.'},'solve-rate progress requires one more solve than the baseline');
+assert.deepEqual(encoreMissionProgress({kind:'first-clue',title:'',target:'',detail:''},3,1,10),{current:1,target:1,reached:true,label:'Goal reached — finish the match.'});
 
 const first=advanceEncoreProgress(null,'1000',summary,5);
 assert.equal(first.lastOutcome,null,'the first recorded match sets a mission without inventing an outcome');

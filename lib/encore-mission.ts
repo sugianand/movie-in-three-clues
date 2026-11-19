@@ -67,6 +67,17 @@ export function completesEncoreMission(mission:EncoreMission,summary:PersonalMat
  return typeof mission.baselineRate==='number'&&summary.solves/totalRounds>mission.baselineRate;
 }
 
+export function encoreMissionProgress(mission:EncoreMission,solves:number,firstClues:number,totalRounds:number){
+ const rounds=Math.max(1,Math.trunc(totalRounds)||1);
+ const safeSolves=Math.max(0,Math.min(rounds,Math.trunc(solves)||0));
+ const safeFirstClues=Math.max(0,Math.min(safeSolves,Math.trunc(firstClues)||0));
+ const current=mission.kind==='first-clue'?safeFirstClues:safeSolves;
+ const target=mission.kind==='perfect'?rounds:mission.kind==='solve-rate'?
+  Math.min(rounds,Math.floor((mission.baselineRate??1)*rounds)+1):1;
+ const unit=mission.kind==='first-clue'?'first-clue solve':target===1?'movie':'movies';
+ return {current,target,reached:current>=target,label:current>=target?'Goal reached — finish the match.':`${current} of ${target} ${unit} secured.`};
+}
+
 export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string,summary:PersonalMatchSummary,totalRounds:number):EncoreProgress{
  if(current?.lastMatchId===matchId)return current;
  const next=encoreMission(summary,totalRounds);

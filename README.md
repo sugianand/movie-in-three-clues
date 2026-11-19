@@ -180,6 +180,8 @@ Accepted friend challenges now close the loop after the next completed match. Th
 
 Seated players now keep a compact private Encore tracker in the lobby and throughout active rounds. It restores the browser-local target, identifies accepted friend challenges, shows the current and best mission run, and explains when the goal will be checked. Spectators never see it, it disappears from finished results in favor of the full debrief, and no mission data is added to room state or network requests.
 
+During the match, that tracker now fills a mission-specific progress bar from the seated player’s private solve and first-clue totals. Perfect-slate and solve-rate goals adapt to the selected 3-, 5- or 10-round length, reached goals stay visible until the final result confirms them, and other players receive none of those personal totals.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
