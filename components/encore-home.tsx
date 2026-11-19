@@ -30,7 +30,7 @@ export function EncoreHome({onPlay}:{onPlay:()=>void}){
  }
  if(invite)return <aside className="encore-home encore-invite" aria-label="Shared Encore Challenge">
   <div className="encore-home-icon" aria-hidden="true"><Share2 size={21}/></div>
-  <div className="encore-home-copy"><span>FRIEND&apos;S ENCORE</span><h2>{invite.title}</h2><p><strong>{invite.target}</strong> {invite.detail}</p><div className="encore-home-run"><b>Fresh streak starts at 0</b><span>Personal best kept · {progress?.bestStreak??0}</span></div><small>The link carries only this mission rule. Accepting replaces your active mission and starts a fresh streak.</small></div>
+  <div className="encore-home-copy"><span>FRIEND&apos;S ENCORE</span><h2>{invite.title}</h2><p><strong>{invite.target}</strong> {invite.detail}</p><div className="encore-home-run"><b>Fresh streak starts at 0</b><span>Personal best kept · {progress?.bestStreak??0}</span></div><small>The link carries only this mission rule. Accepting replaces your active mission and starts a fresh streak. After the match, you can send back a spoiler-free result.</small></div>
   <div className="encore-home-actions"><button type="button" className="secondary" onClick={acceptInvite}>Accept &amp; play</button><button type="button" className="encore-copy" onClick={dismissInvite}>Not now</button></div>
   {shareNotice&&<div className="encore-share-result"><p role="status">{shareNotice}</p></div>}
  </aside>;

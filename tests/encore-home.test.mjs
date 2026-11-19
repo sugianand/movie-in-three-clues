@@ -7,6 +7,7 @@ assert.match(component,/setProgress\(readEncoreProgress\(localStorage\)\)/,'the 
 assert.match(component,/setInvite\(encoreInviteFromUrl\(window\.location\.href\)\)/,'shared Encore links are recognized on arrival');
 assert.match(component,/writeEncoreProgress\(localStorage,next\)/,'accepted challenges become the recipient browser’s next mission');
 assert.match(component,/Accept &amp; play/);assert.match(component,/starts a fresh streak/);assert.match(component,/Personal best kept/);
+assert.match(component,/send back a spoiler-free result/,'accepted friend challenges explain the private response loop');
 assert.match(component,/progress\.streak/,'the landing card recognizes the current completion streak');
 assert.match(component,/Best · \{progress\.bestStreak\}/,'the landing card keeps the personal best visible');
 assert.match(component,/Play your encore/,'the saved goal has a direct route back to party play');
@@ -14,4 +15,8 @@ assert.match(component,/Saved only in this browser/,'the card explains its priva
 assert.doesNotMatch(component,/lastOutcome|lastMatchId/,'the landing card must not expose prior result details');
 assert.match(page,/!session&&entryStep==='landing'/,'the card is limited to the signed-out landing page');
 assert(page.indexOf('<EncoreHome')>=0&&page.indexOf('<MovieNightPassport/>')>page.indexOf('<EncoreHome'),'returning players see their active Encore beside existing Passport continuity');
+const summary=readFileSync(new URL('../components/personal-match-summary.tsx',import.meta.url),'utf8');
+assert.match(summary,/outcome\.invited/,'only accepted friend challenges offer a result reply');
+assert.match(summary,/encoreOutcomeShareText\(outcome,window\.location\.href\)/,'the response is built from the stored mission and a sanitized public URL');
+assert.match(summary,/Friend challenge finished/);assert.match(summary,/Share result/);
 console.log('PASS: active and invited Encore Missions return on the landing page without exposing prior-match details.');

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {acceptEncoreInvite,advanceEncoreProgress,completesEncoreMission,encoreInviteFromUrl,encoreMission,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress} from '../lib/encore-mission.ts';
+import {acceptEncoreInvite,advanceEncoreProgress,completesEncoreMission,encoreInviteFromUrl,encoreMission,encoreOutcomeShareText,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress} from '../lib/encore-mission.ts';
 
 const summary={score:400,solves:2,firstClues:1,averageClue:1.5,fastestMs:1200,headline:'Match complete'};
 const perfect=encoreMission({...summary,solves:3},3);
@@ -30,7 +30,9 @@ assert.deepEqual([missed.streak,missed.bestStreak],[0,2],'a miss resets only the
 const memory=new Map(),storage={getItem:key=>memory.get(key)??null,setItem:(key,value)=>memory.set(key,value)};
 assert(writeEncoreProgress(storage,missed));assert.deepEqual(readEncoreProgress(storage),missed);
 memory.set('three-clues-encore-v1',JSON.stringify({...second,version:1,streak:undefined,bestStreak:undefined}));
-assert.deepEqual(readEncoreProgress(storage),{...second,version:2,streak:0,bestStreak:0},'version-one missions migrate without losing the active goal');
+assert.deepEqual(readEncoreProgress(storage),{...second,version:3,activeInvited:false,streak:0,bestStreak:0},'version-one missions migrate without losing the active goal');
+memory.set('three-clues-encore-v1',JSON.stringify({...second,version:2,activeInvited:undefined,lastOutcome:{complete:true,mission:second.active}}));
+assert.deepEqual(readEncoreProgress(storage),{...second,version:3,activeInvited:false,lastOutcome:{complete:true,mission:second.active,invited:false}},'version-two missions migrate with ordinary outcomes and no invented friend challenge');
 memory.set('three-clues-encore-v1','{"version":1,"active":{"kind":"broken"}}');
 assert.equal(readEncoreProgress(storage),null,'malformed browser data fails quietly');
 memory.set('three-clues-encore-v1',JSON.stringify({...second,streak:3,bestStreak:2}));
@@ -42,11 +44,20 @@ for(const secret of ['PRIVATE-MATCH','SECRET PRIOR TARGET','SECRET-ROOM','PRIVAT
 assert.equal(encoreShareText(shareProgress,'javascript:alert(1)'),null);
 const invited=encoreInviteFromUrl('https://example.com/?encore=first-clue');
 assert.deepEqual(invited,{kind:'first-clue',title:'Beat the reveal',target:'Land 1 first-clue solve.',detail:'Trust the first read before the later clues arrive.'});
-assert.deepEqual(acceptEncoreInvite(shareProgress,invited),{version:2,lastMatchId:'',active:invited,lastOutcome:null,streak:0,bestStreak:4},'accepting a shared goal starts a fair new streak without erasing the personal best');
+const accepted=acceptEncoreInvite(shareProgress,invited);
+assert.deepEqual(accepted,{version:3,lastMatchId:'',active:invited,activeInvited:true,lastOutcome:null,streak:0,bestStreak:4},'accepting a shared goal starts a fair new streak without erasing the personal best');
+const challengeResult=advanceEncoreProgress(accepted,'FRIEND-MATCH',{...summary,firstClues:1},5);
+assert.equal(challengeResult.lastOutcome?.invited,true,'the next unique result remembers that it closes a friend challenge');
+assert.equal(challengeResult.activeInvited,false,'the automatically generated next mission is personal again');
+const outcomeText=encoreOutcomeShareText(challengeResult.lastOutcome,'https://example.com/private?room=SECRET&token=PRIVATE#movie');
+assert.equal(outcomeText,'Three Clues · Friend Encore\nChallenge cleared.\nLand 1 first-clue solve.\nTry the same spoiler-free challenge:\nhttps://example.com/?encore=first-clue');
+for(const secret of ['FRIEND-MATCH','SECRET','PRIVATE','#movie',String(summary.score)])assert(!outcomeText.includes(secret),'friend challenge replies must not expose match, room, identity or score details');
+assert.equal(encoreOutcomeShareText(challengeResult.lastOutcome,'javascript:alert(1)'),null);
 const rateShare=encoreShareText({...shareProgress,active:rate},'https://example.com/private?room=secret');
 assert(rateShare.endsWith('https://example.com/?encore=solve-rate&rate=0.4'));assert.equal(encoreInviteFromUrl(rateShare.split('\n').at(-1)).baselineRate,0.4);
 assert.equal(encoreInviteFromUrl('https://example.com/?encore=solve-rate'),null);assert.equal(encoreInviteFromUrl('https://example.com/?encore=solve-rate&rate='),null);assert.equal(encoreInviteFromUrl('https://example.com/?encore=unknown'),null);assert.equal(encoreInviteFromUrl('javascript:alert(1)'),null);
 let shared,copied;assert.equal(await shareEncore(shareText,{share:async data=>{shared=data;}}),'shared');assert.equal(shared.title,'Three Clues · My Encore');assert.equal(shared.text,shareText);
+assert.equal(await shareEncore(outcomeText,{share:async data=>{shared=data;}},true,'Three Clues · Friend Encore'),'shared');assert.equal(shared.title,'Three Clues · Friend Encore');
 assert.equal(await shareEncore(shareText,{share:async()=>{throw {name:'AbortError'};},copy:async()=>{throw Error('must not copy');}}),'cancelled');
 assert.equal(await shareEncore(shareText,{share:async()=>{throw Error('blocked');},copy:async value=>{copied=value;}}),'copied');assert.equal(copied,shareText);assert.equal(await shareEncore(shareText,{},false),'manual');
 console.log('PASS: tracked Encore Missions are private, streak-aware, share-safe, migration-safe and duplicate-proof.');

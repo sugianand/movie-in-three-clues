@@ -11,12 +11,14 @@ export type EncoreMission={
 export type EncoreOutcome={
  complete:boolean;
  mission:EncoreMission;
+ invited:boolean;
 };
 
 export type EncoreProgress={
- version:2;
+ version:3;
  lastMatchId:string;
  active:EncoreMission;
+ activeInvited:boolean;
  lastOutcome:EncoreOutcome|null;
  streak:number;
  bestStreak:number;
@@ -71,10 +73,11 @@ export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string
  const complete=current?.active?completesEncoreMission(current.active,summary,totalRounds):null;
  const streak=complete?(current?.streak??0)+1:complete===false?0:current?.streak??0;
  return {
-  version:2,
+  version:3,
   lastMatchId:matchId,
   active:next,
-  lastOutcome:current?.active?{complete:!!complete,mission:current.active}:null,
+  activeInvited:false,
+  lastOutcome:current?.active?{complete:!!complete,mission:current.active,invited:current.activeInvited}:null,
   streak,
   bestStreak:Math.max(current?.bestStreak??0,streak),
  };
@@ -90,14 +93,16 @@ function validMission(value:unknown):value is EncoreMission{
 
 export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|null{
  try{
-  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2})|null;
-  if(!value||(value.version!==1&&value.version!==2)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
+  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2|3})|null;
+  if(!value||![1,2,3].includes(value.version??0)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
   const outcome=value.lastOutcome;
   if(outcome!==null&&outcome!==undefined&&
-   (!outcome||typeof outcome!=='object'||typeof outcome.complete!=='boolean'||!validMission(outcome.mission)))return null;
+   (!outcome||typeof outcome!=='object'||typeof outcome.complete!=='boolean'||!validMission(outcome.mission)||
+    ('invited' in outcome&&typeof outcome.invited!=='boolean')))return null;
   const validCount=(count:unknown)=>typeof count==='number'&&Number.isInteger(count)&&count>=0;
-  if(value.version===2&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
-  return {version:2,lastMatchId:value.lastMatchId,active:value.active,lastOutcome:outcome??null,streak:value.version===2?value.streak!:0,bestStreak:value.version===2?value.bestStreak!:0};
+  if(value.version!==1&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
+  if(value.version===3&&typeof value.activeInvited!=='boolean')return null;
+  return {version:3,lastMatchId:value.lastMatchId,active:value.active,activeInvited:value.version===3?value.activeInvited!:false,lastOutcome:outcome?{...outcome,invited:outcome.invited??false}:null,streak:value.version===1?0:value.streak!,bestStreak:value.version===1?0:value.bestStreak!};
  }catch{return null;}
 }
 
@@ -120,19 +125,29 @@ export function encoreInviteFromUrl(href:string){
 }
 
 export function acceptEncoreInvite(current:EncoreProgress|null,mission:EncoreMission):EncoreProgress{
- return {version:2,lastMatchId:'',active:mission,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0};
+ return {version:3,lastMatchId:'',active:mission,activeInvited:true,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0};
+}
+
+function encoreInviteUrl(mission:EncoreMission,href:string){
+ let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
+ const invite=new URL('/',page.origin);invite.searchParams.set('encore',mission.kind);
+ if(mission.kind==='solve-rate'&&typeof mission.baselineRate==='number')invite.searchParams.set('rate',String(mission.baselineRate));
+ return invite.toString();
 }
 
 export function encoreShareText(progress:EncoreProgress,href:string){
- let page:URL;try{page=new URL(href);}catch{return null;}if(!['http:','https:'].includes(page.protocol))return null;
+ const invite=encoreInviteUrl(progress.active,href);if(!invite)return null;
  const streak=progress.streak===1?'1 mission':`${progress.streak} missions`,best=progress.bestStreak===1?'1 mission':`${progress.bestStreak} missions`;
- const invite=new URL('/',page.origin);invite.searchParams.set('encore',progress.active.kind);
- if(progress.active.kind==='solve-rate'&&typeof progress.active.baselineRate==='number')invite.searchParams.set('rate',String(progress.active.baselineRate));
- return ['Three Clues · My Encore',progress.active.target,`Current streak: ${streak} · Best: ${best}`,'Accept this next-show challenge:',invite.toString()].join('\n');
+ return ['Three Clues · My Encore',progress.active.target,`Current streak: ${streak} · Best: ${best}`,'Accept this next-show challenge:',invite].join('\n');
 }
 
-export async function shareEncore(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>},native=true){
- if(native&&platform.share){try{await platform.share({title:'Three Clues · My Encore',text});return 'shared';}catch(error){if(error&&typeof error==='object'&&'name' in error&&error.name==='AbortError')return 'cancelled';}}
+export function encoreOutcomeShareText(outcome:EncoreOutcome,href:string){
+ const invite=encoreInviteUrl(outcome.mission,href);if(!invite)return null;
+ return ['Three Clues · Friend Encore',outcome.complete?'Challenge cleared.':'Challenge missed — rematch accepted.',outcome.mission.target,'Try the same spoiler-free challenge:',invite].join('\n');
+}
+
+export async function shareEncore(text:string,platform:{share?:(data:{title:string;text:string})=>Promise<void>;copy?:(text:string)=>Promise<void>},native=true,title='Three Clues · My Encore'){
+ if(native&&platform.share){try{await platform.share({title,text});return 'shared';}catch(error){if(error&&typeof error==='object'&&'name' in error&&error.name==='AbortError')return 'cancelled';}}
  if(platform.copy){try{await platform.copy(text);return 'copied';}catch{}}
  return 'manual';
 }
