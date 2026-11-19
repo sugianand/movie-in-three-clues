@@ -7,7 +7,7 @@ const wall=readFileSync(new URL('../lib/poster-wall.ts',import.meta.url),'utf8')
 const posters=JSON.parse(wall.match(/= (\[.*\]);/s)[1]);
 const size=Number(component.match(/WALL_SIZE = (\d+)/)[1]);
 
-assert.ok(posters.length>=180,`the wall draws from close to 200 movies (has ${posters.length})`);
+assert.ok(posters.length>=450,`the wall draws from close to 500 movies and shows (has ${posters.length})`);
 assert.equal(new Set(posters).size,posters.length,'no movie is listed twice');
 for(const p of posters) assert.ok(existsSync(new URL(`../public/posters/${p}.webp`,import.meta.url)),`${p}.webp exists`);
 assert.equal(size%3,0,'each visit shows a multiple of 3 posters so all three rows stay full');
