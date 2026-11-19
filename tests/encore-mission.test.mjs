@@ -14,9 +14,10 @@ assert(completesEncoreMission(encoreMission({...summary,solves:0},5),{...summary
 assert(completesEncoreMission(encoreMission({...summary,firstClues:0},5),{...summary,firstClues:1},10));
 assert(completesEncoreMission(rate,{...summary,solves:3},5));
 assert.equal(completesEncoreMission(rate,{...summary,solves:4},10),false,'matching the prior solve rate is not an improvement');
-assert.deepEqual(encoreMissionProgress(perfect,2,1,5),{current:2,target:5,reached:false,label:'2 of 5 movies secured.'},'perfect missions adapt their live target to match length');
-assert.deepEqual(encoreMissionProgress(rate,2,1,5),{current:2,target:3,reached:false,label:'2 of 3 movies secured.'},'solve-rate progress requires one more solve than the baseline');
-assert.deepEqual(encoreMissionProgress({kind:'first-clue',title:'',target:'',detail:''},3,1,10),{current:1,target:1,reached:true,label:'Goal reached — finish the match.'});
+assert.deepEqual(encoreMissionProgress(perfect,2,1,5,2),{current:2,target:5,reached:false,possible:true,label:'2 of 5 movies secured · 3 more across 3 rounds.'},'perfect missions adapt their live target and coaching to match length');
+assert.deepEqual(encoreMissionProgress(rate,2,1,5,4),{current:2,target:3,reached:false,possible:true,label:'2 of 3 movies secured · 1 more in the final round.'},'solve-rate progress requires one more solve than the baseline');
+assert.deepEqual(encoreMissionProgress(perfect,2,1,5,3),{current:2,target:5,reached:false,possible:false,label:'Goal out of reach this match — finish for a fresh Encore.'},'an impossible target is called accurately before results');
+assert.deepEqual(encoreMissionProgress({kind:'first-clue',title:'',target:'',detail:''},3,1,10,4),{current:1,target:1,reached:true,possible:true,label:'Goal reached — finish the match.'});
 
 const first=advanceEncoreProgress(null,'1000',summary,5);
 assert.equal(first.lastOutcome,null,'the first recorded match sets a mission without inventing an outcome');

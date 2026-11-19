@@ -182,6 +182,8 @@ Seated players now keep a compact private Encore tracker in the lobby and throug
 
 During the match, that tracker now fills a mission-specific progress bar from the seated player’s private solve and first-clue totals. Perfect-slate and solve-rate goals adapt to the selected 3-, 5- or 10-round length, reached goals stay visible until the final result confirms them, and other players receive none of those personal totals.
 
+Live Encore coaching also accounts for resolved rounds. It shows the exact number of remaining solves when the mission is still achievable, identifies the final-round chance, and gently marks an unreachable goal while promising the fresh Encore that follows the result. First-clue missions stop counting a round as available as soon as its opening clue has passed.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.

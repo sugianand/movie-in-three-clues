@@ -67,7 +67,7 @@ export function completesEncoreMission(mission:EncoreMission,summary:PersonalMat
  return typeof mission.baselineRate==='number'&&summary.solves/totalRounds>mission.baselineRate;
 }
 
-export function encoreMissionProgress(mission:EncoreMission,solves:number,firstClues:number,totalRounds:number){
+export function encoreMissionProgress(mission:EncoreMission,solves:number,firstClues:number,totalRounds:number,roundsPlayed=0){
  const rounds=Math.max(1,Math.trunc(totalRounds)||1);
  const safeSolves=Math.max(0,Math.min(rounds,Math.trunc(solves)||0));
  const safeFirstClues=Math.max(0,Math.min(safeSolves,Math.trunc(firstClues)||0));
@@ -75,7 +75,10 @@ export function encoreMissionProgress(mission:EncoreMission,solves:number,firstC
  const target=mission.kind==='perfect'?rounds:mission.kind==='solve-rate'?
   Math.min(rounds,Math.floor((mission.baselineRate??1)*rounds)+1):1;
  const unit=mission.kind==='first-clue'?'first-clue solve':target===1?'movie':'movies';
- return {current,target,reached:current>=target,label:current>=target?'Goal reached — finish the match.':`${current} of ${target} ${unit} secured.`};
+ const remaining=Math.max(0,rounds-Math.max(0,Math.min(rounds,Math.trunc(roundsPlayed)||0)));
+ const needed=Math.max(0,target-current),reached=needed===0,possible=current+remaining>=target;
+ const chance=remaining===1?`${needed} more in the final round.`:`${needed} more across ${remaining} rounds.`;
+ return {current,target,reached,possible,label:reached?'Goal reached — finish the match.':possible?`${current} of ${target} ${unit} secured · ${chance}`:'Goal out of reach this match — finish for a fresh Encore.'};
 }
 
 export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string,summary:PersonalMatchSummary,totalRounds:number):EncoreProgress{
