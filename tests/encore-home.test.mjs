@@ -19,4 +19,10 @@ const summary=readFileSync(new URL('../components/personal-match-summary.tsx',im
 assert.match(summary,/outcome\.invited/,'only accepted friend challenges offer a result reply');
 assert.match(summary,/encoreOutcomeShareText\(outcome,window\.location\.href\)/,'the response is built from the stored mission and a sanitized public URL');
 assert.match(summary,/Friend challenge finished/);assert.match(summary,/Share result/);
+const tracker=readFileSync(new URL('../components/encore-tracker.tsx',import.meta.url),'utf8');
+assert.match(tracker,/readEncoreProgress\(localStorage\)/,'the in-room tracker restores the same private browser mission');
+assert.match(tracker,/progress\.activeInvited\?'FRIEND CHALLENGE':'YOUR ENCORE'/,'accepted friend goals stay distinguishable during play');
+assert.match(tracker,/Checked after the final result/,'the tracker sets an accurate completion expectation');
+assert.doesNotMatch(tracker,/lastOutcome|lastMatchId|fetch\(/,'the tracker does not expose results or send mission data to the server');
+assert.match(page,/game&&(?:!practice&&)?!game\.me\.spectator&&game\.status!=='finished'&&<EncoreTracker phase=\{game\.status\}/,'only seated multiplayer players see the private tracker before results');
 console.log('PASS: active and invited Encore Missions return on the landing page without exposing prior-match details.');

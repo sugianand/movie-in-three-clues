@@ -11,6 +11,7 @@ import {SeriesHonors} from '@/components/series-honors';
 import {ScoreJourney} from '@/components/score-journey';
 import {PersonalMatchSummary} from '@/components/personal-match-summary';
 import {EncoreHome} from '@/components/encore-home';
+import {EncoreTracker} from '@/components/encore-tracker';
 import {ThemePicker} from '@/components/theme-picker';
 import {BrandMark} from '@/components/brand-mark';
 import {CinemaBackdrop} from '@/components/cinema-backdrop';
@@ -114,6 +115,7 @@ export default function Home(){
  {game&&((game as Game&{seriesHistory?:SeriesMatch[]}).seriesHistory?.length??0)>0&&<SeriesTimeline history={(game as Game&{seriesHistory?:SeriesMatch[]}).seriesHistory!} players={game.players}/>}
  {game&&!seriesComplete&&(game.defendingChampions?.length??0)>0&&<section className="series-defender" aria-label="Defending Movie Night Series champion"><Crown size={25}/><div><span>DEFENDING {game.defendingChampions!.length===1?'CHAMPION':'CHAMPIONS'}{game.defendingTitleStreak>1?` · ${game.defendingTitleStreak} STRAIGHT`:''}</span><strong>{game.defendingChampions!.join(' & ')}</strong><p>{game.defendingTitleStreak>1?`${game.defendingTitleStreak} consecutive titles. `:''}{game.defendingChampions!.length===1?'Holds':'Hold'} the crown until this first-to-three race has a new winner.</p></div></section>}
  {!session&&entryStep==='landing'&&<><EncoreHome onPlay={()=>{setEntryStep('rooms');setError('');}}/><MovieNightPassport/></>}
+ {game&&!game.me.spectator&&game.status!=='finished'&&<EncoreTracker phase={game.status}/>}
  {game?.status==='finished'&&!game.me.spectator&&<PersonalMatchSummary result={game} matchId={String(game.roundStarted)}/>}
  {game?.status==='finished'&&!game.me.spectator&&<MovieNightPassport result={game}/>}
  {game?.status==='finished'&&seriesComplete&&!game.me.spectator&&<MultiplayerResultCard result={game}/>}

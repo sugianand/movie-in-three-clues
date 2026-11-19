@@ -178,6 +178,8 @@ The landing card can now share or copy a spoiler-free Encore challenge so friend
 
 Accepted friend challenges now close the loop after the next completed match. The result card identifies that the shared mission was finished and offers a spoiler-free reply stating only whether it was cleared or missed, the original rule, and a reusable challenge link. Scores, movies, guesses, identity, room data, match identifiers, and private URL details remain excluded; ordinary self-generated Encore missions do not show the reply action.
 
+Seated players now keep a compact private Encore tracker in the lobby and throughout active rounds. It restores the browser-local target, identifies accepted friend challenges, shows the current and best mission run, and explains when the goal will be checked. Spectators never see it, it disappears from finished results in favor of the full debrief, and no mission data is added to room state or network requests.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.
