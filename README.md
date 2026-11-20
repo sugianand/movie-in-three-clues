@@ -186,6 +186,8 @@ Live Encore coaching also accounts for resolved rounds. It shows the exact numbe
 
 Encore now keeps a lifetime browser-local record of evaluated missions and clears, including a clear rate on the landing card and private in-match tracker. Tracking begins with the first mission evaluated after this upgrade—older saves migrate without inventing past attempts—and accepting a friend challenge preserves the aggregate record while still resetting the current streak.
 
+The landing card also carries a compact seven-mission form reel, making recent clears and misses visible at a glance. It starts empty for upgraded saves, adds exactly one mark per uniquely evaluated match, keeps the lifetime record independent of the rolling window, and survives accepted friend challenges without exposing movie or room details.
+
 Players may share a display name without sharing results. New recaps bind solves and wins to stable player IDs, keeping each person's clue trail, Passport and Series stats accurate; older saved rooms retain name-based compatibility.
 
 Completed multiplayer matches now feed a room-level, first-to-three series table. Every solo winner earns one series win; in Teams, every player on a winning team earns one. Ties award all winners. Wins persist across rematches for the life of the room, while match scores still reset normally.

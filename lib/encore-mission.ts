@@ -14,8 +14,10 @@ export type EncoreOutcome={
  invited:boolean;
 };
 
+export type EncoreMark='clear'|'miss';
+
 export type EncoreProgress={
- version:4;
+ version:5;
  lastMatchId:string;
  active:EncoreMission;
  activeInvited:boolean;
@@ -24,6 +26,7 @@ export type EncoreProgress={
  bestStreak:number;
  attempted:number;
  completed:number;
+ recent:EncoreMark[];
 };
 
 type StorageLike={
@@ -88,8 +91,9 @@ export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string
  const next=encoreMission(summary,totalRounds);
  const complete=current?.active?completesEncoreMission(current.active,summary,totalRounds):null;
  const streak=complete?(current?.streak??0)+1:complete===false?0:current?.streak??0;
+ const mark:EncoreMark=complete?'clear':'miss';
  return {
-  version:4,
+  version:5,
   lastMatchId:matchId,
   active:next,
   activeInvited:false,
@@ -98,12 +102,18 @@ export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string
   bestStreak:Math.max(current?.bestStreak??0,streak),
   attempted:(current?.attempted??0)+(complete===null?0:1),
   completed:(current?.completed??0)+(complete?1:0),
+  recent:complete===null?(current?.recent??[]):[...(current?.recent??[]),mark].slice(-7),
  };
 }
 
 export function encoreRecord(progress:Pick<EncoreProgress,'attempted'|'completed'>){
  if(progress.attempted===0)return 'Record starts with this mission';
  return `${progress.completed}/${progress.attempted} cleared · ${Math.round(progress.completed/progress.attempted*100)}%`;
+}
+
+export function encoreRecentSummary(progress:Pick<EncoreProgress,'recent'>){
+ const clears=progress.recent.filter(mark=>mark==='clear').length;
+ return `Last ${progress.recent.length}: ${clears} cleared`;
 }
 
 function validMission(value:unknown):value is EncoreMission{
@@ -116,8 +126,8 @@ function validMission(value:unknown):value is EncoreMission{
 
 export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|null{
  try{
-  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2|3|4})|null;
-  if(!value||![1,2,3,4].includes(value.version??0)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
+  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2|3|4|5})|null;
+  if(!value||![1,2,3,4,5].includes(value.version??0)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
   const version=value.version!;
   const outcome=value.lastOutcome;
   if(outcome!==null&&outcome!==undefined&&
@@ -126,8 +136,9 @@ export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|nul
   const validCount=(count:unknown)=>typeof count==='number'&&Number.isInteger(count)&&count>=0;
   if(version!==1&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
   if(version>=3&&typeof value.activeInvited!=='boolean')return null;
-  if(version===4&&(!validCount(value.attempted)||!validCount(value.completed)||value.completed! > value.attempted!))return null;
-  return {version:4,lastMatchId:value.lastMatchId,active:value.active,activeInvited:version>=3?value.activeInvited!:false,lastOutcome:outcome?{...outcome,invited:outcome.invited??false}:null,streak:version===1?0:value.streak!,bestStreak:version===1?0:value.bestStreak!,attempted:version===4?value.attempted!:0,completed:version===4?value.completed!:0};
+  if(version>=4&&(!validCount(value.attempted)||!validCount(value.completed)||value.completed! > value.attempted!))return null;
+  if(version===5&&(!Array.isArray(value.recent)||value.recent.length>7||value.recent.some(mark=>!['clear','miss'].includes(mark))))return null;
+  return {version:5,lastMatchId:value.lastMatchId,active:value.active,activeInvited:version>=3?value.activeInvited!:false,lastOutcome:outcome?{...outcome,invited:outcome.invited??false}:null,streak:version===1?0:value.streak!,bestStreak:version===1?0:value.bestStreak!,attempted:version>=4?value.attempted!:0,completed:version>=4?value.completed!:0,recent:version===5?value.recent!:[]};
  }catch{return null;}
 }
 
@@ -150,7 +161,7 @@ export function encoreInviteFromUrl(href:string){
 }
 
 export function acceptEncoreInvite(current:EncoreProgress|null,mission:EncoreMission):EncoreProgress{
- return {version:4,lastMatchId:'',active:mission,activeInvited:true,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0,attempted:current?.attempted??0,completed:current?.completed??0};
+ return {version:5,lastMatchId:'',active:mission,activeInvited:true,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0,attempted:current?.attempted??0,completed:current?.completed??0,recent:current?.recent??[]};
 }
 
 function encoreInviteUrl(mission:EncoreMission,href:string){

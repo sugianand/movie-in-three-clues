@@ -11,6 +11,9 @@ assert.match(component,/send back a spoiler-free result/,'accepted friend challe
 assert.match(component,/progress\.streak/,'the landing card recognizes the current completion streak');
 assert.match(component,/Best · \{progress\.bestStreak\}/,'the landing card keeps the personal best visible');
 assert.match(component,/encoreRecord\(progress\)/,'the landing card shows the browser-local lifetime record');
+assert.match(component,/progress\.recent\.length>0/,'the recent form reel stays hidden until a mission has been evaluated');
+assert.match(component,/encoreRecentSummary\(progress\)/,'the landing card summarizes recent Encore form');
+assert.match(component,/mark==='clear'\?'Cleared':'Missed'/,'the recent form sequence has a meaningful accessible label');
 assert.match(component,/Play your encore/,'the saved goal has a direct route back to party play');
 assert.match(component,/Saved only in this browser/,'the card explains its privacy boundary');
 assert.doesNotMatch(component,/lastOutcome|lastMatchId/,'the landing card must not expose prior result details');
