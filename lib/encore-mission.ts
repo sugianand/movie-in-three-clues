@@ -15,13 +15,15 @@ export type EncoreOutcome={
 };
 
 export type EncoreProgress={
- version:3;
+ version:4;
  lastMatchId:string;
  active:EncoreMission;
  activeInvited:boolean;
  lastOutcome:EncoreOutcome|null;
  streak:number;
  bestStreak:number;
+ attempted:number;
+ completed:number;
 };
 
 type StorageLike={
@@ -87,14 +89,21 @@ export function advanceEncoreProgress(current:EncoreProgress|null,matchId:string
  const complete=current?.active?completesEncoreMission(current.active,summary,totalRounds):null;
  const streak=complete?(current?.streak??0)+1:complete===false?0:current?.streak??0;
  return {
-  version:3,
+  version:4,
   lastMatchId:matchId,
   active:next,
   activeInvited:false,
   lastOutcome:current?.active?{complete:!!complete,mission:current.active,invited:current.activeInvited}:null,
   streak,
   bestStreak:Math.max(current?.bestStreak??0,streak),
+  attempted:(current?.attempted??0)+(complete===null?0:1),
+  completed:(current?.completed??0)+(complete?1:0),
  };
+}
+
+export function encoreRecord(progress:Pick<EncoreProgress,'attempted'|'completed'>){
+ if(progress.attempted===0)return 'Record starts with this mission';
+ return `${progress.completed}/${progress.attempted} cleared · ${Math.round(progress.completed/progress.attempted*100)}%`;
 }
 
 function validMission(value:unknown):value is EncoreMission{
@@ -107,16 +116,18 @@ function validMission(value:unknown):value is EncoreMission{
 
 export function readEncoreProgress(storage?:StorageLike|null):EncoreProgress|null{
  try{
-  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2|3})|null;
-  if(!value||![1,2,3].includes(value.version??0)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
+  const value=JSON.parse(storage?.getItem(STORAGE_KEY)??'null') as (Omit<Partial<EncoreProgress>,'version'>&{version?:1|2|3|4})|null;
+  if(!value||![1,2,3,4].includes(value.version??0)||typeof value.lastMatchId!=='string'||!validMission(value.active))return null;
+  const version=value.version!;
   const outcome=value.lastOutcome;
   if(outcome!==null&&outcome!==undefined&&
    (!outcome||typeof outcome!=='object'||typeof outcome.complete!=='boolean'||!validMission(outcome.mission)||
     ('invited' in outcome&&typeof outcome.invited!=='boolean')))return null;
   const validCount=(count:unknown)=>typeof count==='number'&&Number.isInteger(count)&&count>=0;
-  if(value.version!==1&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
-  if(value.version===3&&typeof value.activeInvited!=='boolean')return null;
-  return {version:3,lastMatchId:value.lastMatchId,active:value.active,activeInvited:value.version===3?value.activeInvited!:false,lastOutcome:outcome?{...outcome,invited:outcome.invited??false}:null,streak:value.version===1?0:value.streak!,bestStreak:value.version===1?0:value.bestStreak!};
+  if(version!==1&&(!validCount(value.streak)||!validCount(value.bestStreak)||value.bestStreak! < value.streak!))return null;
+  if(version>=3&&typeof value.activeInvited!=='boolean')return null;
+  if(version===4&&(!validCount(value.attempted)||!validCount(value.completed)||value.completed! > value.attempted!))return null;
+  return {version:4,lastMatchId:value.lastMatchId,active:value.active,activeInvited:version>=3?value.activeInvited!:false,lastOutcome:outcome?{...outcome,invited:outcome.invited??false}:null,streak:version===1?0:value.streak!,bestStreak:version===1?0:value.bestStreak!,attempted:version===4?value.attempted!:0,completed:version===4?value.completed!:0};
  }catch{return null;}
 }
 
@@ -139,7 +150,7 @@ export function encoreInviteFromUrl(href:string){
 }
 
 export function acceptEncoreInvite(current:EncoreProgress|null,mission:EncoreMission):EncoreProgress{
- return {version:3,lastMatchId:'',active:mission,activeInvited:true,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0};
+ return {version:4,lastMatchId:'',active:mission,activeInvited:true,lastOutcome:null,streak:0,bestStreak:current?.bestStreak??0,attempted:current?.attempted??0,completed:current?.completed??0};
 }
 
 function encoreInviteUrl(mission:EncoreMission,href:string){

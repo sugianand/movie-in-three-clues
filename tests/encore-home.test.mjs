@@ -10,6 +10,7 @@ assert.match(component,/Accept &amp; play/);assert.match(component,/starts a fre
 assert.match(component,/send back a spoiler-free result/,'accepted friend challenges explain the private response loop');
 assert.match(component,/progress\.streak/,'the landing card recognizes the current completion streak');
 assert.match(component,/Best · \{progress\.bestStreak\}/,'the landing card keeps the personal best visible');
+assert.match(component,/encoreRecord\(progress\)/,'the landing card shows the browser-local lifetime record');
 assert.match(component,/Play your encore/,'the saved goal has a direct route back to party play');
 assert.match(component,/Saved only in this browser/,'the card explains its privacy boundary');
 assert.doesNotMatch(component,/lastOutcome|lastMatchId/,'the landing card must not expose prior result details');
@@ -27,6 +28,7 @@ assert.match(tracker,/encoreMissionProgress\(mission,solves,firstClues,totalRoun
 assert.match(tracker,/mission\.kind==='first-clue'&&stage>0/,'a missed first-clue opportunity stops counting as a remaining chance');
 assert.match(tracker,/live\.possible\?'':'is-missed'/,'unreachable missions receive a distinct but non-blocking state');
 assert.match(tracker,/<progress aria-label="Encore mission progress"/,'live progress is exposed accessibly');
+assert.match(tracker,/encoreRecord\(progress\)/,'the private in-room tracker keeps the lifetime record visible');
 assert.doesNotMatch(tracker,/lastOutcome|lastMatchId|fetch\(/,'the tracker does not expose results or send mission data to the server');
 assert.match(page,/game&&(?:!practice&&)?!game\.me\.spectator&&game\.status!=='finished'&&<EncoreTracker phase=\{game\.status\} totalRounds=\{game\.totalRounds\} round=\{game\.round\} stage=\{game\.stage\} solved=\{game\.me\.solved\} solves=\{game\.me\.matchSolves\} firstClues=\{game\.me\.matchFirstClues\}/,'only seated multiplayer players see their private live tracker before results');
 console.log('PASS: active and invited Encore Missions return on the landing page without exposing prior-match details.');

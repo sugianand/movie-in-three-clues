@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {Sparkles} from 'lucide-react';
-import {encoreMissionProgress,readEncoreProgress,type EncoreProgress} from '@/lib/encore-mission';
+import {encoreMissionProgress,encoreRecord,readEncoreProgress,type EncoreProgress} from '@/lib/encore-mission';
 
 export function EncoreTracker({phase,totalRounds,round,stage,solved,solves,firstClues}:{phase:string;totalRounds:number;round:number;stage:number;solved:boolean;solves:number;firstClues:number}){
  const [progress,setProgress]=useState<EncoreProgress|null>(null);
@@ -20,6 +20,6 @@ export function EncoreTracker({phase,totalRounds,round,stage,solved,solves,first
    <small>{mission.detail} Checked after the final result.</small>
    {live&&<div className={`encore-tracker-progress ${live.reached?'is-reached':live.possible?'':'is-missed'}`}><progress aria-label="Encore mission progress" max={live.target} value={live.current}/><b>{live.label}</b></div>}
   </div>
-  <div className="encore-tracker-run"><b>{progress.streak?progress.streak+' live':'Fresh run'}</b><span>Best · {progress.bestStreak}</span></div>
+  <div className="encore-tracker-run"><b>{progress.streak?progress.streak+' live':'Fresh run'}</b><span>Best · {progress.bestStreak}</span><span>{encoreRecord(progress)}</span></div>
  </aside>;
 }

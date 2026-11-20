@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {Copy,Share2,Sparkles} from 'lucide-react';
-import {acceptEncoreInvite,encoreInviteFromUrl,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress,type EncoreMission,type EncoreProgress} from '@/lib/encore-mission';
+import {acceptEncoreInvite,encoreInviteFromUrl,encoreRecord,encoreShareText,readEncoreProgress,shareEncore,writeEncoreProgress,type EncoreMission,type EncoreProgress} from '@/lib/encore-mission';
 
 export function EncoreHome({onPlay}:{onPlay:()=>void}){
  const shareLock=useRef(false),[progress,setProgress]=useState<EncoreProgress|null>(null),[invite,setInvite]=useState<EncoreMission|null>(null),[sharing,setSharing]=useState(false),[shareNotice,setShareNotice]=useState(''),[shareFallback,setShareFallback]=useState('');
@@ -38,7 +38,7 @@ export function EncoreHome({onPlay}:{onPlay:()=>void}){
  const mission=progress.active;
  return <aside className="encore-home" aria-label="Saved Encore Mission">
   <div className="encore-home-icon" aria-hidden="true"><Sparkles size={22}/></div>
-  <div className="encore-home-copy"><span>YOUR ENCORE</span><h2>{mission.title}</h2><p><strong>{mission.target}</strong> {mission.detail}</p><div className="encore-home-run"><b>{progress.streak?`${progress.streak} mission streak`:'Clear it to start a streak'}</b><span>Best · {progress.bestStreak}</span></div><small>Saved only in this browser. Your next completed match checks the goal.</small></div>
+  <div className="encore-home-copy"><span>YOUR ENCORE</span><h2>{mission.title}</h2><p><strong>{mission.target}</strong> {mission.detail}</p><div className="encore-home-run"><b>{progress.streak?`${progress.streak} mission streak`:'Clear it to start a streak'}</b><span>Best · {progress.bestStreak}</span><span>{encoreRecord(progress)}</span></div><small>Saved only in this browser. Your next completed match checks the goal.</small></div>
   <div className="encore-home-actions"><button type="button" className="secondary" onClick={onPlay}>Play your encore</button><button type="button" className="secondary" disabled={sharing} onClick={()=>void share(true)}><Share2 size={15}/>{sharing?'Preparing…':'Share challenge'}</button><button type="button" className="encore-copy" disabled={sharing} onClick={()=>void share(false)}><Copy size={14}/>Copy</button></div>
   {(shareNotice||shareFallback)&&<div className="encore-share-result"><p role="status">{shareNotice}</p>{shareFallback&&<textarea className="daily-share-text" aria-label="Copyable Encore challenge" readOnly rows={5} value={shareFallback} onFocus={event=>event.currentTarget.select()}/>}</div>}
  </aside>;
