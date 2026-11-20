@@ -140,6 +140,8 @@ Returning players also see a spoiler-free Daily Premiere status on the landing p
 
 That landing status now uses the same validated, portable request path as the full puzzle instead of relying on newer browser-only timeout APIs. Saved clue progress and streak status retry after connectivity returns or the tab becomes visible, while a single-flight guard prevents overlapping refreshes and cleanup prevents unmounted updates.
 
+Daily Premiere gameplay now uses that transport for opening, guessing, skipping and recovery as well. Gateway HTML, malformed success payloads, offline failures and timeouts become safe recovery messages instead of crashing or trusting incomplete state, and no guess is automatically retried.
+
 Completed results now share an optional Daily Challenge link containing only the score target and public UTC puzzle date. Friends opening it see a match-or-beat goal before playing, live feedback if the target becomes unreachable, and a won, tied, or missed result afterward. Their existing share action adds a spoiler-free reply saying whether they beat, tied, or missed the received target, while still offering their own score as the next challenge. Date-bound links expire visibly when a new Premiere begins instead of comparing scores across different movies. The URL never includes the movie, clues, guesses, browser pass, streak, or history; zero-point results keep the normal spoiler-free Daily link.
 
 Validation: `node --experimental-strip-types tests/daily.test.mjs` and the daily API checks included in `tests/worker.mjs`. No database migration or additional dependency is required.

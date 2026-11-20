@@ -7,6 +7,7 @@ import type {DailyView} from '@/lib/daily-types';
 import {dailyDraftKey,readDailyDraft,sameDailyProgress,writeDailyDraft} from '@/lib/daily-draft';
 import {dailyStreakStatus} from '@/lib/daily-streak';
 import {dailyChallengeFromSearch,dailyChallengeLink,dailyChallengeReply,dailyChallengeState,type DailyChallenge} from '@/lib/daily-challenge';
+import {dailyRequest} from '@/lib/daily-request';
 import {AlertDialog,AlertDialogContent,AlertDialogHeader,AlertDialogTitle,AlertDialogDescription,AlertDialogFooter,AlertDialogCancel} from '@/components/ui/alert-dialog';
 const passKey='three-clues-daily-pass';
 function resultText(d:DailyView,received:DailyChallenge|null){const marks=d.marks.map(m=>m==='hit'?'🟪':m==='skip'?'⬜':'⬛').join(''),challenge=d.score?`Match or beat my ${d.score} points.`:'Can you solve today’s movie?',reply=received?dailyChallengeReply(received.target,d.score,received.date,d.date):'';return [`Three Clues · Daily Premiere #${d.number}`,`${d.date} · ${d.score}/300 points`,marks,...(reply?[reply]:[]),challenge,dailyChallengeLink(window.location.origin,d.score,d.date)].join('\n');}
@@ -17,8 +18,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
   if(lock.current)return;lock.current=true;setBusy(true);setError('');
   const previous=latest.current;
   try{
-   const res=await fetch('/api/daily',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',signal:AbortSignal.timeout(12000),body:JSON.stringify({action,token:token.current,date:previous?.date,version:previous?.version,guess})});
-   const next=await res.json() as DailyView & {error?:string};if(!res.ok)throw Error(next.error||'Please try again.');if(!alive.current)return;
+   const next=await dailyRequest({action,token:token.current,date:previous?.date,version:previous?.version,guess});if(!alive.current)return;
    let restored='';
    if(!previous)try{restored=readDailyDraft(sessionStorage.getItem(dailyDraftKey(token.current)),next);}catch{}
    latest.current=next;setData(next);
@@ -26,7 +26,7 @@ export function DailyPremiere({onBack}:{onBack:()=>void}){
    setGuess(value=>sameDailyProgress(previous,next)?value:restored);
    if(!sameDailyProgress(previous,next))setRevealOpen(false);
    setNotice(action==='guess'?(next.date!==previous?.date?'A new Daily Premiere has arrived.':next.done?(next.score?'You got it! Your result is saved.':'That’s a wrap. Tomorrow is another movie.'):next.stage>previous!.stage?'Not quite. Here’s your next clue.':'Your progress is up to date.'):action==='skip'?(next.done?'Movie revealed. Your result is saved.':'Next clue revealed.'):restored?'Your unfinished guess is back. Review it, then tap Guess.':'');
-  }catch(e){if(alive.current)setError(e instanceof Error&&e.name==='TimeoutError'?'Connection timed out. Retry to recover your saved progress.':e instanceof Error?e.message:'Connection lost. Please try again.');}
+  }catch(e){if(alive.current)setError(e instanceof Error?e.message:'Connection lost. Please try again.');}
   finally{lock.current=false;if(alive.current){setBusy(false);if(action!=='state')setTimeout(()=>field.current?.focus(),0);}}
  }
  useEffect(()=>{

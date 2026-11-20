@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {dailyRequest,isDailyView} from '../lib/daily-request.ts';
 import {openDaily,dailyView,dailyAction} from '../lib/daily.ts';
 
@@ -20,4 +21,7 @@ try{
  requests=0;globalThis.fetch=(_url,{signal})=>{requests++;return new Promise((_,reject)=>signal.addEventListener('abort',()=>reject(new DOMException('Aborted','AbortError')),{once:true}));};
  await assert.rejects(dailyRequest({action:'guess'},5),/Connection timed out/);assert.equal(requests,1);
 }finally{globalThis.fetch=original;}
+const component=readFileSync(new URL('../components/daily-premiere.tsx',import.meta.url),'utf8');
+assert.match(component,/dailyRequest\(\{action,token:token\.current,date:previous\?\.date,version:previous\?\.version,guess\}\)/,'the full Daily Premiere uses the validated transport for every action');
+assert.doesNotMatch(component,/AbortSignal\.timeout|fetch\('\/api\/daily'/,'Daily gameplay cannot bypass portable timeout and payload validation');
 console.log('PASS: Daily transport validates state, handles gateway/offline/timeout errors, preserves server messages and never retries guesses automatically.');
