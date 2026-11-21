@@ -25,6 +25,7 @@ import {Select,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/compo
 import {collections,eras,difficulties,matchLengths,settingsLabel,type GameSettings} from '@/lib/game-settings';
 import {applyGamePreset,gamePresets,matchesGamePreset} from '@/lib/game-presets';
 import {getDoubleDownReminder} from '@/lib/double-down-reminder';
+import {guessDraftContext,multiplayerDraftKey,readGuessDraft,writeGuessDraft} from '@/lib/guess-draft';
 import {normalizeRoomCode,activeRoomUrl} from '@/lib/join';
 import {clearRecoverableSession,parseRecoverableSession,recentRoomKey,saveRecoverableSession,type RoomSession} from '@/lib/session-recovery';
 type Session=RoomSession;
@@ -49,11 +50,14 @@ export default function Home(){
  if(alive&&current.current===session){if(!response.ok){setOnline(false);if(response.status===400||response.status===403){terminal=true;try{clearRecoverableSession(localStorage);}catch{}setResumeSession(null);setFatalError(data.error||'This room is no longer available.');}else {recovering.current=true;setError(data.error||'Unable to load this room.');}}else accept(data);}}
  catch{if(alive&&current.current===session){recovering.current=true;setOnline(false);}}finally{if(alive&&!terminal)timer=setTimeout(poll,800);}}
  poll();return()=>{alive=false;clearTimeout(timer);controller.abort();};},[session]);
- useEffect(()=>{setGuess('');setDoubleDown(false);setError('');},[game?.roundStarted,game?.stage,game?.status,game?.me.attempt]);
+ const draftContext=guessDraftContext(game);
+ useEffect(()=>{if(!game){setGuess('');return;}let restored='';try{restored=readGuessDraft(sessionStorage.getItem(multiplayerDraftKey),game);if(!restored)sessionStorage.removeItem(multiplayerDraftKey);}catch{}setGuess(restored);},[draftContext]);
+ useEffect(()=>{try{const draft=writeGuessDraft(game,guess);if(draft)sessionStorage.setItem(multiplayerDraftKey,draft);else sessionStorage.removeItem(multiplayerDraftKey);}catch{}},[guess]);
+ useEffect(()=>{setDoubleDown(false);setError('');},[game?.roundStarted,game?.stage,game?.status,game?.me.attempt]);
  async function perform(action:string,extra:Record<string,unknown>={}){
   try{return await runActionOnce(actionLock,async()=>{setBusy(true);setError('');const start=current.current;let transportFailure=true;
    try{const response=await gameRequest<Game & {error?:string;token?:string}>({...start,action,...extra,...(action==='join'?{joinToken:joinToken.current}:{})});transportFailure=false;const data=response.data;if(!response.ok)throw Error(data.error||'Please try again.');if(current.current!==start)return;
-    if(data.token){const s={code:data.code,token:data.token};window.history.replaceState(window.history.state,'',activeRoomUrl(window.location.href,s.code));try{sessionStorage.setItem('movie-clues-session',JSON.stringify(s));saveRecoverableSession(localStorage,s);setResumeSession(null);}catch{setStorageNotice('Your browser is blocking saved sessions. You can still play—keep this tab open.');}current.current=s;latest.current={version:-1,serverNow:0};setSession(s);if(action==='join')joinToken.current=crypto.randomUUID();}accept(data);if(action==='start'||action==='replay')setRoomTab('game');if(action==='guess')setGuess('');return {room:data.code,status:data.status};
+    if(data.token){const s={code:data.code,token:data.token};window.history.replaceState(window.history.state,'',activeRoomUrl(window.location.href,s.code));try{sessionStorage.setItem('movie-clues-session',JSON.stringify(s));saveRecoverableSession(localStorage,s);setResumeSession(null);}catch{setStorageNotice('Your browser is blocking saved sessions. You can still play—keep this tab open.');}current.current=s;latest.current={version:-1,serverNow:0};setSession(s);if(action==='join')joinToken.current=crypto.randomUUID();}accept(data);if(action==='start'||action==='replay')setRoomTab('game');if(action==='guess'){setGuess('');try{sessionStorage.removeItem(multiplayerDraftKey);}catch{}}return {room:data.code,status:data.status};
    }catch(e){const message=e instanceof Error?e.message:'Connection lost. Please try again.';if(transportFailure){recovering.current=true;setOnline(false);}setError(message);throw Error(message);}finally{setBusy(false);}
   });}catch(e){const message=e instanceof Error?e.message:'Please try again.';setError(message);throw Error(message);}
  }
