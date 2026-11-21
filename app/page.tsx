@@ -52,7 +52,7 @@ export default function Home(){
  poll();return()=>{alive=false;clearTimeout(timer);controller.abort();};},[session]);
  const draftContext=guessDraftContext(game);
  useEffect(()=>{if(!game){setGuess('');return;}let restored='';try{restored=readGuessDraft(sessionStorage.getItem(multiplayerDraftKey),game);if(!restored)sessionStorage.removeItem(multiplayerDraftKey);}catch{}setGuess(restored);},[draftContext]);
- useEffect(()=>{try{const draft=writeGuessDraft(game,guess);if(draft)sessionStorage.setItem(multiplayerDraftKey,draft);else sessionStorage.removeItem(multiplayerDraftKey);}catch{}},[guess]);
+ useEffect(()=>{if(!game)return;try{const draft=writeGuessDraft(game,guess);if(draft)sessionStorage.setItem(multiplayerDraftKey,draft);else sessionStorage.removeItem(multiplayerDraftKey);}catch{}},[guess]);
  useEffect(()=>{setDoubleDown(false);setError('');},[game?.roundStarted,game?.stage,game?.status,game?.me.attempt]);
  async function perform(action:string,extra:Record<string,unknown>={}){
   try{return await runActionOnce(actionLock,async()=>{setBusy(true);setError('');const start=current.current;let transportFailure=true;

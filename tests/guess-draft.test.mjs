@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {guessDraftContext,readGuessDraft,writeGuessDraft} from '../lib/guess-draft.ts';
 
 const game={code:'ABC123',round:0,roundStarted:100,status:'playing',stage:0,version:1,me:{id:'player1',attempt:-1,solved:false}};
@@ -29,4 +30,6 @@ for(const value of ['', ' ', 'x'.repeat(151)])assert.equal(writeGuessDraft(game,
 for(const corrupt of [null,'bad','null','{}',JSON.stringify({value:12}), 'x'.repeat(1001)])assert.equal(readGuessDraft(corrupt,game),'');
 assert.deepEqual(Object.keys(JSON.parse(raw)).sort(),['context','value']);
 assert.ok(!raw.includes('token')&&!raw.includes('doubleDown'));
+const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
+assert.match(page,/useEffect\(\(\)=>\{if\(!game\)return;try\{const draft=writeGuessDraft/,'initial room loading cannot erase a recoverable draft');
 console.log('PASS: unfinished guesses survive clue unlocks and clear on attempts, reveals, new rounds, or seat changes.');
