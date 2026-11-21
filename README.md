@@ -64,7 +64,7 @@ The included `tests/integration.mjs` can also test a running server with GAME_TE
 
 ## Implementation
 
-React/Vinext frontend, Cloudflare-compatible backend, D1 room state with optimistic versioned writes. Clients poll every 800 ms; the server controls clue timing and scoring. Room credentials stay in tab-scoped session storage. The answer bank lives only on the server.
+React/Vinext frontend, Cloudflare-compatible backend, D1 room state with optimistic versioned writes. Visible clients poll every 800 ms; hidden tabs pause and catch up immediately when reopened. The server controls clue timing and scoring. Room credentials stay in tab-scoped session storage. The answer bank lives only on the server.
 
 Use Leave room to free a seat. If the host leaves explicitly, the earliest remaining player becomes host. Closing a tab alone does not notify the room.
 
