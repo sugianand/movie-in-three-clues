@@ -66,6 +66,8 @@ The included `tests/integration.mjs` can also test a running server with GAME_TE
 
 React/Vinext frontend, Cloudflare-compatible backend, D1 room state with optimistic versioned writes. Visible clients poll every 800 ms; hidden tabs pause and catch up immediately when reopened. The server controls clue timing and scoring. Room credentials stay in tab-scoped session storage. The answer bank lives only on the server.
 
+Supported mobile and desktop browsers can opt in to keeping the display awake during active multiplayer rounds and reveals. The browser-local preference defaults to off, releases the Screen Wake Lock whenever the match is not active or the tab is hidden, and reacquires it when play resumes. Unsupported browsers omit the control without using a fallback timer or permission workaround.
+
 Use Leave room to free a seat. If the host leaves explicitly, the earliest remaining player becomes host. Closing a tab alone does not notify the room.
 
 ## Join and design update
