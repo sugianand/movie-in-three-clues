@@ -68,6 +68,8 @@ React/Vinext frontend, Cloudflare-compatible backend, D1 room state with optimis
 
 Supported mobile and desktop browsers can opt in to keeping the display awake during active multiplayer rounds and reveals. The browser-local preference defaults to off, releases the Screen Wake Lock whenever the match is not active or the tab is hidden, and reacquires it when play resumes. Unsupported browsers omit the control without using a fallback timer or permission workaround.
 
+Optional Cinema Sound cues identify a new round, revealed clue, the player’s own correct answer, the answer reveal, and final results. Sound defaults off, is synthesized locally with Web Audio, waits for browser-approved interaction, and never plays for initial room recovery or unchanged polling snapshots. Spectators receive shared transition cues but never another player’s private correct cue.
+
 Use Leave room to free a seat. If the host leaves explicitly, the earliest remaining player becomes host. Closing a tab alone does not notify the room.
 
 ## Join and design update
