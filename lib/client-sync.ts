@@ -5,6 +5,15 @@ export function acceptsSnapshot(incoming:SnapshotStamp,current:SnapshotStamp){
 // Capture recovery when the update is queued; React may apply it after refs change.
 export function errorAfterRecovery(recovered:boolean){return (message:string)=>recovered?'':message;}
 export function clueAnnouncement(stage:number,clue:string){return `Clue ${stage+1} of 3, worth ${(3-stage)*100} points: ${clue}`;}
+type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null};
+export function roundAnnouncement(game:AnnouncedRound|null){
+ if(!game)return '';
+ const round=`Round ${game.round+1} of ${game.totalRounds}.`;
+ if(game.status==='playing')return `${round} ${clueAnnouncement(game.stage,game.clues[game.stage]??'')}`;
+ if(game.status==='reveal'&&game.answer)return `${round} The movie was ${game.answer}.`;
+ if(game.status==='finished')return 'Match complete. Final standings are ready.';
+ return '';
+}
 // Keep the phrase stable throughout the warning window so assistive tech announces it once.
 export function timeWarning(seconds:number,stage:number){
  if(seconds<=0||seconds>5)return '';
