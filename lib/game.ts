@@ -140,8 +140,8 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  // Older open tabs omit this stamp; current clients bind actions to one round instance.
  if((body.action==='guess'||body.action==='next'||body.action==='round-ready')&&body.roundStarted!==undefined&&body.roundStarted!==r.started)throw Error('That action belongs to an earlier round. Try again in the current round.');
  if(body.action==='ready'){
-  if(r.status!=='finished')throw Error('Rematch readiness opens after the final reveal.');
-  if(hasSeriesChampion(r))throw Error('This Movie Night Series is complete. Start a new series before readying up.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Readiness opens in the lobby or after the final reveal.');
+  if(r.status==='finished'&&hasSeriesChampion(r))throw Error('This Movie Night Series is complete. Start a new series before readying up.');
   if(typeof body.ready!=='boolean')throw Error('Choose a valid rematch status.');
   p.ready=body.ready;return;
  }
@@ -170,12 +170,12 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
  if(body.action==='team'){
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Teams are locked during a game.');
   if(r.settings?.mode!=='teams'||!teams.some(t=>t.id===body.team))throw Error('Choose a valid team in team mode.');
-  p.team=body.team;if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
+  p.team=body.team;p.ready=false;if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
  }
  if(body.action==='settings'){
   if(p.id!==r.host)throw Error('Only the host can change the settings.');
   if(r.status!=='lobby'&&r.status!=='finished')throw Error('Settings can only change before or between games.');
-  const settings=parseSettings(body.settings);if(eligibleMovies(settings).length<5)throw Error('Choose a collection with enough movies for this match.');r.settings=settings;if(settings.mode==='teams')assignTeams(r);if(r.status==='finished')r.players.forEach(x=>x.ready=false);return;
+  const settings=parseSettings(body.settings);if(eligibleMovies(settings).length<5)throw Error('Choose a collection with enough movies for this match.');r.settings=settings;if(settings.mode==='teams')assignTeams(r);r.players.forEach(x=>x.ready=false);return;
  }
  if(body.action==='start'||body.action==='next'||body.action==='replay'){
   if(p.id!==r.host)throw Error('Only the host can do that.');
