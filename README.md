@@ -74,6 +74,8 @@ Use Leave room to free a seat. If the host leaves explicitly, the earliest remai
 
 Before a match or between completed matches, the host can pass hosting to any other seated player without leaving. Scores, Series progress, settings, and movie rotation stay unchanged; the new host immediately controls setup and round advancement.
 
+The host can also remove an inactive seat before or between matches, reopening that place without resetting the room’s settings, movie history, completed result, or Series race. Removed players may join again later with the room code.
+
 ## Join and design update
 
 Separate Host and Join forms, inline join validation, same-name suffixes, pasted-code cleanup, prefilled invite links, and storage-blocked session fallback. Redesigned entry, lobby, clue cards, timer, standings and winner screens. Cookie-free Worker tests cover full gameplay and the new join paths; real Incognito browser testing remains unverified in the authoring environment.

@@ -163,6 +163,14 @@ export function act(r:Room,token:string,body:any,now=Date.now()){
   if(!nextHost)throw Error('Choose another active player to host.');
   r.host=nextHost.id;r.notice=`${nextHost.name} is now the host.`;return;
  }
+ if(body.action==='remove-player'){
+  if(p.id!==r.host)throw Error('Only the host can remove a player.');
+  if(r.status!=='lobby'&&r.status!=='finished')throw Error('Players can only be removed before or between games.');
+  if(typeof body.playerId!=='string'||body.playerId===p.id)throw Error('Choose another active player to remove.');
+  const target=r.players.find(player=>player.id===body.playerId);
+  if(!target)throw Error('Choose another active player to remove.');
+  r.players=r.players.filter(player=>player.id!==target.id);r.notice=`${target.name} was removed by the host.`;return;
+ }
  if(body.action==='round-ready'){
   if(r.status!=='reveal')throw Error('Round readiness opens after the answer is revealed.');
   if(body.round!==r.round||body.roundStarted!==r.started)throw Error('That ready signal belongs to an earlier round.');
