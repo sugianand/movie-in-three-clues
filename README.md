@@ -76,6 +76,8 @@ Before a match or between completed matches, the host can pass hosting to any ot
 
 The host can also remove an inactive seat before or between matches, reopening that place without resetting the room’s settings, movie history, completed result, or Series race. Removed players may join again later with the room code.
 
+Lobby invites now use the device’s native share sheet when available, with clipboard and selectable-link fallbacks when sharing permissions are unavailable. Invite URLs retain only the current path and room code, removing unrelated query parameters, fragments, and embedded credentials before sharing.
+
 ## Join and design update
 
 Separate Host and Join forms, inline join validation, same-name suffixes, pasted-code cleanup, prefilled invite links, and storage-blocked session fallback. Redesigned entry, lobby, clue cards, timer, standings and winner screens. Cookie-free Worker tests cover full gameplay and the new join paths; real Incognito browser testing remains unverified in the authoring environment.

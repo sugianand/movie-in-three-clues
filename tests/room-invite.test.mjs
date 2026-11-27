@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {roomInvite,sendRoomInvite} from '../lib/room-invite.ts';
+
+const invite=roomInvite('https://user:secret@example.com/play?token=private&daily=1&room=OLD123#private','ABC123');
+assert.equal(invite.url,'https://example.com/play?room=ABC123');
+assert(!JSON.stringify(invite).includes('private'));
+assert(!JSON.stringify(invite).includes('secret'));
+assert.match(invite.text,/ABC123/);
+assert.throws(()=>roomInvite('javascript:alert(1)','ABC123'));
+assert.throws(()=>roomInvite('https://example.com','bad'));
+let copies=0,shares=0;
+const platform={share:async data=>{shares++;assert.deepEqual(data,invite);},copy:async url=>{copies++;assert.equal(url,invite.url);}};
+assert.equal(await sendRoomInvite(invite,platform),'shared');assert.equal(copies,0);
+assert.equal(await sendRoomInvite(invite,platform,false),'copied');assert.equal(shares,1);
+assert.equal(await sendRoomInvite(invite,{share:async()=>{throw {name:'AbortError'};},copy:platform.copy}),'cancelled');assert.equal(copies,1);
+assert.equal(await sendRoomInvite(invite,{share:async()=>{throw Error('Denied');},copy:platform.copy}),'copied');
+assert.equal(await sendRoomInvite(invite,{}),'manual');
+assert.equal(await sendRoomInvite(invite,{copy:async()=>{throw Error('Blocked');}}),'manual');
+
+const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
+const component=readFileSync(new URL('../components/room-invite.tsx',import.meta.url),'utf8');
+assert.match(page,/<RoomInvite key={game\.code} code={game\.code}\/>/);
+assert.match(component,/navigator\.share/);assert.match(component,/navigator\.clipboard/);
+assert.match(component,/Select and copy the invite below/);assert.match(component,/role="status"/);
+console.log('PASS: room invites remove private URL data, share natively, preserve cancellation, and fall back to copy/manual.');

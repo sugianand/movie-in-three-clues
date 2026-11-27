@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+/* Invitation controls remain usable when sharing or clipboard permissions fail. */
+.invite-actions{display:flex;flex-wrap:wrap;gap:8px}.room-invite .invite-panel{flex-wrap:wrap}.room-invite .invite-status{font-size:13px;line-height:1.5;color:var(--muted-foreground);margin:8px 0}.invite-status:empty{display:none}.invite-fallback{margin:12px 0}.invite-fallback input{font-size:16px}.invite-actions button{min-height:44px}@media(max-width:650px){.invite-actions{width:100%}.invite-actions button{flex:1}.room-invite .invite-panel{gap:14px}}
 @font-face {
   font-family: 'Barlow Condensed';
   font-style: normal;
