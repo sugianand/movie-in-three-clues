@@ -72,6 +72,8 @@ Optional Cinema Sound cues identify a new round, revealed clue, the player’s o
 
 Use Leave room to free a seat. If the host leaves explicitly, the earliest remaining player becomes host. Closing a tab alone does not notify the room.
 
+Before a match or between completed matches, the host can pass hosting to any other seated player without leaving. Scores, Series progress, settings, and movie rotation stay unchanged; the new host immediately controls setup and round advancement.
+
 ## Join and design update
 
 Separate Host and Join forms, inline join validation, same-name suffixes, pasted-code cleanup, prefilled invite links, and storage-blocked session fallback. Redesigned entry, lobby, clue cards, timer, standings and winner screens. Cookie-free Worker tests cover full gameplay and the new join paths; real Incognito browser testing remains unverified in the authoring environment.
