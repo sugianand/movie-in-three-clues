@@ -5,6 +5,21 @@ export function acceptsSnapshot(incoming:SnapshotStamp,current:SnapshotStamp){
 // Capture recovery when the update is queued; React may apply it after refs change.
 export function errorAfterRecovery(recovered:boolean){return (message:string)=>recovered?'':message;}
 export function clueAnnouncement(stage:number,clue:string){return `Clue ${stage+1} of 3, worth ${(3-stage)*100} points: ${clue}`;}
+type AnnouncedRound={status:string;round:number;totalRounds:number;stage:number;clues:string[];answer:string|null;roundStarted?:number;serverNow?:number};
+export function roundAnnouncement(game:AnnouncedRound|null){
+ if(!game)return '';
+ const round=`Round ${game.round+1} of ${game.totalRounds}.`;
+ if(game.status==='playing'&&game.roundStarted!==undefined&&game.serverNow!==undefined&&game.roundStarted>game.serverNow)return `${round} Get ready. First clue in ${Math.ceil((game.roundStarted-game.serverNow)/1000)} seconds.`;
+ if(game.status==='playing')return `${round} ${clueAnnouncement(game.stage,game.clues[game.stage]??'')}`;
+ if(game.status==='reveal'&&game.answer)return `${round} The movie was ${game.answer}.`;
+ if(game.status==='finished')return 'Match complete. Final standings are ready.';
+ return '';
+}
+// Keep the phrase stable throughout the warning window so assistive tech announces it once.
+export function timeWarning(seconds:number,stage:number){
+ if(seconds<=0||seconds>5)return '';
+ return stage===2?'Five seconds or less to guess before the answer reveal.':'Five seconds or less before the next clue and lower base points.';
+}
 export async function runActionOnce<T>(lock:{current:boolean},action:()=>Promise<T>){
  if(lock.current)throw Error('That action is already being sent. Please wait.');
  lock.current=true;

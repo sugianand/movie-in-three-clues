@@ -22,7 +22,10 @@ header.tc-header{position:sticky;top:0;z-index:60;height:auto;display:block;padd
 .tc-nav .theme-picker[open] summary::after{transform:translateY(1px) rotate(-135deg)}
 .tc-nav .theme-picker summary::-webkit-details-marker{display:none}
 .tc-nav .theme-popover{right:0;left:auto;top:calc(100% + 10px)}
+.tc-nav :is(.cinema-sound,.screen-awake) button{display:flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;border:0;border-radius:10px;background:transparent;color:var(--foreground);font:600 15px/1 var(--tc-font);opacity:.86;cursor:pointer;transition:background .15s ease,opacity .15s ease}
+.tc-nav :is(.cinema-sound,.screen-awake) button:hover{background:var(--tc-soft);opacity:1}.tc-nav :is(.cinema-sound,.screen-awake) button[aria-pressed=true] svg{color:var(--ring,var(--brand-accent));filter:drop-shadow(0 0 7px color-mix(in srgb,var(--brand-accent) 65%,transparent))}
 .tc-home:focus-visible,.tc-nav-link:focus-visible,.tc-nav summary:focus-visible,.tc-btn:focus-visible{outline:3px solid var(--focus-ring,var(--brand-accent));outline-offset:2px}
+.tc-nav :is(.cinema-sound,.screen-awake) button:focus-visible{outline:3px solid var(--focus-ring,var(--brand-accent));outline-offset:2px}
 
 /* Landing */
 .tc-landing{font-family:var(--tc-font);padding:clamp(36px,7vw,88px) 0 clamp(40px,6vw,72px);color:var(--foreground)}
@@ -79,6 +82,7 @@ main .cinema-backdrop.cinema-backdrop-subdued .cinema-backdrop-reel{opacity:.17}
  .tc-logo-word{font-size:18px}
  .tc-logo-symbol{width:34px;height:34px}
  .tc-nav .theme-picker summary,.tc-nav-link{padding:0 9px;font-size:14px}
+ .tc-nav :is(.cinema-sound,.screen-awake) button{width:40px;justify-content:center;padding:0}.tc-nav :is(.cinema-sound,.screen-awake) button span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
  .tc-actions .tc-btn{flex:1 1 100%}
  .tc-demo{padding:18px 18px 16px}
  .tc-demo-clue{grid-template-columns:28px minmax(0,1fr);row-gap:4px}

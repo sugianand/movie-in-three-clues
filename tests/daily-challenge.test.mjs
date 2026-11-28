@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {dailyChallengeFromSearch,dailyChallengeLink,dailyChallengeReply,dailyChallengeState} from '../lib/daily-challenge.ts';
+
+assert.deepEqual(dailyChallengeFromSearch('?daily=1&challenge=200&day=2026-11-07'),{target:200,date:'2026-11-07'});
+assert.equal(dailyChallengeFromSearch('?challenge=200'),null,'dayless legacy links cannot target a different movie');
+assert.equal(dailyChallengeFromSearch('?challenge=150&day=2026-11-07'),null);
+assert.equal(dailyChallengeFromSearch('?challenge=200&day=2026-02-30'),null);
+assert.equal(dailyChallengeLink('https://three-clues.test/',300,'2026-11-07'),'https://three-clues.test/?daily=1&challenge=300&day=2026-11-07');
+assert.equal(dailyChallengeLink('https://three-clues.test',0,'2026-11-07'),'https://three-clues.test/?daily=1');
+assert.equal(dailyChallengeReply(200,300,'2026-11-07','2026-11-07'),'Challenge result: beat the 200-point target by 100.');
+assert.equal(dailyChallengeReply(200,200,'2026-11-07','2026-11-07'),'Challenge result: tied the 200-point target.');
+assert.equal(dailyChallengeReply(300,100,'2026-11-07','2026-11-07'),'Challenge result: finished 200 points short of the 300-point target.');
+assert.equal(dailyChallengeReply(200,300,'2026-11-06','2026-11-07'),'','expired challenges never enter a fresh puzzle share');
+assert.deepEqual(dailyChallengeState(200,0,false,0,'2026-11-07','2026-11-07'),{headline:'Match or beat 200 points',detail:'Solve by clue 2 to tie it.',outcome:'open'});
+assert.deepEqual(dailyChallengeState(300,0,false,1,'2026-11-07','2026-11-07'),{headline:'Challenge target slipped away',detail:'The best remaining score is 200 points. Keep playing for your streak and personal best.',outcome:'out-of-reach'});
+assert.deepEqual(dailyChallengeState(200,0,false,2,'2026-11-07','2026-11-07'),{headline:'Challenge target slipped away',detail:'The best remaining score is 100 points. Keep playing for your streak and personal best.',outcome:'out-of-reach'});
+assert.equal(dailyChallengeState(100,0,false,2,'2026-11-07','2026-11-07').outcome,'open');
+assert.equal(dailyChallengeState(100,300,true,0,'2026-11-07','2026-11-07').outcome,'won');
+assert.equal(dailyChallengeState(200,200,true,1,'2026-11-07','2026-11-07').outcome,'tied');
+assert.deepEqual(dailyChallengeState(300,100,true,2,'2026-11-07','2026-11-07'),{headline:'Challenge missed',detail:'You finished 200 points short.',outcome:'missed'});
+assert.deepEqual(dailyChallengeState(200,300,true,0,'2026-11-06','2026-11-07'),{headline:'Challenge expired',detail:'That target belonged to the Nov 6 Premiere. Today’s movie is a fresh challenge.',outcome:'expired'});
+const premiere=readFileSync(new URL('../components/daily-premiere.tsx',import.meta.url),'utf8');
+assert.match(premiere,/dailyChallengeLink\(window\.location\.origin,d\.score,d\.date\)/);
+assert.match(premiere,/resultText\(data,challengeLink\)/);
+assert.match(premiere,/daily-challenge-\$\{challenge\.outcome\}/);
+console.log('PASS: date-bound Daily Challenges report active, out-of-reach, won, tied, missed and expired outcomes with spoiler-free replies.');

@@ -7,6 +7,8 @@ act(room,host.token,{action:'start'},1000);
 assert.deepEqual(view(room,guest.token,1001).recap,[],'recap stays private during play');assert.equal(view(room,guest.token,1001).fastest,null);assert.equal(view(room,guest.token,1001).roundSpotlight,null);
 
 act(room,host.token,{action:'guess',round:0,stage:0,guess:movies[room.deck[0]].title},1001);
+assert.deepEqual([view(room,host.token,1002).me.matchSolves,view(room,host.token,1002).me.matchFirstClues],[1,1],'the seated player gets private live Encore totals');
+assert.deepEqual([view(room,guest.token,1002).me.matchSolves,view(room,guest.token,1002).me.matchFirstClues],[0,0],'another player cannot see that private progress');
 advance(room,46001);
 assert.equal(room.recap.length,1);assert.equal(room.recap[0].solvers[0].name,'Host');assert.deepEqual(room.recap[0].missed,['Guest']);
 const reveal=view(room,guest.token,46001);assert.deepEqual(reveal.recap,[],'full recap stays private at reveal');assert.equal(reveal.fastest,null);assert.deepEqual(reveal.roundSpotlight,{solved:1,players:2,fastest:{name:'Host',clue:1,points:300,ms:1}});
@@ -19,6 +21,7 @@ advance(room,138005);act(room,host.token,{action:'next',round:2},138006);
 
 const result=view(room,guest.token,138006);
 assert.equal(result.status,'finished');assert.equal(result.recap.length,3);assert.equal(result.recap[2].title,movies[room.deck[2]].title);
+assert.deepEqual([result.me.matchSolves,result.me.matchFirstClues],[2,2],'private totals cover the complete match without exposing the recap early');
 assert.match(result.comeback,/Guest climbed from 2nd after round 1 to win/);
 assert.deepEqual(result.fastest,{name:'Guest',title:movies[room.deck[1]].title,clue:1,points:300,ms:1});
 assert.deepEqual(result.recap.map(row=>row.solvers.map(s=>s.clue)),[[1],[1],[1]]);
