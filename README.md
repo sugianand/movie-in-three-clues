@@ -120,6 +120,8 @@ Host Settings now offers Individual or Teams and Easy (30 seconds per clue / 90 
 
 Team play uses Team Purple and Team Gold. Players are assigned to the smaller team when entering team mode or joining, and can choose their own team before or between games. With an even active roster, the host can rebalance everyone in join order with one tap; team names, scores, movie rotation, and Series history stay intact while stale ready signals clear. Starting requires equal nonempty teams: 2, 4, 6 or 8 players. Every player has one guess per clue and earns personal points that add to their team's total; team totals hide new points until reveal. Highest team total wins and ties are shared. Discuss on your own voice/chat service; no built-in chat. Completed team results are saved so changing the next match's settings does not rewrite the winner.
 
+Lobby and rematch controls preview queued spectator promotion using the same team assignment rules as the server. Invalid Team splits remain blocked with the exact upcoming Purple–Gold count instead of failing only after the host tries to start.
+
 Tests cover all three timer boundaries, team selection/permissions, uneven-team rejection, hidden totals, five rounds, shared and single winners, stable results and replay.
 
 ## Intro, room setup and team names
