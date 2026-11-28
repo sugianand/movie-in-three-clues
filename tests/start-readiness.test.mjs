@@ -20,5 +20,8 @@ const page=readFileSync(new URL('../app/page.tsx',import.meta.url),'utf8');
 const readiness=readFileSync(new URL('../lib/start-readiness.ts',import.meta.url),'utf8');
 assert.match(page,/const startBlock=game\?startReadiness\(game\):''/);
 assert.match(page,/disabled={busy\|\|!!startBlock\|\|!online}/);
+assert.match(page,/disabled={busy\|\|!online\|\|!!startBlock\|\|game\.movieCount<5}/,'Settings start uses the same readiness guard');
+assert.match(page,/\{startBlock&&<p className="notice" role="status">\{startBlock\}<\/p>\}/,'Settings explains the exact start blocker');
+assert.doesNotMatch(page,/nextPlayerCount/,'No approximate player-count shortcut can bypass team readiness');
 assert.match(readiness,/Current next-match split/);
 console.log('PASS: match readiness previews balanced teams and queued seats without mutating the room.');
