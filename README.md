@@ -144,6 +144,8 @@ The landing, Host/Join forms, lobby, settings, team cards, clue screens, results
 
 The home screen now offers a one-player daily puzzle alongside multiplayer. Everyone gets the same movie for a UTC day. Each wrong guess or skip reveals another clue; a correct answer earns 300, 200, or 100 points. The answer and unrevealed clues stay on the server until completion. No countdown limits an individual guess; the puzzle resets at midnight UTC.
 
+Every skip now opens a confirmation that states the exact points being given up and the score still available. Players can cancel without changing progress; the confirmed action remains guarded while a request is saving or the Daily Premiere has expired.
+
 A random browser pass in localStorage identifies a D1 profile stored under the `daily:` namespace in the existing rooms table. Progress survives reloads; atomic version checks prevent retries and simultaneous tabs from consuming multiple guesses. Completed attempts cannot be replayed on the same pass. Stats include played, win percentage, consecutive winning days, best streak, total points, and seven recent results. Share results omit the title and clues. These are casual browser stats, not identity-verified rankings; clearing browser data creates a fresh pass and stats do not transfer between devices.
 
 The streak card keeps yesterday’s valid run visible before today is played and now explains exactly what today means: extend an active streak, start a new one, confirm a secured result, or begin fresh tomorrow after a miss.
